@@ -1,17 +1,11 @@
-import 'package:QCM/CommonDrawer.dart';
-import 'package:QCM/Fqc.dart';
-import 'package:QCM/FqcTestList.dart';
-import 'package:QCM/Ipqc.dart';
-import 'package:QCM/Iqcp.dart';
-import 'package:QCM/IqcpTestList.dart';
-import 'package:QCM/QualityList.dart';
-import 'package:QCM/QualityPage.dart';
-import 'package:QCM/components/appbar.dart';
-import 'package:QCM/constant/app_color.dart';
-import 'package:QCM/constant/app_fonts.dart';
-import 'package:QCM/constant/app_styles.dart';
-import 'package:QCM/directory.dart';
-import 'package:QCM/ipqcTestList.dart';
+import 'package:Maintenance/CommonDrawer.dart';
+
+import 'package:Maintenance/components/appbar.dart';
+import 'package:Maintenance/constant/app_color.dart';
+import 'package:Maintenance/constant/app_fonts.dart';
+import 'package:Maintenance/constant/app_styles.dart';
+import 'package:Maintenance/directory.dart';
+
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 // import '../BoxCricket.dart';
@@ -125,27 +119,55 @@ class _WelcomePageState extends State<WelcomePage> {
                   const SizedBox(
                     width: 10,
                   ),
-                  Expanded(
-                      child: tabDashboard(
-                          'IQCP',
-                          designation != 'Super Admin'
-                              ? AppAssets.IQCP
-                              : AppAssets.icApproved, () {
-                    Navigator.of(context).pushAndRemoveUntil(
-                        MaterialPageRoute(
-                            builder: (BuildContext context) =>
-                                designation != 'Super Admin'
-                                    ? IqcpPage()
-                                    : IqcpTestList()),
-                        (Route<dynamic> route) => false);
-                  })),
+                  Center(
+                    child: GestureDetector(
+                      onTap: () {
+                        // Handle the onTap event here
+                        print('Container tapped!');
+                      },
+                      child: Stack(
+                        alignment: Alignment.center,
+                        children: [
+                          Container(
+                            width: 390.0,
+                            height: 250.0,
+                            decoration: BoxDecoration(
+                              color: Color.fromARGB(255, 67, 236, 25),
+                              border: Border.all(
+                                  color: Color.fromARGB(255, 236, 103, 103),
+                                  width: 3),
+                              borderRadius: BorderRadius.circular(8),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.grey.withOpacity(0.5),
+                                  spreadRadius: 5,
+                                  blurRadius: 7,
+                                  offset: Offset(
+                                      5, 10), // changes position of shadow
+                                ),
+                              ],
+                            ),
+                          ),
+                          Positioned(
+                            child: Image.asset(
+                              AppAssets
+                                  .icApproved, // Replace with your logo asset path
+                              width:
+                                  100.0, // Adjust the size of the logo as needed
+                              height: 100.0,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
                   const SizedBox(
                     width: 10,
                   ),
                 ],
               ),
               const SizedBox(
-                height: 10,
+                height: 25,
               ),
               Row(
                 mainAxisAlignment: MainAxisAlignment.start,
@@ -154,78 +176,61 @@ class _WelcomePageState extends State<WelcomePage> {
                   const SizedBox(
                     width: 10,
                   ),
-                  Expanded(
-                      child: tabDashboard(
-                          'IPQC',
-                          designation != 'Super Admin'
-                              ? AppAssets.ipqc
-                              : AppAssets.ipqc, () {
-                    Navigator.of(context).pushAndRemoveUntil(
-                        MaterialPageRoute(
-                            builder: (BuildContext context) =>
-                                designation != 'Super Admin'
-                                    ? IpqcPage()
-                                    : IpqcTestList()),
-                        (Route<dynamic> route) => false);
-                  })),
-                  const SizedBox(
-                    width: 10,
+                  Center(
+                    child: GestureDetector(
+                      onTap: () {
+                        // Handle the onTap event here
+                        print('Container tapped!');
+                      },
+                      child: Stack(
+                        alignment: Alignment.center,
+                        children: [
+                          Container(
+                            width: 390.0,
+                            height: 250.0,
+                            decoration: BoxDecoration(
+                              color: Color.fromARGB(255, 236, 81, 250),
+                              border: Border.all(
+                                  color: Color.fromARGB(255, 236, 103, 103),
+                                  width: 3),
+                              borderRadius: BorderRadius.circular(8),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Color.fromARGB(255, 115, 6, 129)
+                                      .withOpacity(0.5),
+                                  spreadRadius: 5,
+                                  blurRadius: 7,
+                                  offset: Offset(
+                                      5, 10), // changes position of shadow
+                                ),
+                              ],
+                            ),
+                          ),
+                          Positioned(
+                            child: Image.asset(
+                              AppAssets
+                                  .IQCP, // Replace with your logo asset path
+                              width:
+                                  100.0, // Adjust the size of the logo as needed
+                              height: 100.0,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
                   ),
-                ],
-              ),
-              const SizedBox(
-                height: 10,
-              ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.start,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const SizedBox(
-                    width: 10,
-                  ),
-                  Expanded(
-                      child: tabDashboard(
-                          'FQC',
-                          designation != 'Super Admin'
-                              ? AppAssets.fqcadd
-                              : AppAssets.fqc, () {
-                    Navigator.of(context).pushAndRemoveUntil(
-                        MaterialPageRoute(
-                            builder: (BuildContext context) =>
-                                designation != 'Super Admin'
-                                    ? FqcPage()
-                                    : FqcTestList()),
-                        (Route<dynamic> route) => false);
-                  })),
-                  const SizedBox(
-                    width: 10,
-                  ),
-                ],
-              ),
-              const SizedBox(
-                height: 10,
-              ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.start,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const SizedBox(
-                    width: 10,
-                  ),
-                  Expanded(
-                      child: tabDashboard(
-                          'QUALITY',
-                          designation != 'Super Admin'
-                              ? AppAssets.qualityadd
-                              : AppAssets.quality, () {
-                    Navigator.of(context).pushAndRemoveUntil(
-                        MaterialPageRoute(
-                            builder: (BuildContext context) =>
-                                designation != 'Super Admin'
-                                    ? QualityPage()
-                                    : QualityList()),
-                        (Route<dynamic> route) => false);
-                  })),
+
+                  // Expanded(
+                  //     child: tabDashboard('Machine Maintenance', AppAssets.ipqc,
+                  //         () {
+                  //   // Navigator.of(context).pushAndRemoveUntil(
+                  //   //     MaterialPageRoute(
+                  //   //         builder: (BuildContext context) =>
+                  //   //             designation != 'Super Admin'
+                  //   //                 ? IpqcPage()
+                  //   //                 : IpqcTestList()),
+                  //   //     (Route<dynamic> route) => false);
+                  // })),
                   const SizedBox(
                     width: 10,
                   ),
@@ -238,7 +243,7 @@ class _WelcomePageState extends State<WelcomePage> {
       bottomNavigationBar: Container(
         height: 60,
         decoration: const BoxDecoration(
-          color: Color.fromARGB(255, 245, 203, 19),
+          color: Color.fromARGB(255, 218, 132, 240),
           borderRadius: BorderRadius.only(
             topLeft: Radius.circular(20),
             topRight: Radius.circular(20),
@@ -250,10 +255,7 @@ class _WelcomePageState extends State<WelcomePage> {
             InkWell(
                 onTap: () {
                   Navigator.of(context).pushReplacement(MaterialPageRoute(
-                      builder: (BuildContext context) =>
-                          department == 'IQCP' && designation != 'Super Admin'
-                              ? IqcpPage()
-                              : WelcomePage()));
+                      builder: (BuildContext context) => WelcomePage()));
                 },
                 child: Image.asset(
                     home

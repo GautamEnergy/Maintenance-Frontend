@@ -1,21 +1,18 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:ui';
-import 'package:QCM/CommonDrawer.dart';
-import 'package:QCM/Fqc.dart';
-import 'package:QCM/Ipqc.dart';
-import 'package:QCM/Iqcp.dart';
-import 'package:QCM/QualityPage.dart';
-import 'package:QCM/Welcomepage.dart';
-import 'package:QCM/addeditemployee.dart';
-import 'package:QCM/components/app_loader.dart';
-import 'package:QCM/components/appbar.dart';
-import 'package:QCM/constant/app_assets.dart';
-import 'package:QCM/constant/app_color.dart';
-import 'package:QCM/constant/app_fonts.dart';
-import 'package:QCM/constant/app_strings.dart';
-import 'package:QCM/constant/app_styles.dart';
-import 'package:QCM/user_list_model.dart';
+import 'package:Maintenance/CommonDrawer.dart';
+
+import 'package:Maintenance/Welcomepage.dart';
+import 'package:Maintenance/addeditemployee.dart';
+import 'package:Maintenance/components/app_loader.dart';
+import 'package:Maintenance/components/appbar.dart';
+import 'package:Maintenance/constant/app_assets.dart';
+import 'package:Maintenance/constant/app_color.dart';
+import 'package:Maintenance/constant/app_fonts.dart';
+import 'package:Maintenance/constant/app_strings.dart';
+import 'package:Maintenance/constant/app_styles.dart';
+import 'package:Maintenance/user_list_model.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -317,7 +314,7 @@ class _DirectoryState extends State<EmployeeList> {
                 bottomNavigationBar: Container(
                   height: 60,
                   decoration: const BoxDecoration(
-                    color: Color.fromARGB(255, 245, 203, 19),
+                    color: Color.fromARGB(255, 218, 132, 240),
                     borderRadius: BorderRadius.only(
                       topLeft: Radius.circular(20),
                       topRight: Radius.circular(20),
@@ -331,23 +328,7 @@ class _DirectoryState extends State<EmployeeList> {
                             Navigator.of(context).pushReplacement(
                                 MaterialPageRoute(
                                     builder: (BuildContext context) =>
-                                        (department == 'IQCP' &&
-                                                designation != 'Super Admin')
-                                            ? IqcpPage()
-                                            : (department == 'IPQC' &&
-                                                    designation !=
-                                                        'Super Admin')
-                                                ? IpqcPage()
-                                                : (department == 'FQC' &&
-                                                        designation !=
-                                                            'Super Admin')
-                                                    ? FqcPage()
-                                                    : (department ==
-                                                                'QUALITY' &&
-                                                            designation !=
-                                                                'Super Admin')
-                                                        ? QualityPage()
-                                                        : WelcomePage()));
+                                        WelcomePage()));
                           },
                           child: Image.asset(
                               home

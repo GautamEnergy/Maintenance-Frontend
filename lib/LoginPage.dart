@@ -1,17 +1,14 @@
 import 'dart:convert';
 import 'dart:io';
-import 'package:QCM/Fqc.dart';
-import 'package:QCM/Ipqc.dart';
-import 'package:QCM/Iqcp.dart';
-import 'package:QCM/QualityPage.dart';
-import 'package:QCM/Welcomepage.dart';
-import 'package:QCM/components/app_button_widget.dart';
-import 'package:QCM/components/app_loader.dart';
-import 'package:QCM/constant/app_assets.dart';
-import 'package:QCM/constant/app_color.dart';
-import 'package:QCM/constant/app_fonts.dart';
-import 'package:QCM/constant/app_helper.dart';
-import 'package:QCM/constant/app_styles.dart';
+
+import 'package:Maintenance/Welcomepage.dart';
+import 'package:Maintenance/components/app_button_widget.dart';
+import 'package:Maintenance/components/app_loader.dart';
+import 'package:Maintenance/constant/app_assets.dart';
+import 'package:Maintenance/constant/app_color.dart';
+import 'package:Maintenance/constant/app_fonts.dart';
+import 'package:Maintenance/constant/app_helper.dart';
+import 'package:Maintenance/constant/app_styles.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
@@ -39,12 +36,12 @@ class _LoginPageState extends State<LoginPage> {
 
   // String path = "http://192.168.0.100:8080/"; //local
   // String path =
-  //     "https://fair-gray-gharial-wig.cyclic.app/"; // QCM Cyclic Dev
+  //     "https://fair-gray-gharial-wig.cyclic.app/"; // Maintenance Cyclic Dev
 
   // String path =
-  //     "https://emp56gfc2b.ap-south-1.awsapprunner.com/"; // QCM AWS Dev
+  //     "https://emp56gfc2b.ap-south-1.awsapprunner.com/"; // Maintenance AWS Dev
   // String path =
-  //     "https://sore-rose-kingfisher-tutu.cyclic.app/"; // QCM App Cyclic Prod
+  //     "https://sore-rose-kingfisher-tutu.cyclic.app/"; // Maintenance App Cyclic Prod
 
   // String path = "https://xvvmywehv3.ap-south-1.awsapprunner.com/"; // AWS Prod
   String path = "http://srv515471.hstgr.cloud:8080/"; // Hostinger Dev
@@ -126,17 +123,7 @@ class _LoginPageState extends State<LoginPage> {
             designation = prefs.getString('designation')!;
             department = prefs.getString('department')!;
             Navigator.of(context).pushReplacement(MaterialPageRoute(
-                builder: (BuildContext context) => (department == 'IQCP' &&
-                        designation != 'Super Admin')
-                    ? IqcpPage()
-                    : (department == 'IPQC' && designation != 'Super Admin')
-                        ? IpqcPage()
-                        : (department == 'FQC' && designation != 'Super Admin')
-                            ? FqcPage()
-                            : (department == 'QUALITY' &&
-                                    designation != 'Super Admin')
-                                ? QualityPage()
-                                : WelcomePage()));
+                builder: (BuildContext context) => WelcomePage()));
           });
           print(prefs.getString('site'));
         }

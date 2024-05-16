@@ -1,5 +1,5 @@
-import 'package:QCM/constant/app_assets.dart';
-import 'package:QCM/constant/app_color.dart';
+import 'package:Maintenance/constant/app_assets.dart';
+import 'package:Maintenance/constant/app_color.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 

@@ -1,13 +1,11 @@
 import 'dart:async';
 import 'dart:convert';
-import 'package:QCM/Fqc.dart';
-import 'package:QCM/Ipqc.dart';
-import 'package:QCM/Iqcp.dart';
-import 'package:QCM/LoginPage.dart';
-import 'package:QCM/QualityPage.dart';
-import 'package:QCM/Welcomepage.dart';
-import 'package:QCM/constant/app_assets.dart';
-import 'package:QCM/directory.dart';
+
+import 'package:Maintenance/LoginPage.dart';
+
+import 'package:Maintenance/Welcomepage.dart';
+import 'package:Maintenance/constant/app_assets.dart';
+import 'package:Maintenance/directory.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 // import 'package:lbn_flutter_project/LoginPage.dart';
@@ -70,17 +68,7 @@ class _SplashScreenState extends State<SplashScreen> {
         Timer(
             Duration(seconds: 2),
             () => Navigator.of(context).pushReplacement(MaterialPageRoute(
-                builder: (BuildContext context) => (department == 'IQCP' &&
-                        designation != 'Super Admin')
-                    ? IqcpPage()
-                    : (department == 'IPQC' && designation != 'Super Admin')
-                        ? IpqcPage()
-                        : (department == 'FQC' && designation != 'Super Admin')
-                            ? FqcPage()
-                            : (department == 'QUALITY' &&
-                                    designation != 'Super Admin')
-                                ? QualityPage()
-                                : WelcomePage())));
+                builder: (BuildContext context) => WelcomePage())));
       } else {
         Timer(
             Duration(seconds: 3),

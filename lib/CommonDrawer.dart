@@ -1,18 +1,10 @@
-import 'package:QCM/Fqc.dart';
-import 'package:QCM/FqcTestList.dart';
-import 'package:QCM/Ipqc.dart';
-import 'package:QCM/Iqcp.dart';
-import 'package:QCM/IqcpTestList.dart';
-import 'package:QCM/QualityList.dart';
-import 'package:QCM/QualityPage.dart';
-import 'package:QCM/QualityReport.dart';
-import 'package:QCM/Welcomepage.dart';
-import 'package:QCM/components/appbar.dart';
-import 'package:QCM/constant/app_color.dart';
-import 'package:QCM/constant/app_fonts.dart';
-import 'package:QCM/constant/app_styles.dart';
-import 'package:QCM/directory.dart';
-import 'package:QCM/ipqcTestList.dart';
+import 'package:Maintenance/Welcomepage.dart';
+import 'package:Maintenance/components/appbar.dart';
+import 'package:Maintenance/constant/app_color.dart';
+import 'package:Maintenance/constant/app_fonts.dart';
+import 'package:Maintenance/constant/app_styles.dart';
+import 'package:Maintenance/directory.dart';
+
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -91,15 +83,7 @@ class _PublicDrawerState extends State<PublicDrawer> {
 
   Future<bool> redirectto() async {
     Navigator.of(context).pushAndRemoveUntil(
-        MaterialPageRoute(
-            builder: (BuildContext context) =>
-                (department == 'IQCP' && designation != 'Super Admin')
-                    ? IqcpPage()
-                    : (department == 'IPQC' && designation != 'Super Admin')
-                        ? IpqcPage()
-                        : (department == 'FQC' && designation != 'Super Admin')
-                            ? FqcPage()
-                            : WelcomePage()),
+        MaterialPageRoute(builder: (BuildContext context) => WelcomePage()),
         (Route<dynamic> route) => false);
     return true;
   }
@@ -117,13 +101,7 @@ class _PublicDrawerState extends State<PublicDrawer> {
         logo: "logo",
         onTap: () {
           Navigator.push(context, MaterialPageRoute(builder: (context) {
-            return (department == 'IQCP' && designation != 'Super Admin')
-                ? IqcpPage()
-                : (department == 'IPQC' && designation != 'Super Admin')
-                    ? IpqcPage()
-                    : (department == 'FQC' && designation != 'Super Admin')
-                        ? FqcPage()
-                        : WelcomePage();
+            return WelcomePage();
           }));
         },
       ),
@@ -149,20 +127,7 @@ class _PublicDrawerState extends State<PublicDrawer> {
                     child: tabDashboard('Welcome', AppAssets.home, () {
                   Navigator.of(context).pushAndRemoveUntil(
                       MaterialPageRoute(
-                          builder: (BuildContext context) =>
-                              (department == 'IQCP' &&
-                                      designation != 'Super Admin')
-                                  ? IqcpPage()
-                                  : (department == 'IPQC' &&
-                                          designation != 'Super Admin')
-                                      ? IpqcPage()
-                                      : (department == 'FQC' &&
-                                              designation != 'Super Admin')
-                                          ? FqcPage()
-                                          : (department == 'QUALITY' &&
-                                                  designation != 'Super Admin')
-                                              ? QualityPage()
-                                              : WelcomePage()),
+                          builder: (BuildContext context) => WelcomePage()),
                       (Route<dynamic> route) => false);
                 })),
                 SizedBox(
@@ -170,181 +135,47 @@ class _PublicDrawerState extends State<PublicDrawer> {
                 ),
               ],
             ),
-            if ((designation != 'Super Admin' && department == 'IQCP') ||
-                (designation == 'Super Admin'))
-              SizedBox(
-                height: 10,
-              ),
+
             // IQCP
-            if ((designation != 'Super Admin' && department == 'IQCP') ||
-                (designation == 'Super Admin'))
-              Row(
-                mainAxisAlignment: MainAxisAlignment.start,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  SizedBox(
-                    width: 10,
-                  ),
-                  Expanded(
-                      child: tabDashboard(
-                          'IQCP Test List', AppAssets.icApproved, () {
-                    Navigator.of(context).pushAndRemoveUntil(
-                        MaterialPageRoute(
-                            builder: (BuildContext context) => IqcpTestList()),
-                        (Route<dynamic> route) => false);
-                  })),
-                  SizedBox(
-                    width: 10,
-                  ),
-                  Expanded(
-                      child: tabDashboard('IQCP', AppAssets.IQCP, () {
-                    Navigator.of(context).pushAndRemoveUntil(
-                        MaterialPageRoute(
-                            builder: (BuildContext context) => IqcpPage()),
-                        (Route<dynamic> route) => false);
-                  })),
-                  SizedBox(
-                    width: 10,
-                  ),
-                ],
-              ),
-            if ((designation != 'Super Admin' && department == 'IPQC') ||
-                (designation == 'Super Admin'))
-              SizedBox(
-                height: 10,
-              ),
 
             //IPQC
-            if ((designation != 'Super Admin' && department == 'IPQC') ||
-                (designation == 'Super Admin'))
-              Row(
-                mainAxisAlignment: MainAxisAlignment.start,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  SizedBox(
-                    width: 10,
-                  ),
-                  Expanded(
-                      child: tabDashboard('IPQC Test List', AppAssets.ipqc, () {
-                    Navigator.of(context).pushAndRemoveUntil(
-                        MaterialPageRoute(
-                            builder: (BuildContext context) => IpqcTestList()),
-                        (Route<dynamic> route) => false);
-                  })),
-                  SizedBox(
-                    width: 10,
-                  ),
-                  Expanded(
-                      child: tabDashboard('IPQC', AppAssets.ipqc, () {
-                    Navigator.of(context).pushAndRemoveUntil(
-                        MaterialPageRoute(
-                            builder: (BuildContext context) => IpqcPage()),
-                        (Route<dynamic> route) => false);
-                  })),
-                  SizedBox(
-                    width: 10,
-                  ),
-                ],
-              ),
 
-            if ((designation != 'Super Admin' && department == 'FQC') ||
-                (designation == 'Super Admin'))
-              SizedBox(
-                height: 10,
-              ),
+            // Row(
+            //   mainAxisAlignment: MainAxisAlignment.start,
+            //   crossAxisAlignment: CrossAxisAlignment.start,
+            //   children: [
+            //     SizedBox(
+            //       width: 10,
+            //     ),
+            //     Expanded(
+            //         child: tabDashboard('IPQC Test List', AppAssets.ipqc, () {
+            //       Navigator.of(context).pushAndRemoveUntil(
+            //           MaterialPageRoute(
+            //               builder: (BuildContext context) => IpqcTestList()),
+            //           (Route<dynamic> route) => false);
+            //     })),
+            //     SizedBox(
+            //       width: 10,
+            //     ),
+            //     Expanded(
+            //         child: tabDashboard('IPQC', AppAssets.ipqc, () {
+            //       Navigator.of(context).pushAndRemoveUntil(
+            //           MaterialPageRoute(
+            //               builder: (BuildContext context) => IpqcPage()),
+            //           (Route<dynamic> route) => false);
+            //     })),
+            //     SizedBox(
+            //       width: 10,
+            //     ),
+            //   ],
+            // ),
+
             // IQCP
-            if ((designation != 'Super Admin' && department == 'FQC') ||
-                (designation == 'Super Admin'))
-              Row(
-                mainAxisAlignment: MainAxisAlignment.start,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  SizedBox(
-                    width: 10,
-                  ),
-                  Expanded(
-                      child: tabDashboard('FQC Test List', AppAssets.fqc, () {
-                    Navigator.of(context).pushAndRemoveUntil(
-                        MaterialPageRoute(
-                            builder: (BuildContext context) => FqcTestList()),
-                        (Route<dynamic> route) => false);
-                  })),
-                  SizedBox(
-                    width: 10,
-                  ),
-                  Expanded(
-                      child: tabDashboard('FQC', AppAssets.fqcadd, () {
-                    Navigator.of(context).pushAndRemoveUntil(
-                        MaterialPageRoute(
-                            builder: (BuildContext context) => FqcPage()),
-                        (Route<dynamic> route) => false);
-                  })),
-                  SizedBox(
-                    width: 10,
-                  ),
-                ],
-              ),
-
-            if ((designation != 'Super Admin' && department == 'QUALITY') ||
-                (designation == 'Super Admin'))
-              SizedBox(
-                height: 10,
-              ),
-            // IQCP
-            if ((designation != 'Super Admin' && department == 'QUALITY') ||
-                (designation == 'Super Admin'))
-              Row(
-                mainAxisAlignment: MainAxisAlignment.start,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  SizedBox(
-                    width: 10,
-                  ),
-                  Expanded(
-                      child:
-                          tabDashboard('Quality List', AppAssets.quality, () {
-                    Navigator.of(context).pushAndRemoveUntil(
-                        MaterialPageRoute(
-                            builder: (BuildContext context) => QualityList()),
-                        (Route<dynamic> route) => false);
-                  })),
-                  SizedBox(
-                    width: 10,
-                  ),
-                  Expanded(
-                      child: tabDashboard('QUALITY', AppAssets.qualityadd, () {
-                    Navigator.of(context).pushAndRemoveUntil(
-                        MaterialPageRoute(
-                            builder: (BuildContext context) => QualityPage()),
-                        (Route<dynamic> route) => false);
-                  })),
-                  SizedBox(
-                    width: 10,
-                  ),
-                ],
-              ),
-
-            SizedBox(
-              height: 10,
-            ),
 
             Row(
               mainAxisAlignment: MainAxisAlignment.start,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                if (designation == 'Super Admin')
-                  SizedBox(
-                    width: 10,
-                  ),
-                if (designation == 'Super Admin')
-                  Expanded(
-                      child: tabDashboard(
-                          'Quality Reports', AppAssets.imgReportIcon, () {
-                    Navigator.of(context).pushAndRemoveUntil(
-                        MaterialPageRoute(
-                            builder: (BuildContext context) => QualityReport()),
-                        (Route<dynamic> route) => false);
-                  })),
                 SizedBox(
                   width: 10,
                 ),
@@ -399,7 +230,7 @@ class _PublicDrawerState extends State<PublicDrawer> {
       bottomNavigationBar: Container(
         height: 60,
         decoration: const BoxDecoration(
-          color: Color.fromARGB(255, 245, 203, 19),
+          color: Color.fromARGB(255, 218, 132, 240),
           borderRadius: BorderRadius.only(
             topLeft: Radius.circular(20),
             topRight: Radius.circular(20),
@@ -411,19 +242,7 @@ class _PublicDrawerState extends State<PublicDrawer> {
             InkWell(
                 onTap: () {
                   Navigator.of(context).pushReplacement(MaterialPageRoute(
-                      builder: (BuildContext context) =>
-                          (department == 'IQCP' && designation != 'Super Admin')
-                              ? IqcpPage()
-                              : (department == 'IPQC' &&
-                                      designation != 'Super Admin')
-                                  ? IpqcPage()
-                                  : (department == 'FQC' &&
-                                          designation != 'Super Admin')
-                                      ? FqcPage()
-                                      : (department == 'QUALITY' &&
-                                              designation != 'Super Admin')
-                                          ? QualityPage()
-                                          : WelcomePage()));
+                      builder: (BuildContext context) => WelcomePage()));
                 },
                 child: Image.asset(
                     home

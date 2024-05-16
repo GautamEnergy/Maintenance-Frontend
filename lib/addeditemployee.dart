@@ -1,13 +1,10 @@
 import 'dart:convert';
 import 'dart:io';
-import 'package:QCM/Fqc.dart';
-import 'package:QCM/Ipqc.dart';
-import 'package:QCM/Iqcp.dart';
-import 'package:QCM/QualityPage.dart';
-import 'package:QCM/components/app_loader.dart';
+
+import 'package:Maintenance/components/app_loader.dart';
 import 'package:dio/src/response.dart' as Response;
-import 'package:QCM/components/app_button_widget.dart';
-import 'package:QCM/directory.dart';
+import 'package:Maintenance/components/app_button_widget.dart';
+import 'package:Maintenance/directory.dart';
 import 'package:flutter_image_compress/flutter_image_compress.dart';
 import 'package:http_parser/http_parser.dart';
 import 'package:cached_network_image/cached_network_image.dart';
@@ -216,15 +213,7 @@ class _ScoreDetailsState extends State<AddEditProfile> {
 
   Future<bool> redirectto() async {
     Navigator.push(context, MaterialPageRoute(builder: (context) {
-      return designation != "Super Admin" && department == "IQCP"
-          ? IqcpPage()
-          : designation != "Super Admin" && department == "IPQC"
-              ? IpqcPage()
-              : designation != "Super Admin" && department == "FQC"
-                  ? FqcPage()
-                  : designation != "Super Admin" && department == "QUALITY"
-                      ? QualityPage()
-                      : EmployeeList();
+      return EmployeeList();
     }));
     return true;
   }
@@ -253,17 +242,7 @@ class _ScoreDetailsState extends State<AddEditProfile> {
                 logo: "logo",
                 onTap: () {
                   Navigator.push(context, MaterialPageRoute(builder: (context) {
-                    return designation != "Super Admin" && department == "IQCP"
-                        ? IqcpPage()
-                        : designation != "Super Admin" && department == "IPQC"
-                            ? IpqcPage()
-                            : designation != "Super Admin" &&
-                                    department == "FQC"
-                                ? FqcPage()
-                                : designation != "Super Admin" &&
-                                        department == "QUALITY"
-                                    ? QualityPage()
-                                    : EmployeeList();
+                    return EmployeeList();
                   }));
                 },
               ),
@@ -347,7 +326,7 @@ class _ScoreDetailsState extends State<AddEditProfile> {
     final prefs = await SharedPreferences.getInstance();
     site = prefs.getString('site');
 
-    final url = (site! + 'QCM//GetDepartmentList');
+    final url = (site! + 'Maintenance//GetDepartmentList');
 
     http.get(
       Uri.parse(url),
@@ -368,7 +347,7 @@ class _ScoreDetailsState extends State<AddEditProfile> {
     final prefs = await SharedPreferences.getInstance();
     site = prefs.getString('site');
 
-    final url = (site! + 'QCM/GetDesignationList');
+    final url = (site! + 'Maintenance/GetDesignationList');
 
     http.get(
       Uri.parse(url),
@@ -390,7 +369,7 @@ class _ScoreDetailsState extends State<AddEditProfile> {
     final prefs = await SharedPreferences.getInstance();
     site = prefs.getString('site');
 
-    final url = (site! + 'QCM/GetWorkLocationList');
+    final url = (site! + 'Maintenance/GetWorkLocationList');
 
     http.get(
       Uri.parse(url),
