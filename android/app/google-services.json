@@ -1,21 +1,21 @@
 {
   "project_info": {
-    "project_number": "325562469631",
-    "project_id": "qcmgautam",
-    "storage_bucket": "qcmgautam.appspot.com"
+    "project_number": "571619880326",
+    "project_id": "maintenancegautamsolar",
+    "storage_bucket": "maintenancegautamsolar.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:325562469631:android:3e1bc1097a116fb3b610ca",
+        "mobilesdk_app_id": "1:571619880326:android:5c4d79c7f390ef48e39007",
         "android_client_info": {
-          "package_name": "com.gautam.qcm"
+          "package_name": "com.gautamsolar.maintenance"
         }
       },
       "oauth_client": [],
       "api_key": [
         {
-          "current_key": "AIzaSyCT9PcmIvzxzKaJv-POtWwk9sP-NASfE7Q"
+          "current_key": "AIzaSyBnuJxo3F1o3xAIxDf2RszZYYWLOe3imRg"
         }
       ],
       "services": {

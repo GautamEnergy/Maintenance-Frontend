@@ -1,6 +1,6 @@
 {
-    "name": "QCM",
-    "short_name": "QCM",
+    "name": "Maintenance",
+    "short_name": "Maintenance",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",

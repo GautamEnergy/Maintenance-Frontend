@@ -1,4 +1,4 @@
-package com.gautam.qcm
+package com.gautamsolar.maintenance
 
 import io.flutter.embedding.android.FlutterActivity
 
