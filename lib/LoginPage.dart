@@ -169,7 +169,7 @@ class _LoginPageState extends State<LoginPage> {
                             // ),
                             Center(
                               child: Image.asset(AppAssets.imgWelcome,
-                                  width: 200, height: 150, fit: BoxFit.fill),
+                                  width: 200, height: 200, fit: BoxFit.fill),
                             ),
                             const SizedBox(
                               height: 10,

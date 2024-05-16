@@ -209,7 +209,7 @@ class _PublicDrawerState extends State<PublicDrawer> {
             Container(
               alignment: Alignment.center,
               child: const Text(
-                ('PROD'),
+                ('DEV'),
                 textAlign: TextAlign.center,
                 style: TextStyle(fontSize: 14, fontWeight: FontWeight.normal),
               ),
@@ -217,7 +217,7 @@ class _PublicDrawerState extends State<PublicDrawer> {
             Container(
                 alignment: Alignment.center,
                 child: const Text(
-                  ('V1.0.20240514.1818'),
+                  ('V1.0.20240516.1351'),
                   textAlign: TextAlign.center,
                   style: TextStyle(fontSize: 14, fontWeight: FontWeight.normal),
                 )),

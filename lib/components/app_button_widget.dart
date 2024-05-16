@@ -37,7 +37,7 @@ class AppButton extends StatelessWidget {
         child: TextButton(
           onPressed: () => onTap(),
           style: TextButton.styleFrom(
-            backgroundColor: Color.fromARGB(255, 134, 8, 4),
+            backgroundColor: Color.fromARGB(255, 14, 76, 245),
             elevation: 3,
             shape: RoundedRectangleBorder(
               side: side,
