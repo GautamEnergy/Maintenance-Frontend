@@ -11,6 +11,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 // import '../BoxCricket.dart';
 import '../constant/app_assets.dart';
 import '../main.dart';
+import 'package:shimmer/shimmer.dart';
 
 class WelcomePage extends StatefulWidget {
   WelcomePage({Key? key}) : super(key: key);
@@ -19,7 +20,8 @@ class WelcomePage extends StatefulWidget {
   _WelcomePageState createState() => _WelcomePageState();
 }
 
-class _WelcomePageState extends State<WelcomePage> {
+class _WelcomePageState extends State<WelcomePage>
+    with SingleTickerProviderStateMixin {
   String? firstname,
       designation,
       department,
@@ -41,6 +43,10 @@ class _WelcomePageState extends State<WelcomePage> {
       face = false,
       home = true;
   var decodedResult;
+
+  late AnimationController _controller;
+  late Animation<double> _animation;
+
   void store() async {
     final prefs = await SharedPreferences.getInstance();
     setState(() {
@@ -66,6 +72,27 @@ class _WelcomePageState extends State<WelcomePage> {
   void initState() {
     super.initState();
     store();
+
+    _controller = AnimationController(
+      duration: const Duration(seconds: 1),
+      vsync: this,
+    )..repeat(reverse: true);
+
+    _animation = Tween<double>(
+      begin: 0.95,
+      end: 1.05,
+    ).animate(
+      CurvedAnimation(
+        parent: _controller,
+        curve: Curves.easeInOut,
+      ),
+    );
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
   }
 
   adminbuttons() {
@@ -128,24 +155,40 @@ class _WelcomePageState extends State<WelcomePage> {
                       child: Stack(
                         alignment: Alignment.center,
                         children: [
-                          Container(
-                            width: 390.0,
-                            height: 250.0,
-                            decoration: BoxDecoration(
-                              color: Color.fromARGB(255, 67, 236, 25),
-                              border: Border.all(
-                                  color: Color.fromARGB(255, 236, 103, 103),
-                                  width: 3),
-                              borderRadius: BorderRadius.circular(8),
-                              boxShadow: [
-                                BoxShadow(
-                                  color: Colors.grey.withOpacity(0.5),
-                                  spreadRadius: 5,
-                                  blurRadius: 7,
-                                  offset: Offset(
-                                      5, 10), // changes position of shadow
+                          AnimatedBuilder(
+                            animation: _animation,
+                            builder: (context, child) {
+                              return Transform.scale(
+                                scale: _animation.value,
+                                child: child,
+                              );
+                            },
+                            child: Container(
+                              width: 390.0,
+                              height: 250.0,
+                              decoration: BoxDecoration(
+                                image: DecorationImage(
+                                  image: AssetImage(
+                                      'assets/images/AiBN_Logo.png'), // Replace with your image path
+                                  fit: BoxFit.cover,
                                 ),
-                              ],
+                                // width: 200.0, // Adjust the width as needed
+                                // height: 150.0,
+                                // border: Border.all(
+                                //   color: Color.fromARGB(255, 236, 103, 103),
+                                //   width: 3,
+                                // ),
+                                borderRadius: BorderRadius.circular(8),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: Colors.grey.withOpacity(0.5),
+                                    spreadRadius: 5,
+                                    blurRadius: 7,
+                                    offset: Offset(
+                                        5, 10), // changes position of shadow
+                                  ),
+                                ],
+                              ),
                             ),
                           ),
                           Positioned(
@@ -164,6 +207,22 @@ class _WelcomePageState extends State<WelcomePage> {
                   const SizedBox(
                     width: 10,
                   ),
+                  // SizedBox(
+                  //   width: 200.0,
+                  //   height: 100.0,
+                  //   child: Shimmer.fromColors(
+                  //     baseColor: Colors.red,
+                  //     highlightColor: Colors.yellow,
+                  //     child: Text(
+                  //       'Shimmer',
+                  //       textAlign: TextAlign.center,
+                  //       style: TextStyle(
+                  //         fontSize: 40.0,
+                  //         fontWeight: FontWeight.bold,
+                  //       ),
+                  //     ),
+                  //   ),
+                  // ),
                 ],
               ),
               const SizedBox(
@@ -231,9 +290,25 @@ class _WelcomePageState extends State<WelcomePage> {
                   //   //                 : IpqcTestList()),
                   //   //     (Route<dynamic> route) => false);
                   // })),
-                  const SizedBox(
-                    width: 10,
-                  ),
+                  // const SizedBox(
+                  //   width: 10,
+                  // ),
+                  // SizedBox(
+                  //   width: 200.0,
+                  //   height: 100.0,
+                  //   child: Shimmer.fromColors(
+                  //     baseColor: Colors.red,
+                  //     highlightColor: Colors.yellow,
+                  //     child: Text(
+                  //       'Shimmer',
+                  //       textAlign: TextAlign.center,
+                  //       style: TextStyle(
+                  //         fontSize: 40.0,
+                  //         fontWeight: FontWeight.bold,
+                  //       ),
+                  //     ),
+                  //   ),
+                  // ),
                 ],
               ),
             ],
