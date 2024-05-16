@@ -135,7 +135,9 @@ class _PublicDrawerState extends State<PublicDrawer> {
                 ),
               ],
             ),
-
+            SizedBox(
+              height: 10,
+            ),
             // IQCP
 
             //IPQC
@@ -410,21 +412,21 @@ Widget tabDashboard(String title, String img, final Function onPressed) {
         color: AppColors.white,
         borderRadius: BorderRadius.circular(10),
       ),
-      height: 115,
+      height: 215,
       child: Stack(
         children: [
           Positioned(
               bottom: 0,
               right: 0,
               child: Container(
-                height: 50,
+                height: 100,
                 width: 155,
                 decoration: BoxDecoration(
                     borderRadius:
                         BorderRadius.only(bottomRight: Radius.circular(10)),
                     image: DecorationImage(
                         image: AssetImage(
-                          AppAssets.icEllipse,
+                          AppAssets.busbar,
                         ),
                         fit: BoxFit.fill)),
                 // child: Image.asset(
