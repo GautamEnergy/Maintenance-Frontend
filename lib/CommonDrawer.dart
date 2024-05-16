@@ -232,7 +232,7 @@ class _PublicDrawerState extends State<PublicDrawer> {
       bottomNavigationBar: Container(
         height: 60,
         decoration: const BoxDecoration(
-          color: Color.fromARGB(255, 218, 132, 240),
+          color: Color.fromARGB(255, 194, 16, 238),
           borderRadius: BorderRadius.only(
             topLeft: Radius.circular(20),
             topRight: Radius.circular(20),
@@ -419,7 +419,7 @@ Widget tabDashboard(String title, String img, final Function onPressed) {
               bottom: 0,
               right: 0,
               child: Container(
-                height: 100,
+                height: 150,
                 width: 155,
                 decoration: BoxDecoration(
                     borderRadius:

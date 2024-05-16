@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:Maintenance/CommonDrawer.dart';
 
 import 'package:Maintenance/components/appbar.dart';
@@ -11,7 +13,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 // import '../BoxCricket.dart';
 import '../constant/app_assets.dart';
 import '../main.dart';
-import 'package:shimmer/shimmer.dart';
+// import 'package:shimmer/shimmer.dart';
 
 class WelcomePage extends StatefulWidget {
   WelcomePage({Key? key}) : super(key: key);
@@ -74,12 +76,12 @@ class _WelcomePageState extends State<WelcomePage>
     store();
 
     _controller = AnimationController(
-      duration: const Duration(seconds: 1),
+      duration: const Duration(seconds: 3),
       vsync: this,
     )..repeat(reverse: true);
 
     _animation = Tween<double>(
-      begin: 0.95,
+      begin: 0.85,
       end: 1.05,
     ).animate(
       CurvedAnimation(
@@ -146,87 +148,21 @@ class _WelcomePageState extends State<WelcomePage>
                   const SizedBox(
                     width: 10,
                   ),
-                  Center(
-                    child: GestureDetector(
-                      onTap: () {
-                        // Handle the onTap event here
-                        print('Container tapped!');
-                      },
-                      child: Stack(
-                        alignment: Alignment.center,
-                        children: [
-                          AnimatedBuilder(
-                            animation: _animation,
-                            builder: (context, child) {
-                              return Transform.scale(
-                                scale: _animation.value,
-                                child: child,
-                              );
-                            },
-                            child: Container(
-                              width: 390.0,
-                              height: 250.0,
-                              decoration: BoxDecoration(
-                                image: DecorationImage(
-                                  image: AssetImage(
-                                      'assets/images/AiBN_Logo.png'), // Replace with your image path
-                                  fit: BoxFit.cover,
-                                ),
-                                // width: 200.0, // Adjust the width as needed
-                                // height: 150.0,
-                                // border: Border.all(
-                                //   color: Color.fromARGB(255, 236, 103, 103),
-                                //   width: 3,
-                                // ),
-                                borderRadius: BorderRadius.circular(8),
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: Colors.grey.withOpacity(0.5),
-                                    spreadRadius: 5,
-                                    blurRadius: 7,
-                                    offset: Offset(
-                                        5, 10), // changes position of shadow
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
-                          Positioned(
-                            child: Image.asset(
-                              AppAssets
-                                  .icApproved, // Replace with your logo asset path
-                              width:
-                                  100.0, // Adjust the size of the logo as needed
-                              height: 100.0,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
+                  Expanded(
+                      child:
+                          inSpareParts('Spare Parts', AppAssets.imgWelcome, () {
+                    // Navigator.of(context).pushAndRemoveUntil(
+                    //     MaterialPageRoute(
+                    //         builder: (BuildContext context) => EmployeeList()),
+                    //     (Route<dynamic> route) => false);
+                  })),
                   const SizedBox(
                     width: 10,
                   ),
-                  // SizedBox(
-                  //   width: 200.0,
-                  //   height: 100.0,
-                  //   child: Shimmer.fromColors(
-                  //     baseColor: Colors.red,
-                  //     highlightColor: Colors.yellow,
-                  //     child: Text(
-                  //       'Shimmer',
-                  //       textAlign: TextAlign.center,
-                  //       style: TextStyle(
-                  //         fontSize: 40.0,
-                  //         fontWeight: FontWeight.bold,
-                  //       ),
-                  //     ),
-                  //   ),
-                  // ),
                 ],
               ),
               const SizedBox(
-                height: 25,
+                height: 20,
               ),
               Row(
                 mainAxisAlignment: MainAxisAlignment.start,
@@ -235,80 +171,17 @@ class _WelcomePageState extends State<WelcomePage>
                   const SizedBox(
                     width: 10,
                   ),
-                  Center(
-                    child: GestureDetector(
-                      onTap: () {
-                        // Handle the onTap event here
-                        print('Container tapped!');
-                      },
-                      child: Stack(
-                        alignment: Alignment.center,
-                        children: [
-                          Container(
-                            width: 390.0,
-                            height: 250.0,
-                            decoration: BoxDecoration(
-                              color: Color.fromARGB(255, 236, 81, 250),
-                              border: Border.all(
-                                  color: Color.fromARGB(255, 236, 103, 103),
-                                  width: 3),
-                              borderRadius: BorderRadius.circular(8),
-                              boxShadow: [
-                                BoxShadow(
-                                  color: Color.fromARGB(255, 115, 6, 129)
-                                      .withOpacity(0.5),
-                                  spreadRadius: 5,
-                                  blurRadius: 7,
-                                  offset: Offset(
-                                      5, 10), // changes position of shadow
-                                ),
-                              ],
-                            ),
-                          ),
-                          Positioned(
-                            child: Image.asset(
-                              AppAssets
-                                  .IQCP, // Replace with your logo asset path
-                              width:
-                                  100.0, // Adjust the size of the logo as needed
-                              height: 100.0,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
+                  Expanded(
+                      child: outSpareParts(
+                          'Machine Maintenance', AppAssets.Laminator1, () {
+                    // Navigator.of(context).pushAndRemoveUntil(
+                    //     MaterialPageRoute(
+                    //         builder: (BuildContext context) => EmployeeList()),
+                    //     (Route<dynamic> route) => false);
+                  })),
+                  const SizedBox(
+                    width: 10,
                   ),
-
-                  // Expanded(
-                  //     child: tabDashboard('Machine Maintenance', AppAssets.ipqc,
-                  //         () {
-                  //   // Navigator.of(context).pushAndRemoveUntil(
-                  //   //     MaterialPageRoute(
-                  //   //         builder: (BuildContext context) =>
-                  //   //             designation != 'Super Admin'
-                  //   //                 ? IpqcPage()
-                  //   //                 : IpqcTestList()),
-                  //   //     (Route<dynamic> route) => false);
-                  // })),
-                  // const SizedBox(
-                  //   width: 10,
-                  // ),
-                  // SizedBox(
-                  //   width: 200.0,
-                  //   height: 100.0,
-                  //   child: Shimmer.fromColors(
-                  //     baseColor: Colors.red,
-                  //     highlightColor: Colors.yellow,
-                  //     child: Text(
-                  //       'Shimmer',
-                  //       textAlign: TextAlign.center,
-                  //       style: TextStyle(
-                  //         fontSize: 40.0,
-                  //         fontWeight: FontWeight.bold,
-                  //       ),
-                  //     ),
-                  //   ),
-                  // ),
                 ],
               ),
             ],
@@ -318,7 +191,7 @@ class _WelcomePageState extends State<WelcomePage>
       bottomNavigationBar: Container(
         height: 60,
         decoration: const BoxDecoration(
-          color: Color.fromARGB(255, 218, 132, 240),
+          color: Color.fromARGB(255, 194, 16, 238),
           borderRadius: BorderRadius.only(
             topLeft: Radius.circular(20),
             topRight: Radius.circular(20),
@@ -462,6 +335,158 @@ class _WelcomePageState extends State<WelcomePage>
     const Item3('1-2-1', "images/drawer-p2p.png"),
     const Item3('Overall', "images/drawer-visitors.png"),
   ];
+
+  Widget inSpareParts(String title, String img, final Function onPressed) {
+    return InkWell(
+      onTap: () {
+        onPressed();
+      },
+      child: AnimatedBuilder(
+          animation: _animation,
+          builder: (context, child) {
+            return Transform.scale(
+              scale: _animation.value,
+              child: child,
+            );
+          },
+          child: Container(
+            decoration: BoxDecoration(
+              color: Color.fromARGB(255, 24, 146, 247),
+              borderRadius: BorderRadius.circular(10),
+            ),
+            height: 255,
+            child: Stack(
+              children: [
+                Positioned(
+                    bottom: 0,
+                    right: 0,
+                    child: Container(
+                      height: 150,
+                      width: 155,
+                      decoration: BoxDecoration(
+                          borderRadius: BorderRadius.only(
+                              bottomRight: Radius.circular(10)),
+                          image: DecorationImage(
+                              image: AssetImage(
+                                AppAssets.imgWelcome,
+                              ),
+                              fit: BoxFit.fill)),
+                      // child: Image.asset(
+                      //   AppAssets.icEllipse,
+                      //   fit: BoxFit.fill,
+                      //   height: 50,
+                      //   width: 155,
+                      // ),
+                    )),
+                Column(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.only(left: 18.0, top: 15),
+                      child: Text(title,
+                          style: TextStyle(
+                              fontWeight: FontWeight.w600,
+                              fontFamily: appFontFamily,
+                              fontSize: 16,
+                              color: Color.fromARGB(255, 255, 255, 255))),
+                    ),
+                    SizedBox(
+                      height: 15,
+                    ),
+                    Center(
+                        child: Container(
+                            height: 36,
+                            width: 36,
+                            child: Image.asset(
+                              img,
+                              height: 36,
+                              width: 36,
+                              //fit: BoxFit.cover,
+                            )))
+                  ],
+                )
+              ],
+            ),
+          )),
+    );
+  }
+
+  Widget outSpareParts(String title, String img, final Function onPressed) {
+    return InkWell(
+      onTap: () {
+        onPressed();
+      },
+      child: AnimatedBuilder(
+          animation: _animation,
+          builder: (context, child) {
+            return Transform.scale(
+              scale: _animation.value,
+              child: child,
+            );
+          },
+          child: Container(
+            decoration: BoxDecoration(
+              color: Color.fromARGB(255, 255, 255, 255),
+              borderRadius: BorderRadius.circular(10),
+            ),
+            height: 255,
+            child: Stack(
+              children: [
+                Positioned(
+                    bottom: 0,
+                    right: 0,
+                    child: Container(
+                      height: 200,
+                      width: 175,
+                      decoration: BoxDecoration(
+                          borderRadius: BorderRadius.only(
+                              bottomRight: Radius.circular(10)),
+                          image: DecorationImage(
+                              image: AssetImage(
+                                AppAssets.Laminator1,
+                              ),
+                              fit: BoxFit.fill)),
+                      // child: Image.asset(
+                      //   AppAssets.icEllipse,
+                      //   fit: BoxFit.fill,
+                      //   height: 50,
+                      //   width: 155,
+                      // ),
+                    )),
+                Column(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.only(left: 18.0, top: 15),
+                      child: Text(title,
+                          style: TextStyle(
+                              fontWeight: FontWeight.w600,
+                              fontFamily: appFontFamily,
+                              fontSize: 16,
+                              color: Color.fromARGB(249, 0, 0, 0))),
+                    ),
+                    SizedBox(
+                      height: 15,
+                    ),
+                    Center(
+                        child: Container(
+                            height: 36,
+                            width: 36,
+                            child: Image.asset(
+                              img,
+                              height: 36,
+                              width: 36,
+                              //fit: BoxFit.cover,
+                            )))
+                  ],
+                )
+              ],
+            ),
+          )),
+    );
+  }
 }
 
 class Item {
@@ -488,64 +513,78 @@ class Item3 {
   final String path;
 }
 
-Widget tabDashboard(String title, String img, final Function onPressed) {
-  return InkWell(
-    onTap: () {
-      onPressed();
-    },
-    child: Container(
-      decoration: BoxDecoration(
-        color: AppColors.white,
-        borderRadius: BorderRadius.circular(10),
-      ),
-      height: 115,
-      child: Stack(
-        children: [
-          Positioned(
-              bottom: 0,
-              right: 0,
-              child: Container(
-                height: 50,
-                width: 155,
-                decoration: BoxDecoration(
-                    borderRadius:
-                        BorderRadius.only(bottomRight: Radius.circular(10)),
-                    image: DecorationImage(
-                        image: AssetImage(
-                          AppAssets.icEllipse,
-                        ),
-                        fit: BoxFit.fill)),
-              )),
-          Column(
-            mainAxisAlignment: MainAxisAlignment.start,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Padding(
-                padding: const EdgeInsets.only(left: 18.0, top: 15),
-                child: Text(title,
-                    style: const TextStyle(
-                        fontWeight: FontWeight.w600,
-                        fontFamily: appFontFamily,
-                        fontSize: 16,
-                        color: AppColors.textFieldCaptionColor)),
-              ),
-              const SizedBox(
-                height: 15,
-              ),
-              Center(
-                  child: Container(
-                      height: 36,
-                      width: 36,
-                      child: Image.asset(
-                        img,
-                        height: 36,
-                        width: 36,
-                        //fit: BoxFit.cover,
-                      )))
-            ],
-          )
-        ],
-      ),
-    ),
-  );
-}
+// Widget tabDashboard(String title, String img, final Function onPressed) {
+//   return InkWell(
+//     onTap: () {
+//       onPressed();
+//     },
+//     child: AnimatedBuilder(
+//         animation: _animation,
+//         builder: (context, child) {
+//           return Transform.scale(
+//             scale: _animation.value,
+//             child: child,
+//           );
+//         },
+//         child: Container(
+//           decoration: BoxDecoration(
+//             color: AppColors.white,
+//             borderRadius: BorderRadius.circular(10),
+//           ),
+//           height: 215,
+//           child: Stack(
+//             children: [
+//               Positioned(
+//                   bottom: 0,
+//                   right: 0,
+//                   child: Container(
+//                     height: 150,
+//                     width: 155,
+//                     decoration: BoxDecoration(
+//                         borderRadius:
+//                             BorderRadius.only(bottomRight: Radius.circular(10)),
+//                         image: DecorationImage(
+//                             image: AssetImage(
+//                               AppAssets.busbar,
+//                             ),
+//                             fit: BoxFit.fill)),
+//                     // child: Image.asset(
+//                     //   AppAssets.icEllipse,
+//                     //   fit: BoxFit.fill,
+//                     //   height: 50,
+//                     //   width: 155,
+//                     // ),
+//                   )),
+//               Column(
+//                 mainAxisAlignment: MainAxisAlignment.start,
+//                 crossAxisAlignment: CrossAxisAlignment.start,
+//                 children: [
+//                   Padding(
+//                     padding: const EdgeInsets.only(left: 18.0, top: 15),
+//                     child: Text(title,
+//                         style: TextStyle(
+//                             fontWeight: FontWeight.w600,
+//                             fontFamily: appFontFamily,
+//                             fontSize: 16,
+//                             color: AppColors.textFieldCaptionColor)),
+//                   ),
+//                   SizedBox(
+//                     height: 15,
+//                   ),
+//                   Center(
+//                       child: Container(
+//                           height: 36,
+//                           width: 36,
+//                           child: Image.asset(
+//                             img,
+//                             height: 36,
+//                             width: 36,
+//                             //fit: BoxFit.cover,
+//                           )))
+//                 ],
+//               )
+//             ],
+//           ),
+//         )),
+//   );
+// }
