@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "325562469631",
+    "project_id": "qcmgautam",
+    "storage_bucket": "qcmgautam.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:325562469631:android:3e1bc1097a116fb3b610ca",
+        "android_client_info": {
+          "package_name": "com.gautam.qcm"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCT9PcmIvzxzKaJv-POtWwk9sP-NASfE7Q"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
