@@ -4,6 +4,7 @@ import 'package:Maintenance/constant/app_color.dart';
 import 'package:Maintenance/constant/app_fonts.dart';
 import 'package:Maintenance/constant/app_styles.dart';
 import 'package:Maintenance/directory.dart';
+import 'package:Maintenance/spare.dart';
 
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -133,6 +134,17 @@ class _PublicDrawerState extends State<PublicDrawer> {
                 SizedBox(
                   width: 10,
                 ),
+                Expanded(
+                    child:
+                        inSpareParts('Spare Parts', AppAssets.imgWelcome, () {
+                  Navigator.of(context).pushAndRemoveUntil(
+                      MaterialPageRoute(
+                          builder: (BuildContext context) => spare()),
+                      (Route<dynamic> route) => false);
+                })),
+                const SizedBox(
+                  width: 10,
+                ),
               ],
             ),
             SizedBox(
@@ -182,7 +194,19 @@ class _PublicDrawerState extends State<PublicDrawer> {
                   width: 10,
                 ),
                 Expanded(
-                    child: tabDashboard('Logout', AppAssets.iclogout, () async {
+                    child: outSpareParts(
+                        'Machine Maintenance', AppAssets.Laminator1, () {
+                  // Navigator.of(context).pushAndRemoveUntil(
+                  //     MaterialPageRoute(
+                  //         builder: (BuildContext context) => EmployeeList()),
+                  //     (Route<dynamic> route) => false);
+                })),
+                SizedBox(
+                  width: 10,
+                ),
+                Expanded(
+                    child:
+                        logoutDashboard('Logout', AppAssets.iclogout, () async {
                   final prefs = await SharedPreferences.getInstance();
 
                   prefs.remove('site');
@@ -409,26 +433,22 @@ Widget tabDashboard(String title, String img, final Function onPressed) {
     },
     child: Container(
       decoration: BoxDecoration(
-        color: AppColors.white,
+        color: Color.fromARGB(255, 28, 216, 169),
         borderRadius: BorderRadius.circular(10),
       ),
-      height: 215,
+      height: 115,
       child: Stack(
         children: [
           Positioned(
               bottom: 0,
               right: 0,
               child: Container(
-                height: 150,
-                width: 155,
+                height: 50,
+                width: 55,
                 decoration: BoxDecoration(
-                    borderRadius:
-                        BorderRadius.only(bottomRight: Radius.circular(10)),
-                    image: DecorationImage(
-                        image: AssetImage(
-                          AppAssets.busbar,
-                        ),
-                        fit: BoxFit.fill)),
+                  borderRadius:
+                      BorderRadius.only(bottomRight: Radius.circular(10)),
+                ),
                 // child: Image.asset(
                 //   AppAssets.icEllipse,
                 //   fit: BoxFit.fill,
@@ -468,4 +488,211 @@ Widget tabDashboard(String title, String img, final Function onPressed) {
       ),
     ),
   );
+}
+
+Widget logoutDashboard(String title, String img, final Function onPressed) {
+  return InkWell(
+    onTap: () {
+      onPressed();
+    },
+    child: Container(
+      decoration: BoxDecoration(
+        color: Color.fromARGB(255, 218, 99, 31),
+        borderRadius: BorderRadius.circular(10),
+      ),
+      height: 115,
+      child: Stack(
+        children: [
+          Positioned(
+              bottom: 0,
+              right: 0,
+              child: Container(
+                height: 50,
+                width: 55,
+                decoration: BoxDecoration(
+                  borderRadius:
+                      BorderRadius.only(bottomRight: Radius.circular(10)),
+                ),
+                // child: Image.asset(
+                //   AppAssets.icEllipse,
+                //   fit: BoxFit.fill,
+                //   height: 50,
+                //   width: 155,
+                // ),
+              )),
+          Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Padding(
+                padding: const EdgeInsets.only(left: 18.0, top: 15),
+                child: Text(title,
+                    style: TextStyle(
+                        fontWeight: FontWeight.w600,
+                        fontFamily: appFontFamily,
+                        fontSize: 16,
+                        color: AppColors.textFieldCaptionColor)),
+              ),
+              SizedBox(
+                height: 15,
+              ),
+              Center(
+                  child: Container(
+                      height: 36,
+                      width: 36,
+                      child: Image.asset(
+                        img,
+                        height: 36,
+                        width: 36,
+                        //fit: BoxFit.cover,
+                      )))
+            ],
+          )
+        ],
+      ),
+    ),
+  );
+}
+
+Widget inSpareParts(String title, String img, final Function onPressed) {
+  return InkWell(
+    onTap: () {
+      onPressed();
+    },
+    // child: AnimatedBuilder(
+    //     animation: _animation1,
+    //     builder: (context, child) {
+    //       return Transform.scale(
+    //         scale: _animation1.value,
+    //         child: child,
+    //       );
+    //     },
+    child: Container(
+      decoration: BoxDecoration(
+        color: Color.fromARGB(255, 24, 146, 247),
+        borderRadius: BorderRadius.circular(10),
+      ),
+      height: 115,
+      child: Stack(
+        children: [
+          Positioned(
+              bottom: 0,
+              right: 0,
+              child: Container(
+                height: 50,
+                width: 55,
+                decoration: BoxDecoration(
+                  borderRadius:
+                      BorderRadius.only(bottomRight: Radius.circular(10)),
+                ),
+                // child: Image.asset(
+                //   AppAssets.icEllipse,
+                //   fit: BoxFit.fill,
+                //   height: 50,
+                //   width: 155,
+                // ),
+              )),
+          Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Padding(
+                padding: const EdgeInsets.only(left: 18.0, top: 15),
+                child: Text(title,
+                    style: TextStyle(
+                        fontWeight: FontWeight.w600,
+                        fontFamily: appFontFamily,
+                        fontSize: 16,
+                        color: Color.fromARGB(255, 255, 255, 255))),
+              ),
+              SizedBox(
+                height: 15,
+              ),
+              Center(
+                  child: Container(
+                      height: 36,
+                      width: 36,
+                      child: Image.asset(
+                        img,
+                        height: 36,
+                        width: 36,
+                        //fit: BoxFit.cover,
+                      )))
+            ],
+          )
+        ],
+      ),
+    ),
+  );
+}
+
+Widget outSpareParts(String title, String img, final Function onPressed) {
+  return InkWell(
+      onTap: () {
+        onPressed();
+      },
+      // child: AnimatedBuilder(
+      //     animation: _animation2,
+      //     builder: (context, child) {
+      //       return Transform.scale(
+      //         scale: _animation2.value,
+      //         child: child,
+      //       );
+      //     },
+      child: Container(
+        decoration: BoxDecoration(
+          color: Color.fromARGB(255, 255, 255, 255),
+          borderRadius: BorderRadius.circular(10),
+        ),
+        height: 115,
+        child: Stack(
+          children: [
+            Positioned(
+                bottom: 0,
+                right: 0,
+                child: Container(
+                  height: 50,
+                  width: 55,
+                  decoration: BoxDecoration(
+                    borderRadius:
+                        BorderRadius.only(bottomRight: Radius.circular(10)),
+                  ),
+                  // child: Image.asset(
+                  //   AppAssets.icEllipse,
+                  //   fit: BoxFit.fill,
+                  //   height: 50,
+                  //   width: 155,
+                  // ),
+                )),
+            Column(
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.only(left: 18.0, top: 15),
+                  child: Text(title,
+                      style: TextStyle(
+                          fontWeight: FontWeight.w600,
+                          fontFamily: appFontFamily,
+                          fontSize: 16,
+                          color: Color.fromARGB(249, 0, 0, 0))),
+                ),
+                SizedBox(
+                  height: 15,
+                ),
+                Center(
+                    child: Container(
+                        height: 36,
+                        width: 36,
+                        child: Image.asset(
+                          img,
+                          height: 36,
+                          width: 36,
+                          //fit: BoxFit.cover,
+                        )))
+              ],
+            )
+          ],
+        ),
+      ));
 }

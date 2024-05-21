@@ -7,6 +7,7 @@ import 'package:Maintenance/constant/app_color.dart';
 import 'package:Maintenance/constant/app_fonts.dart';
 import 'package:Maintenance/constant/app_styles.dart';
 import 'package:Maintenance/directory.dart';
+import 'package:Maintenance/spare.dart';
 
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -23,7 +24,7 @@ class WelcomePage extends StatefulWidget {
 }
 
 class _WelcomePageState extends State<WelcomePage>
-    with SingleTickerProviderStateMixin {
+    with TickerProviderStateMixin {
   String? firstname,
       designation,
       department,
@@ -46,9 +47,11 @@ class _WelcomePageState extends State<WelcomePage>
       home = true;
   var decodedResult;
 
-  late AnimationController _controller;
-  late Animation<double> _animation;
-
+  late AnimationController _controller1;
+  late Animation<double> _animation1;
+  late AnimationController _controller2;
+  late Animation<double> _animation2;
+  late bool showFirst;
   void store() async {
     final prefs = await SharedPreferences.getInstance();
     setState(() {
@@ -75,25 +78,62 @@ class _WelcomePageState extends State<WelcomePage>
     super.initState();
     store();
 
-    _controller = AnimationController(
+    _controller1 = AnimationController(
       duration: const Duration(seconds: 3),
       vsync: this,
-    )..repeat(reverse: true);
+    );
 
-    _animation = Tween<double>(
+    _animation1 = Tween<double>(
       begin: 0.85,
       end: 1.05,
     ).animate(
       CurvedAnimation(
-        parent: _controller,
-        curve: Curves.easeInOut,
+        parent: _controller1,
+        curve: Curves.linear,
       ),
     );
+
+    _controller2 = AnimationController(
+      duration: const Duration(seconds: 3),
+      vsync: this,
+    );
+
+    _animation2 = Tween<double>(
+      begin: 1.05,
+      end: 0.85,
+    ).animate(
+      CurvedAnimation(
+        parent: _controller2,
+        curve: Curves.linear,
+      ),
+    );
+
+    showFirst = true;
+
+    // Switch cards every 3 seconds
+    _switchCards();
+  }
+
+  void _switchCards() {
+    Future.delayed(Duration(seconds: 3), () {
+      setState(() {
+        showFirst = !showFirst;
+        if (showFirst) {
+          _controller1.forward(from: 0.0);
+          _controller2.reverse(from: 1.0);
+        } else {
+          _controller1.reverse(from: 1.0);
+          _controller2.forward(from: 0.0);
+        }
+      });
+      _switchCards();
+    });
   }
 
   @override
   void dispose() {
-    _controller.dispose();
+    _controller1.dispose();
+    _controller2.dispose();
     super.dispose();
   }
 
@@ -151,10 +191,10 @@ class _WelcomePageState extends State<WelcomePage>
                   Expanded(
                       child:
                           inSpareParts('Spare Parts', AppAssets.imgWelcome, () {
-                    // Navigator.of(context).pushAndRemoveUntil(
-                    //     MaterialPageRoute(
-                    //         builder: (BuildContext context) => EmployeeList()),
-                    //     (Route<dynamic> route) => false);
+                    Navigator.of(context).pushAndRemoveUntil(
+                        MaterialPageRoute(
+                            builder: (BuildContext context) => spare()),
+                        (Route<dynamic> route) => false);
                   })),
                   const SizedBox(
                     width: 10,
@@ -342,10 +382,10 @@ class _WelcomePageState extends State<WelcomePage>
         onPressed();
       },
       child: AnimatedBuilder(
-          animation: _animation,
+          animation: _animation1,
           builder: (context, child) {
             return Transform.scale(
-              scale: _animation.value,
+              scale: _animation1.value,
               child: child,
             );
           },
@@ -418,10 +458,10 @@ class _WelcomePageState extends State<WelcomePage>
         onPressed();
       },
       child: AnimatedBuilder(
-          animation: _animation,
+          animation: _animation2,
           builder: (context, child) {
             return Transform.scale(
-              scale: _animation.value,
+              scale: _animation2.value,
               child: child,
             );
           },
