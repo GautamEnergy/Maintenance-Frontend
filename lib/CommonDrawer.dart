@@ -135,8 +135,8 @@ class _PublicDrawerState extends State<PublicDrawer> {
                   width: 10,
                 ),
                 Expanded(
-                    child:
-                        inSpareParts('Spare Parts', AppAssets.imgWelcome, () {
+                    child: inSpareParts('Spare Parts In', AppAssets.imgWelcome,
+                        () {
                   Navigator.of(context).pushAndRemoveUntil(
                       MaterialPageRoute(
                           builder: (BuildContext context) => spare()),
@@ -205,6 +205,63 @@ class _PublicDrawerState extends State<PublicDrawer> {
                   width: 10,
                 ),
                 Expanded(
+                    child: addParty('Add New Party', AppAssets.Addicon, () {
+                  // Navigator.of(context).pushAndRemoveUntil(
+                  //     MaterialPageRoute(
+                  //         builder: (BuildContext context) => EmployeeList()),
+                  //     (Route<dynamic> route) => false);
+                })),
+                SizedBox(
+                  width: 10,
+                ),
+              ],
+            ),
+
+            const SizedBox(
+              height: 10,
+            ),
+
+            Row(
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                SizedBox(
+                  width: 10,
+                ),
+                Expanded(
+                    child: addMachine('Add New Machine', AppAssets.Addicon, () {
+                  // Navigator.of(context).pushAndRemoveUntil(
+                  //     MaterialPageRoute(
+                  //         builder: (BuildContext context) => EmployeeList()),
+                  //     (Route<dynamic> route) => false);
+                })),
+                SizedBox(
+                  width: 10,
+                ),
+                Expanded(
+                    child: addSparePartName(
+                        'Add New Spare Part', AppAssets.Addicon, () {
+                  // Navigator.of(context).pushAndRemoveUntil(
+                  //     MaterialPageRoute(
+                  //         builder: (BuildContext context) => EmployeeList()),
+                  //     (Route<dynamic> route) => false);
+                })),
+                SizedBox(
+                  width: 10,
+                ),
+              ],
+            ),
+            const SizedBox(
+              height: 10,
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                SizedBox(
+                  width: 10,
+                ),
+                Expanded(
                     child:
                         logoutDashboard('Logout', AppAssets.iclogout, () async {
                   final prefs = await SharedPreferences.getInstance();
@@ -228,9 +285,8 @@ class _PublicDrawerState extends State<PublicDrawer> {
                 ),
               ],
             ),
-
-            const SizedBox(
-              height: 10,
+            SizedBox(
+              height: 20,
             ),
             Container(
               alignment: Alignment.center,
@@ -256,7 +312,7 @@ class _PublicDrawerState extends State<PublicDrawer> {
       bottomNavigationBar: Container(
         height: 60,
         decoration: const BoxDecoration(
-          color: Color.fromARGB(255, 194, 16, 238),
+          color: Color.fromARGB(255, 98, 99, 100),
           borderRadius: BorderRadius.only(
             topLeft: Radius.circular(20),
             topRight: Radius.circular(20),
@@ -436,7 +492,7 @@ Widget tabDashboard(String title, String img, final Function onPressed) {
         color: Color.fromARGB(255, 28, 216, 169),
         borderRadius: BorderRadius.circular(10),
       ),
-      height: 115,
+      height: 145,
       child: Stack(
         children: [
           Positioned(
@@ -474,12 +530,12 @@ Widget tabDashboard(String title, String img, final Function onPressed) {
               ),
               Center(
                   child: Container(
-                      height: 36,
-                      width: 36,
+                      height: 56,
+                      width: 56,
                       child: Image.asset(
                         img,
-                        height: 36,
-                        width: 36,
+                        height: 56,
+                        width: 56,
                         //fit: BoxFit.cover,
                       )))
             ],
@@ -500,7 +556,7 @@ Widget logoutDashboard(String title, String img, final Function onPressed) {
         color: Color.fromARGB(255, 218, 99, 31),
         borderRadius: BorderRadius.circular(10),
       ),
-      height: 115,
+      height: 145,
       child: Stack(
         children: [
           Positioned(
@@ -538,12 +594,12 @@ Widget logoutDashboard(String title, String img, final Function onPressed) {
               ),
               Center(
                   child: Container(
-                      height: 36,
-                      width: 36,
+                      height: 56,
+                      width: 56,
                       child: Image.asset(
                         img,
-                        height: 36,
-                        width: 36,
+                        height: 56,
+                        width: 56,
                         //fit: BoxFit.cover,
                       )))
             ],
@@ -572,7 +628,7 @@ Widget inSpareParts(String title, String img, final Function onPressed) {
         color: Color.fromARGB(255, 24, 146, 247),
         borderRadius: BorderRadius.circular(10),
       ),
-      height: 115,
+      height: 145,
       child: Stack(
         children: [
           Positioned(
@@ -610,12 +666,12 @@ Widget inSpareParts(String title, String img, final Function onPressed) {
               ),
               Center(
                   child: Container(
-                      height: 36,
-                      width: 36,
+                      height: 56,
+                      width: 56,
                       child: Image.asset(
                         img,
-                        height: 36,
-                        width: 36,
+                        height: 56,
+                        width: 56,
                         //fit: BoxFit.cover,
                       )))
             ],
@@ -644,7 +700,7 @@ Widget outSpareParts(String title, String img, final Function onPressed) {
           color: Color.fromARGB(255, 255, 255, 255),
           borderRadius: BorderRadius.circular(10),
         ),
-        height: 115,
+        height: 145,
         child: Stack(
           children: [
             Positioned(
@@ -682,12 +738,225 @@ Widget outSpareParts(String title, String img, final Function onPressed) {
                 ),
                 Center(
                     child: Container(
-                        height: 36,
-                        width: 36,
+                        height: 56,
+                        width: 56,
                         child: Image.asset(
                           img,
-                          height: 36,
-                          width: 36,
+                          height: 56,
+                          width: 56,
+                          //fit: BoxFit.cover,
+                        )))
+              ],
+            )
+          ],
+        ),
+      ));
+}
+
+Widget addParty(String title, String img, final Function onPressed) {
+  return InkWell(
+      onTap: () {
+        onPressed();
+      },
+      // child: AnimatedBuilder(
+      //     animation: _animation2,
+      //     builder: (context, child) {
+      //       return Transform.scale(
+      //         scale: _animation2.value,
+      //         child: child,
+      //       );
+      //     },
+      child: Container(
+        decoration: BoxDecoration(
+          color: Color.fromARGB(255, 245, 190, 8),
+          borderRadius: BorderRadius.circular(10),
+        ),
+        height: 145,
+        child: Stack(
+          children: [
+            Positioned(
+                bottom: 0,
+                right: 0,
+                child: Container(
+                  height: 50,
+                  width: 55,
+                  decoration: BoxDecoration(
+                    borderRadius:
+                        BorderRadius.only(bottomRight: Radius.circular(10)),
+                  ),
+                  // child: Image.asset(
+                  //   AppAssets.icEllipse,
+                  //   fit: BoxFit.fill,
+                  //   height: 50,
+                  //   width: 155,
+                  // ),
+                )),
+            Column(
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.only(left: 18.0, top: 15),
+                  child: Text(title,
+                      style: TextStyle(
+                          fontWeight: FontWeight.w600,
+                          fontFamily: appFontFamily,
+                          fontSize: 16,
+                          color: Color.fromARGB(249, 0, 0, 0))),
+                ),
+                SizedBox(
+                  height: 15,
+                ),
+                Center(
+                    child: Container(
+                        height: 56,
+                        width: 56,
+                        child: Image.asset(
+                          img,
+                          height: 56,
+                          width: 56,
+                          //fit: BoxFit.cover,
+                        )))
+              ],
+            )
+          ],
+        ),
+      ));
+}
+
+Widget addMachine(String title, String img, final Function onPressed) {
+  return InkWell(
+      onTap: () {
+        onPressed();
+      },
+      // child: AnimatedBuilder(
+      //     animation: _animation2,
+      //     builder: (context, child) {
+      //       return Transform.scale(
+      //         scale: _animation2.value,
+      //         child: child,
+      //       );
+      //     },
+      child: Container(
+        decoration: BoxDecoration(
+          color: Color.fromARGB(255, 223, 54, 238),
+          borderRadius: BorderRadius.circular(10),
+        ),
+        height: 145,
+        child: Stack(
+          children: [
+            Positioned(
+                bottom: 0,
+                right: 0,
+                child: Container(
+                  height: 50,
+                  width: 55,
+                  decoration: BoxDecoration(
+                    borderRadius:
+                        BorderRadius.only(bottomRight: Radius.circular(10)),
+                  ),
+                  // child: Image.asset(
+                  //   AppAssets.icEllipse,
+                  //   fit: BoxFit.fill,
+                  //   height: 50,
+                  //   width: 155,
+                  // ),
+                )),
+            Column(
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.only(left: 18.0, top: 15),
+                  child: Text(title,
+                      style: TextStyle(
+                          fontWeight: FontWeight.w600,
+                          fontFamily: appFontFamily,
+                          fontSize: 16,
+                          color: Color.fromARGB(248, 255, 255, 255))),
+                ),
+                SizedBox(
+                  height: 15,
+                ),
+                Center(
+                    child: Container(
+                        height: 56,
+                        width: 56,
+                        child: Image.asset(
+                          img,
+                          height: 56,
+                          width: 56,
+                          //fit: BoxFit.cover,
+                        )))
+              ],
+            )
+          ],
+        ),
+      ));
+}
+
+Widget addSparePartName(String title, String img, final Function onPressed) {
+  return InkWell(
+      onTap: () {
+        onPressed();
+      },
+      // child: AnimatedBuilder(
+      //     animation: _animation2,
+      //     builder: (context, child) {
+      //       return Transform.scale(
+      //         scale: _animation2.value,
+      //         child: child,
+      //       );
+      //     },
+      child: Container(
+        decoration: BoxDecoration(
+          color: Color.fromARGB(255, 136, 240, 132),
+          borderRadius: BorderRadius.circular(10),
+        ),
+        height: 145,
+        child: Stack(
+          children: [
+            Positioned(
+                bottom: 0,
+                right: 0,
+                child: Container(
+                  height: 50,
+                  width: 55,
+                  decoration: BoxDecoration(
+                    borderRadius:
+                        BorderRadius.only(bottomRight: Radius.circular(10)),
+                  ),
+                  // child: Image.asset(
+                  //   AppAssets.icEllipse,
+                  //   fit: BoxFit.fill,
+                  //   height: 50,
+                  //   width: 155,
+                  // ),
+                )),
+            Column(
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.only(left: 18.0, top: 15),
+                  child: Text(title,
+                      style: TextStyle(
+                          fontWeight: FontWeight.w600,
+                          fontFamily: appFontFamily,
+                          fontSize: 16,
+                          color: Color.fromARGB(249, 0, 0, 0))),
+                ),
+                SizedBox(
+                  height: 15,
+                ),
+                Center(
+                    child: Container(
+                        height: 56,
+                        width: 56,
+                        child: Image.asset(
+                          img,
+                          height: 56,
+                          width: 56,
                           //fit: BoxFit.cover,
                         )))
               ],

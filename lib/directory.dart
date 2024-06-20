@@ -314,7 +314,7 @@ class _DirectoryState extends State<EmployeeList> {
                 bottomNavigationBar: Container(
                   height: 60,
                   decoration: const BoxDecoration(
-                    color: Color.fromARGB(255, 194, 16, 238),
+                    color: Color.fromARGB(255, 98, 99, 100),
                     borderRadius: BorderRadius.only(
                       topLeft: Radius.circular(20),
                       topRight: Radius.circular(20),

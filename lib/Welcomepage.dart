@@ -189,8 +189,8 @@ class _WelcomePageState extends State<WelcomePage>
                     width: 10,
                   ),
                   Expanded(
-                      child:
-                          inSpareParts('Spare Parts', AppAssets.imgWelcome, () {
+                      child: inSpareParts(
+                          'Spare Parts In', AppAssets.imgWelcome, () {
                     Navigator.of(context).pushAndRemoveUntil(
                         MaterialPageRoute(
                             builder: (BuildContext context) => spare()),
@@ -231,7 +231,7 @@ class _WelcomePageState extends State<WelcomePage>
       bottomNavigationBar: Container(
         height: 60,
         decoration: const BoxDecoration(
-          color: Color.fromARGB(255, 194, 16, 238),
+          color: Color.fromARGB(255, 98, 99, 100),
           borderRadius: BorderRadius.only(
             topLeft: Radius.circular(20),
             topRight: Radius.circular(20),
@@ -382,73 +382,87 @@ class _WelcomePageState extends State<WelcomePage>
         onPressed();
       },
       child: AnimatedBuilder(
-          animation: _animation1,
-          builder: (context, child) {
-            return Transform.scale(
-              scale: _animation1.value,
-              child: child,
-            );
-          },
-          child: Container(
-            decoration: BoxDecoration(
-              color: Color.fromARGB(255, 24, 146, 247),
-              borderRadius: BorderRadius.circular(10),
-            ),
-            height: 255,
-            child: Stack(
-              children: [
-                Positioned(
-                    bottom: 0,
-                    right: 0,
+        animation: _animation1,
+        builder: (context, child) {
+          return Transform.scale(
+            scale: _animation1.value,
+            child: child,
+          );
+        },
+        child: Container(
+          decoration: BoxDecoration(
+            color: Color.fromARGB(255, 24, 146, 247),
+            borderRadius: BorderRadius.circular(10),
+          ),
+          height: 255,
+          child: Stack(
+            children: [
+              Positioned(
+                bottom: 0,
+                right: 0,
+                child: Container(
+                  height: 150,
+                  width: 155,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.only(
+                      bottomRight: Radius.circular(10),
+                    ),
+                    image: DecorationImage(
+                      image: AssetImage(AppAssets.imgWelcome),
+                      fit: BoxFit.fill,
+                    ),
+                  ),
+                ),
+              ),
+              Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.only(left: 18.0, top: 15),
+                    child: Text(
+                      title,
+                      style: TextStyle(
+                        fontWeight: FontWeight.w600,
+                        fontFamily: appFontFamily,
+                        fontSize: 16,
+                        color: Color.fromARGB(255, 255, 255, 255),
+                      ),
+                    ),
+                  ),
+                  SizedBox(
+                    height: 15,
+                  ),
+                  Center(
                     child: Container(
-                      height: 150,
-                      width: 155,
-                      decoration: BoxDecoration(
-                          borderRadius: BorderRadius.only(
-                              bottomRight: Radius.circular(10)),
-                          image: DecorationImage(
-                              image: AssetImage(
-                                AppAssets.imgWelcome,
-                              ),
-                              fit: BoxFit.fill)),
-                      // child: Image.asset(
-                      //   AppAssets.icEllipse,
-                      //   fit: BoxFit.fill,
-                      //   height: 50,
-                      //   width: 155,
-                      // ),
-                    )),
-                Column(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.only(left: 18.0, top: 15),
-                      child: Text(title,
-                          style: TextStyle(
-                              fontWeight: FontWeight.w600,
-                              fontFamily: appFontFamily,
-                              fontSize: 16,
-                              color: Color.fromARGB(255, 255, 255, 255))),
+                      height: 36,
+                      width: 36,
+                      child: Image.asset(
+                        img,
+                        height: 36,
+                        width: 36,
+                      ),
                     ),
-                    SizedBox(
-                      height: 15,
+                  ),
+                  SizedBox(
+                    height: 10,
+                  ),
+                  Center(
+                    child: Text(
+                      "0",
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 60,
+                        color: Colors.white,
+                      ),
                     ),
-                    Center(
-                        child: Container(
-                            height: 36,
-                            width: 36,
-                            child: Image.asset(
-                              img,
-                              height: 36,
-                              width: 36,
-                              //fit: BoxFit.cover,
-                            )))
-                  ],
-                )
-              ],
-            ),
-          )),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+      ),
     );
   }
 

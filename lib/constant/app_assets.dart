@@ -114,6 +114,7 @@ class AppAssets {
 
   static String Laminator1 = 'assets/icons/laminator1.png';
   static String Laminator2 = 'assets/icons/laminator2.png';
+  static String Addicon = 'assets/icons/addicon.png';
 
   //testing
   static String peel = 'assets/icons/peel.png';
