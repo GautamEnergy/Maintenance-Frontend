@@ -1,3 +1,6 @@
+import 'package:Maintenance/AddMachine.dart';
+import 'package:Maintenance/AddParty.dart';
+import 'package:Maintenance/AddSparePart.dart';
 import 'package:Maintenance/Welcomepage.dart';
 import 'package:Maintenance/components/appbar.dart';
 import 'package:Maintenance/constant/app_color.dart';
@@ -205,11 +208,11 @@ class _PublicDrawerState extends State<PublicDrawer> {
                   width: 10,
                 ),
                 Expanded(
-                    child: addParty('Add New Party', AppAssets.Addicon, () {
-                  // Navigator.of(context).pushAndRemoveUntil(
-                  //     MaterialPageRoute(
-                  //         builder: (BuildContext context) => EmployeeList()),
-                  //     (Route<dynamic> route) => false);
+                    child: addPartyName('Add New Party', AppAssets.Addicon, () {
+                  Navigator.of(context).pushAndRemoveUntil(
+                      MaterialPageRoute(
+                          builder: (BuildContext context) => addParty()),
+                      (Route<dynamic> route) => false);
                 })),
                 SizedBox(
                   width: 10,
@@ -229,11 +232,12 @@ class _PublicDrawerState extends State<PublicDrawer> {
                   width: 10,
                 ),
                 Expanded(
-                    child: addMachine('Add New Machine', AppAssets.Addicon, () {
-                  // Navigator.of(context).pushAndRemoveUntil(
-                  //     MaterialPageRoute(
-                  //         builder: (BuildContext context) => EmployeeList()),
-                  //     (Route<dynamic> route) => false);
+                    child: addMachineName('Add New Machine', AppAssets.Addicon,
+                        () {
+                  Navigator.of(context).pushAndRemoveUntil(
+                      MaterialPageRoute(
+                          builder: (BuildContext context) => addMachine()),
+                      (Route<dynamic> route) => false);
                 })),
                 SizedBox(
                   width: 10,
@@ -241,10 +245,10 @@ class _PublicDrawerState extends State<PublicDrawer> {
                 Expanded(
                     child: addSparePartName(
                         'Add New Spare Part', AppAssets.Addicon, () {
-                  // Navigator.of(context).pushAndRemoveUntil(
-                  //     MaterialPageRoute(
-                  //         builder: (BuildContext context) => EmployeeList()),
-                  //     (Route<dynamic> route) => false);
+                  Navigator.of(context).pushAndRemoveUntil(
+                      MaterialPageRoute(
+                          builder: (BuildContext context) => addSparePart()),
+                      (Route<dynamic> route) => false);
                 })),
                 SizedBox(
                   width: 10,
@@ -753,7 +757,7 @@ Widget outSpareParts(String title, String img, final Function onPressed) {
       ));
 }
 
-Widget addParty(String title, String img, final Function onPressed) {
+Widget addPartyName(String title, String img, final Function onPressed) {
   return InkWell(
       onTap: () {
         onPressed();
@@ -824,7 +828,7 @@ Widget addParty(String title, String img, final Function onPressed) {
       ));
 }
 
-Widget addMachine(String title, String img, final Function onPressed) {
+Widget addMachineName(String title, String img, final Function onPressed) {
   return InkWell(
       onTap: () {
         onPressed();
