@@ -43,6 +43,9 @@ class _addSparePartState extends State<addSparePart> {
   TextEditingController specificationController = TextEditingController();
   TextEditingController machineModelNumberController = TextEditingController();
 
+  TextEditingController drawingPdfController = new TextEditingController();
+  TextEditingController imageController = new TextEditingController();
+
   List<TextEditingController> sampleAControllers = [];
   List<TextEditingController> sampleBControllers = [];
 
@@ -66,12 +69,13 @@ class _addSparePartState extends State<addSparePart> {
   List sampleBInputText = [];
   List machineList = [];
   late String sendStatus;
-
+  List<int>? imageBytes, drawingPdfFileBytes;
   String status = '',
       jobCarId = '',
       machineNameController = "",
       approvalStatus = "Approved",
       designation = '',
+      SparePartId = '',
       token = '',
       department = '';
   final _dio = Dio();
@@ -105,6 +109,39 @@ class _addSparePartState extends State<addSparePart> {
       token = prefs.getString('token')!;
     });
     getMachineListData();
+  }
+
+  Future<void> _pickImage() async {
+    FilePickerResult? result = await FilePicker.platform.pickFiles(
+      type: FileType.image,
+    );
+
+    if (result != null) {
+      File pdffile = File(result.files.single.path!);
+      setState(() {
+        imageBytes = pdffile.readAsBytesSync();
+        imageController.text = result.files.single.name;
+      });
+    } else {
+      // User canceled the file picker
+    }
+  }
+
+  Future<void> _pickcocPDF() async {
+    FilePickerResult? result = await FilePicker.platform.pickFiles(
+      type: FileType.custom,
+      allowedExtensions: ['pdf'],
+    );
+
+    if (result != null) {
+      File pdffile = File(result.files.single.path!);
+      setState(() {
+        drawingPdfFileBytes = pdffile.readAsBytesSync();
+        drawingPdfController.text = result.files.single.name;
+      });
+    } else {
+      // User canceled the file picker
+    }
   }
 
   getMachineModelNumber(machineId) async {
@@ -174,6 +211,62 @@ class _addSparePartState extends State<addSparePart> {
   //   }
   // }
 
+  uploadPDF(List<int> imageBytes, List<int> drawingPdfBytes) async {
+    setState(() {
+      _isLoading = true;
+    });
+    final prefs = await SharedPreferences.getInstance();
+    site = prefs.getString('site')!;
+
+    var currentdate = DateTime.now().microsecondsSinceEpoch;
+    var formData = FormData.fromMap({
+      "SparePartId": SparePartId,
+      "SparePartImage": MultipartFile.fromBytes(
+        imageBytes,
+        filename: (imageController.text + (currentdate.toString()) + '.png'),
+        contentType: MediaType("application", 'png'),
+      ),
+      "DrawingImage": MultipartFile.fromBytes(
+        drawingPdfBytes,
+        filename:
+            (drawingPdfController.text + (currentdate.toString()) + '.pdf'),
+        contentType: MediaType("application", 'pdf'),
+      ),
+    });
+
+    _response = await _dio.post((site! + 'Maintenance/SparePartsImage'), // Prod
+
+        options: Options(
+          contentType: 'multipart/form-data',
+          followRedirects: false,
+          validateStatus: (status) => true,
+        ),
+        data: formData);
+
+    try {
+      if (_response?.statusCode == 200) {
+        setState(() {
+          _isLoading = false;
+        });
+
+        Toast.show("Spare Part Added Successfully.",
+            duration: Toast.lengthLong,
+            gravity: Toast.center,
+            backgroundColor: AppColors.blueColor);
+        Navigator.of(context).pushReplacement(MaterialPageRoute(
+            builder: (BuildContext context) => WelcomePage()));
+      } else {
+        setState(() {
+          _isLoading = false;
+        });
+        Toast.show("Error In Server",
+            duration: Toast.lengthLong, gravity: Toast.center);
+      }
+    } catch (err) {
+      print("Error");
+    }
+  }
+
   Future createData() async {
     var data = {
       "SparePartName": sparePartNameController.text,
@@ -205,23 +298,27 @@ class _addSparePartState extends State<addSparePart> {
 
     if (response.statusCode == 200) {
       var objData = json.decode(response.body);
-      setState(() {
-        _isLoading = false;
-      });
 
       if (objData['success'] == false) {
+        setState(() {
+          _isLoading = false;
+        });
         Toast.show(objData['message'],
             duration: Toast.lengthLong,
             gravity: Toast.center,
             backgroundColor: AppColors.redColor);
       } else {
-        Toast.show("Spare Part Added Successfully.",
-            duration: Toast.lengthLong,
-            gravity: Toast.center,
-            backgroundColor: AppColors.blueColor);
-        Navigator.of(context).pushAndRemoveUntil(
-            MaterialPageRoute(builder: (BuildContext context) => WelcomePage()),
-            (Route<dynamic> route) => false);
+        setState(() {
+          SparePartId = objData['SparePartId'];
+        });
+        uploadPDF((imageBytes ?? []), (drawingPdfFileBytes ?? []));
+        // Toast.show("Spare Part Added Successfully.",
+        //     duration: Toast.lengthLong,
+        //     gravity: Toast.center,
+        //     backgroundColor: AppColors.blueColor);
+        // Navigator.of(context).pushAndRemoveUntil(
+        //     MaterialPageRoute(builder: (BuildContext context) => WelcomePage()),
+        //     (Route<dynamic> route) => false);
       }
     } else {
       setState(() {
@@ -593,6 +690,89 @@ class _addSparePartState extends State<addSparePart> {
                                       ),
                                     ],
                                   ),
+                                ),
+
+                                const SizedBox(
+                                  height: 15,
+                                ),
+                                Text(
+                                  "Upload Image",
+                                  style: AppStyles.textfieldCaptionTextStyle,
+                                ),
+                                const SizedBox(
+                                  height: 5,
+                                ),
+                                TextFormField(
+                                  controller: imageController,
+                                  keyboardType: TextInputType.text,
+                                  textInputAction: TextInputAction.next,
+                                  decoration: AppStyles.textFieldInputDecoration
+                                      .copyWith(
+                                          hintText: "Please Select Image",
+                                          fillColor: Color.fromARGB(
+                                                  255, 187, 241, 185)
+                                              .withOpacity(
+                                                  0.5), // Your desired color
+                                          filled: true,
+                                          suffixIcon: IconButton(
+                                            onPressed: () async {
+                                              _pickImage();
+                                            },
+                                            icon: const Icon(
+                                                Icons.open_in_browser),
+                                          ),
+                                          counterText: ''),
+                                  style: AppStyles.textInputTextStyle,
+                                  maxLines: 1,
+                                  readOnly: true,
+                                  validator: (value) {
+                                    if (value!.isEmpty) {
+                                      return "Please Select Image";
+                                    } else {
+                                      return null;
+                                    }
+                                  },
+                                ),
+                                const SizedBox(
+                                  height: 15,
+                                ),
+                                Text(
+                                  "Upload Drawing Pdf",
+                                  style: AppStyles.textfieldCaptionTextStyle,
+                                ),
+                                const SizedBox(
+                                  height: 5,
+                                ),
+                                TextFormField(
+                                  controller: drawingPdfController,
+                                  keyboardType: TextInputType.text,
+                                  textInputAction: TextInputAction.next,
+                                  decoration: AppStyles.textFieldInputDecoration
+                                      .copyWith(
+                                          hintText: "Please Select Drawing Pdf",
+                                          fillColor: Color.fromARGB(
+                                                  255, 187, 241, 185)
+                                              .withOpacity(
+                                                  0.5), // Your desired color
+                                          filled: true,
+                                          suffixIcon: IconButton(
+                                            onPressed: () async {
+                                              _pickcocPDF();
+                                            },
+                                            icon: const Icon(
+                                                Icons.open_in_browser),
+                                          ),
+                                          counterText: ''),
+                                  style: AppStyles.textInputTextStyle,
+                                  maxLines: 1,
+                                  readOnly: true,
+                                  validator: (value) {
+                                    if (value!.isEmpty) {
+                                      return "Please Select Drawing Pdf";
+                                    } else {
+                                      return null;
+                                    }
+                                  },
                                 ),
 
                                 const SizedBox(
