@@ -1,5 +1,14 @@
 import 'dart:convert';
+import 'dart:ffi';
 import 'dart:io';
+import 'package:multi_dropdown/enum/app_enums.dart';
+import 'package:multi_dropdown/models/chip_config.dart';
+import 'package:multi_dropdown/models/network_config.dart';
+import 'package:multi_dropdown/models/value_item.dart';
+import 'package:multi_dropdown/multiselect_dropdown.dart';
+import 'package:multi_dropdown/widgets/hint_text.dart';
+import 'package:multi_dropdown/widgets/selection_chip.dart';
+import 'package:multi_dropdown/widgets/single_selected_item.dart';
 import 'package:Maintenance/CommonDrawer.dart';
 import 'package:Maintenance/Welcomepage.dart';
 import 'package:Maintenance/components/app_button_widget.dart';
@@ -11,16 +20,15 @@ import 'package:Maintenance/constant/app_fonts.dart';
 import 'package:Maintenance/constant/app_helper.dart';
 import 'package:Maintenance/constant/app_styles.dart';
 
-import 'package:Maintenance/constant/app_color.dart';
 import 'package:dio/dio.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:form_field_validator/form_field_validator.dart';
-import 'package:url_launcher/url_launcher.dart' as UrlLauncher;
+
 import 'package:http_parser/http_parser.dart';
-import 'package:intl/intl.dart';
+
 import 'package:http/http.dart' as http;
 import 'package:dio/src/response.dart' as Response;
 
@@ -38,11 +46,12 @@ class _addSparePartState extends State<addSparePart> {
   final _registerFormKey = GlobalKey<FormState>();
 
   TextEditingController sparePartNameController = TextEditingController();
+  TextEditingController masterSparePartNameController = TextEditingController();
   TextEditingController sparePartNumberController = TextEditingController();
   TextEditingController brandNameController = TextEditingController();
   TextEditingController specificationController = TextEditingController();
   TextEditingController machineModelNumberController = TextEditingController();
-
+  final MultiSelectController _controller = MultiSelectController();
   TextEditingController drawingPdfController = new TextEditingController();
   TextEditingController imageController = new TextEditingController();
 
@@ -64,10 +73,12 @@ class _addSparePartState extends State<addSparePart> {
   String selectedspare = "";
   String selectedsparemodel = "";
   String selectedbrand = "";
-
+  String _selectedValue = "Spare Part Name";
+  List MachineData = [];
   List sampleAInputtext = [];
   List sampleBInputText = [];
   List machineList = [];
+  List<ValueItem> options = [];
   late String sendStatus;
   List<int>? imageBytes, drawingPdfFileBytes;
   String status = '',
@@ -109,6 +120,12 @@ class _addSparePartState extends State<addSparePart> {
       token = prefs.getString('token')!;
     });
     getMachineListData();
+  }
+
+  void _handleRadioValueChange(value) {
+    setState(() {
+      _selectedValue = value!;
+    });
   }
 
   Future<void> _pickImage() async {
@@ -164,8 +181,8 @@ class _addSparePartState extends State<addSparePart> {
           machineModelNumberController.text =
               machineBody['data'][0]['MachineModelNumber'];
         });
-        print("machine list data");
-        print(machineModelNumberController.text);
+        // print("machine list data");
+        // print(machineModelNumberController.text);
       }
     });
   }
@@ -176,9 +193,9 @@ class _addSparePartState extends State<addSparePart> {
 
     final url = (site! + 'Maintenance/MachineDetailById');
 
-    http.post(
+    http.get(
       Uri.parse(url),
-      body: json.encode({"MachineId": ""}),
+      // body: json.encode({"MachineId": ""}),
       headers: {
         'Content-Type': 'application/json; charset=UTF-8',
       },
@@ -186,7 +203,11 @@ class _addSparePartState extends State<addSparePart> {
       if (mounted) {
         var machineBody = jsonDecode(response.body);
         setState(() {
-          machineList = machineBody['data'];
+          machineList = machineBody;
+          // options = machineList
+          //     .map((item) => ValueItem(
+          //         label: item['MachineName']!, value: item['MachineId']!))
+          //     .toList();
         });
         print("machine list data");
         print(machineList);
@@ -269,12 +290,13 @@ class _addSparePartState extends State<addSparePart> {
 
   Future createData() async {
     var data = {
+      "SparePartType": _selectedValue,
       "SparePartName": sparePartNameController.text,
       "Specification": specificationController.text,
       "SpareNumber": sparePartNumberController.text,
       "BrandName": brandNameController.text,
-      "MachineName": machineNameController ?? "",
-      "MachineModelNumber": machineModelNumberController.text,
+      "MachineName": MachineData ?? [],
+      //  "MachineModelNumber": machineModelNumberController.text,
       "Status": "Active",
       "CurrentUser": personid
     };
@@ -311,14 +333,20 @@ class _addSparePartState extends State<addSparePart> {
         setState(() {
           SparePartId = objData['SparePartId'];
         });
-        uploadPDF((imageBytes ?? []), (drawingPdfFileBytes ?? []));
-        // Toast.show("Spare Part Added Successfully.",
-        //     duration: Toast.lengthLong,
-        //     gravity: Toast.center,
-        //     backgroundColor: AppColors.blueColor);
-        // Navigator.of(context).pushAndRemoveUntil(
-        //     MaterialPageRoute(builder: (BuildContext context) => WelcomePage()),
-        //     (Route<dynamic> route) => false);
+
+        if ((imageBytes != null && imageBytes != "") ||
+            (drawingPdfFileBytes != null && drawingPdfFileBytes != "")) {
+          uploadPDF((imageBytes ?? []), (drawingPdfFileBytes ?? []));
+        } else {
+          Toast.show("Spare Part Added Successfully.",
+              duration: Toast.lengthLong,
+              gravity: Toast.center,
+              backgroundColor: AppColors.blueColor);
+          Navigator.of(context).pushAndRemoveUntil(
+              MaterialPageRoute(
+                  builder: (BuildContext context) => WelcomePage()),
+              (Route<dynamic> route) => false);
+        }
       }
     } else {
       setState(() {
@@ -328,55 +356,6 @@ class _addSparePartState extends State<addSparePart> {
           duration: Toast.lengthLong, gravity: Toast.center);
     }
   }
-
-  // uploadPDF(List<int> referenceBytes) async {
-  //   setState(() {
-  //     _isLoading = true;
-  //   });
-  //   final prefs = await SharedPreferences.getInstance();
-  //   site = prefs.getString('site')!;
-
-  //   var currentdate = DateTime.now().microsecondsSinceEpoch;
-  //   var formData = FormData.fromMap({
-  //     "JobCardDetailId": jobCarId,
-  //     "SolderingPdf": MultipartFile.fromBytes(
-  //       referenceBytes,
-  //       filename:
-  //           (referencePdfController.text + (currentdate.toString()) + '.pdf'),
-  //       contentType: MediaType("application", 'pdf'),
-  //     ),
-  //   });
-
-  //   _response =
-  //       await _dio.post((site! + 'IPQC/UploadSolderingPeelTestPdf'), // Prod
-
-  //           options: Options(
-  //             contentType: 'multipart/form-data',
-  //             followRedirects: false,
-  //             validateStatus: (status) => true,
-  //           ),
-  //           data: formData);
-
-  //   try {
-  //     if (_response?.statusCode == 200) {
-  //       setState(() {
-  //         _isLoading = false;
-  //       });
-
-  //       Toast.show("Busbar Test Completed.",
-  //           duration: Toast.lengthLong,
-  //           gravity: Toast.center,
-  //           backgroundColor: AppColors.blueColor);
-  //       Navigator.of(context).pushReplacement(MaterialPageRoute(
-  //           builder: (BuildContext context) => IpqcTestList()));
-  //     } else {
-  //       Toast.show("Error In Server",
-  //           duration: Toast.lengthLong, gravity: Toast.center);
-  //     }
-  //   } catch (err) {
-  //     print("Error");
-  //   }
-  // }
 
   @override
   Widget build(BuildContext context) {
@@ -482,7 +461,38 @@ class _addSparePartState extends State<addSparePart> {
                                 ),
 
                                 Text(
-                                  "Spare Part Name",
+                                  "Spare Part Type",
+                                  style: AppStyles.textfieldCaptionTextStyle,
+                                ),
+                                SizedBox(
+                                  height: 5,
+                                ),
+                                ListTile(
+                                  title: const Text('Spare Part Name'),
+                                  leading: Radio<String>(
+                                    value: "Spare Part Name",
+                                    groupValue: _selectedValue,
+                                    onChanged: _handleRadioValueChange,
+                                  ),
+                                ),
+
+                                ListTile(
+                                  title: const Text('Master Spare Part Name'),
+                                  leading: Radio<String>(
+                                    value: "Master Spare Part Name",
+                                    groupValue: _selectedValue,
+                                    onChanged: _handleRadioValueChange,
+                                  ),
+                                ),
+
+                                const SizedBox(
+                                  height: 15,
+                                ),
+
+                                Text(
+                                  _selectedValue == "Spare Part Name"
+                                      ? "Spare Part Name"
+                                      : "Master Spare Part Name",
                                   style: AppStyles.textfieldCaptionTextStyle,
                                 ),
                                 SizedBox(
@@ -494,7 +504,10 @@ class _addSparePartState extends State<addSparePart> {
                                   textInputAction: TextInputAction.next,
                                   decoration: AppStyles.textFieldInputDecoration
                                       .copyWith(
-                                    hintText: "Please Enter Spare Part Name",
+                                    hintText: _selectedValue ==
+                                            "Spare Part Name"
+                                        ? "Please Enter Spare Part Name"
+                                        : "Please Enter Master Spare Part Name",
                                     fillColor: Color.fromARGB(
                                             255, 187, 241, 185)
                                         .withOpacity(0.5), // Your desired color
@@ -504,8 +517,10 @@ class _addSparePartState extends State<addSparePart> {
                                   validator: MultiValidator(
                                     [
                                       RequiredValidator(
-                                        errorText:
-                                            "Please Enter Spare Part Name",
+                                        errorText: _selectedValue ==
+                                                "Spare Part Name"
+                                            ? "Please Enter Spare Part Name"
+                                            : "Please Enter Master Spare Part Name",
                                       ),
                                     ],
                                   ),
@@ -515,7 +530,7 @@ class _addSparePartState extends State<addSparePart> {
                                   height: 15,
                                 ),
                                 Text(
-                                  "Spare Part Number",
+                                  "Spare Part Model Number",
                                   style: AppStyles.textfieldCaptionTextStyle,
                                 ),
                                 SizedBox(
@@ -527,7 +542,8 @@ class _addSparePartState extends State<addSparePart> {
                                   textInputAction: TextInputAction.next,
                                   decoration: AppStyles.textFieldInputDecoration
                                       .copyWith(
-                                    hintText: "Please Enter Spare Part Number",
+                                    hintText:
+                                        "Please Enter Spare Part Model Number",
                                     fillColor: Color.fromARGB(
                                             255, 187, 241, 185)
                                         .withOpacity(0.5), // Your desired color
@@ -538,7 +554,7 @@ class _addSparePartState extends State<addSparePart> {
                                     [
                                       RequiredValidator(
                                         errorText:
-                                            "Please Enter Spare Part Number",
+                                            "Please Enter Spare Part Model Number",
                                       ),
                                     ],
                                   ),
@@ -620,77 +636,124 @@ class _addSparePartState extends State<addSparePart> {
                                 SizedBox(
                                   height: 5,
                                 ),
-                                DropdownButtonFormField<String>(
-                                  decoration: AppStyles.textFieldInputDecoration
-                                      .copyWith(
-                                          hintText:
-                                              "Please Select Machine Name",
-                                          fillColor:
-                                              Color.fromARGB(255, 187, 241, 185)
-                                                  .withOpacity(0.5),
-                                          counterText: '',
-                                          contentPadding: EdgeInsets.all(10)),
-                                  borderRadius: BorderRadius.circular(20),
-                                  items: machineList
-                                      .map((label) => DropdownMenuItem(
-                                            child: Text(label['MachineName'],
-                                                style: AppStyles
-                                                    .textInputTextStyle),
-                                            value:
-                                                label['MachineId'].toString(),
-                                          ))
-                                      .toList(),
-                                  onChanged: (val) {
-                                    setState(() {
-                                      machineNameController = val!;
-                                    });
-                                    getMachineModelNumber(val!);
-                                  },
-                                  value: machineNameController != ''
-                                      ? machineNameController
-                                      : null,
-                                  validator: (value) {
-                                    if (value == null || value.isEmpty) {
-                                      return 'Please Select Machine Name';
-                                    }
-                                    return null;
-                                  },
+
+                                Container(
+                                  child: MultiSelectDropDown.network(
+                                    onOptionSelected: (options) {
+                                      List<String> MachineData = [];
+                                      options.forEach((element) {
+                                        MachineData.add(element.value!);
+                                      });
+                                      print(
+                                          '#########################################');
+                                      print(MachineData);
+                                    },
+                                    networkConfig: NetworkConfig(
+                                      url:
+                                          'http://srv515471.hstgr.cloud:8080/Maintenance/MachineDetailById',
+                                      method: RequestMethod.get,
+                                      headers: {
+                                        'Content-Type': 'application/json',
+                                      },
+                                    ),
+                                    fieldBackgroundColor:
+                                        Color.fromARGB(255, 187, 241, 185),
+                                    chipConfig: const ChipConfig(
+                                        backgroundColor: Colors.amber,
+                                        labelColor: Colors.black,
+                                        wrapType: WrapType.wrap),
+                                    responseParser: (response) {
+                                      final list =
+                                          (response as List<dynamic>).map((e) {
+                                        final item = e as Map<String, dynamic>;
+                                        return ValueItem(
+                                          label: item['MachineName'],
+                                          value: item['MachineId'].toString(),
+                                        );
+                                      }).toList();
+
+                                      return Future.value(list);
+                                    },
+                                    responseErrorBuilder: (context, body) {
+                                      return const Padding(
+                                        padding: EdgeInsets.all(16.0),
+                                        child: Text('Error fetching the data'),
+                                      );
+                                    },
+                                  ),
                                 ),
 
-                                const SizedBox(
-                                  height: 15,
-                                ),
-                                Text(
-                                  "Machine Model Number",
-                                  style: AppStyles.textfieldCaptionTextStyle,
-                                ),
-                                SizedBox(
-                                  height: 5,
-                                ),
-                                TextFormField(
-                                  controller: machineModelNumberController,
-                                  keyboardType: TextInputType.text,
-                                  textInputAction: TextInputAction.next,
-                                  decoration: AppStyles.textFieldInputDecoration
-                                      .copyWith(
-                                    hintText:
-                                        "Please Enter Machine Model Number",
-                                    fillColor: Color.fromARGB(
-                                            255, 187, 241, 185)
-                                        .withOpacity(0.5), // Your desired color
-                                    filled: true,
-                                  ),
-                                  style: AppStyles.textInputTextStyle,
-                                  readOnly: true,
-                                  validator: MultiValidator(
-                                    [
-                                      RequiredValidator(
-                                        errorText:
-                                            "Please Enter Machine Model Number",
-                                      ),
-                                    ],
-                                  ),
-                                ),
+                                // DropdownButtonFormField<String>(
+                                //   decoration: AppStyles.textFieldInputDecoration
+                                //       .copyWith(
+                                //           hintText:
+                                //               "Please Select Machine Name",
+                                //           fillColor:
+                                //               Color.fromARGB(255, 187, 241, 185)
+                                //                   .withOpacity(0.5),
+                                //           counterText: '',
+                                //           contentPadding: EdgeInsets.all(10)),
+                                //   borderRadius: BorderRadius.circular(20),
+                                //   items: machineList
+                                //       .map((label) => DropdownMenuItem(
+                                //             child: Text(label['MachineName'],
+                                //                 style: AppStyles
+                                //                     .textInputTextStyle),
+                                //             value:
+                                //                 label['MachineId'].toString(),
+                                //           ))
+                                //       .toList(),
+                                //   onChanged: (val) {
+                                //     setState(() {
+                                //       machineNameController = val!;
+                                //     });
+                                //     getMachineModelNumber(val!);
+                                //   },
+                                //   value: machineNameController != ''
+                                //       ? machineNameController
+                                //       : null,
+                                //   validator: (value) {
+                                //     if (value == null || value.isEmpty) {
+                                //       return 'Please Select Machine Name';
+                                //     }
+                                //     return null;
+                                //   },
+                                // ),
+
+                                // const SizedBox(
+                                //   height: 15,
+                                // ),
+                                // Text(
+                                //   "Machine Model Number",
+                                //   style: AppStyles.textfieldCaptionTextStyle,
+                                // ),
+                                // SizedBox(
+                                //   height: 5,
+                                // ),
+                                // TextFormField(
+                                //   controller: machineModelNumberController,
+                                //   keyboardType: TextInputType.text,
+                                //   textInputAction: TextInputAction.next,
+                                //   decoration: AppStyles.textFieldInputDecoration
+                                //       .copyWith(
+                                //     hintText:
+                                //         "Please Enter Machine Model Number",
+                                //     fillColor: Color.fromARGB(
+                                //             255, 187, 241, 185)
+                                //         .withOpacity(0.5), // Your desired color
+                                //     filled: true,
+                                //   ),
+                                //   style: AppStyles.textInputTextStyle,
+                                //   readOnly: true,
+                                //   validator: MultiValidator(
+                                //     [
+                                //       RequiredValidator(
+                                //         errorText:
+                                //             "Please Enter Machine Model Number",
+                                //       ),
+                                //     ],
+                                //   ),
+                                // ),
 
                                 const SizedBox(
                                   height: 15,
@@ -725,13 +788,13 @@ class _addSparePartState extends State<addSparePart> {
                                   style: AppStyles.textInputTextStyle,
                                   maxLines: 1,
                                   readOnly: true,
-                                  validator: (value) {
-                                    if (value!.isEmpty) {
-                                      return "Please Select Image";
-                                    } else {
-                                      return null;
-                                    }
-                                  },
+                                  // validator: (value) {
+                                  //   if (value!.isEmpty) {
+                                  //     return "Please Select Image";
+                                  //   } else {
+                                  //     return null;
+                                  //   }
+                                  // },
                                 ),
                                 const SizedBox(
                                   height: 15,
@@ -766,13 +829,13 @@ class _addSparePartState extends State<addSparePart> {
                                   style: AppStyles.textInputTextStyle,
                                   maxLines: 1,
                                   readOnly: true,
-                                  validator: (value) {
-                                    if (value!.isEmpty) {
-                                      return "Please Select Drawing Pdf";
-                                    } else {
-                                      return null;
-                                    }
-                                  },
+                                  // validator: (value) {
+                                  //   if (value!.isEmpty) {
+                                  //     return "Please Select Drawing Pdf";
+                                  //   } else {
+                                  //     return null;
+                                  //   }
+                                  // },
                                 ),
 
                                 const SizedBox(
