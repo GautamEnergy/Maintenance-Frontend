@@ -290,7 +290,7 @@ class _addSparePartState extends State<addSparePart> {
 
   Future createData() async {
     var data = {
-      "SparePartType": _selectedValue,
+      "MasterSparePartName": masterSparePartNameController.text,
       "SparePartName": sparePartNameController.text,
       "Specification": specificationController.text,
       "SpareNumber": sparePartNumberController.text,
@@ -348,6 +348,14 @@ class _addSparePartState extends State<addSparePart> {
               (Route<dynamic> route) => false);
         }
       }
+    } else if (response.statusCode == 409) {
+      setState(() {
+        _isLoading = false;
+      });
+      Toast.show('This spare part model number is already exist.',
+          duration: Toast.lengthLong,
+          gravity: Toast.center,
+          backgroundColor: AppColors.redColor);
     } else {
       setState(() {
         _isLoading = false;
@@ -461,27 +469,50 @@ class _addSparePartState extends State<addSparePart> {
                                 ),
 
                                 Text(
-                                  "Spare Part Type",
+                                  "Master Spare Part Name",
                                   style: AppStyles.textfieldCaptionTextStyle,
                                 ),
                                 SizedBox(
                                   height: 5,
                                 ),
-                                ListTile(
-                                  title: const Text('Spare Part Name'),
-                                  leading: Radio<String>(
-                                    value: "Spare Part Name",
-                                    groupValue: _selectedValue,
-                                    onChanged: _handleRadioValueChange,
-                                  ),
-                                ),
+                                // ListTile(
+                                //   title: const Text('Spare Part Name'),
+                                //   leading: Radio<String>(
+                                //     value: "Spare Part Name",
+                                //     groupValue: _selectedValue,
+                                //     onChanged: _handleRadioValueChange,
+                                //   ),
+                                // ),
 
-                                ListTile(
-                                  title: const Text('Master Spare Part Name'),
-                                  leading: Radio<String>(
-                                    value: "Master Spare Part Name",
-                                    groupValue: _selectedValue,
-                                    onChanged: _handleRadioValueChange,
+                                // ListTile(
+                                //   title: const Text('Master Spare Part Name'),
+                                //   leading: Radio<String>(
+                                //     value: "Master Spare Part Name",
+                                //     groupValue: _selectedValue,
+                                //     onChanged: _handleRadioValueChange,
+                                //   ),
+                                // ),
+                                TextFormField(
+                                  controller: masterSparePartNameController,
+                                  keyboardType: TextInputType.text,
+                                  textInputAction: TextInputAction.next,
+                                  decoration: AppStyles.textFieldInputDecoration
+                                      .copyWith(
+                                    hintText:
+                                        "Please Enter Master Spare Part Name",
+                                    fillColor: Color.fromARGB(
+                                            255, 187, 241, 185)
+                                        .withOpacity(0.5), // Your desired color
+                                    filled: true,
+                                  ),
+                                  style: AppStyles.textInputTextStyle,
+                                  validator: MultiValidator(
+                                    [
+                                      RequiredValidator(
+                                        errorText:
+                                            "Please Enter Master Spare Part Name",
+                                      ),
+                                    ],
                                   ),
                                 ),
 
@@ -490,9 +521,7 @@ class _addSparePartState extends State<addSparePart> {
                                 ),
 
                                 Text(
-                                  _selectedValue == "Spare Part Name"
-                                      ? "Spare Part Name"
-                                      : "Master Spare Part Name",
+                                  "Spare Part Name",
                                   style: AppStyles.textfieldCaptionTextStyle,
                                 ),
                                 SizedBox(
@@ -504,10 +533,7 @@ class _addSparePartState extends State<addSparePart> {
                                   textInputAction: TextInputAction.next,
                                   decoration: AppStyles.textFieldInputDecoration
                                       .copyWith(
-                                    hintText: _selectedValue ==
-                                            "Spare Part Name"
-                                        ? "Please Enter Spare Part Name"
-                                        : "Please Enter Master Spare Part Name",
+                                    hintText: "Please Enter Spare Part Name",
                                     fillColor: Color.fromARGB(
                                             255, 187, 241, 185)
                                         .withOpacity(0.5), // Your desired color
@@ -517,10 +543,8 @@ class _addSparePartState extends State<addSparePart> {
                                   validator: MultiValidator(
                                     [
                                       RequiredValidator(
-                                        errorText: _selectedValue ==
-                                                "Spare Part Name"
-                                            ? "Please Enter Spare Part Name"
-                                            : "Please Enter Master Spare Part Name",
+                                        errorText:
+                                            "Please Enter Spare Part Name",
                                       ),
                                     ],
                                   ),
@@ -640,7 +664,7 @@ class _addSparePartState extends State<addSparePart> {
                                 Container(
                                   child: MultiSelectDropDown.network(
                                     onOptionSelected: (options) {
-                                      List<String> MachineData = [];
+                                      MachineData = [];
                                       options.forEach((element) {
                                         MachineData.add(element.value!);
                                       });
@@ -856,7 +880,17 @@ class _addSparePartState extends State<addSparePart> {
                                         .validate()) {
                                       _registerFormKey.currentState!.save();
                                       print("bhanuuuuuu");
-                                      createData();
+                                      print(MachineData);
+                                      if (MachineData.isEmpty) {
+                                        Toast.show(
+                                            "Please Select Machine Name.",
+                                            duration: Toast.lengthLong,
+                                            gravity: Toast.center,
+                                            backgroundColor:
+                                                AppColors.redColor);
+                                      } else {
+                                        createData();
+                                      }
                                     }
                                   },
                                   label: "Save",

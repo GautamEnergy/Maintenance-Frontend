@@ -7,7 +7,7 @@ import 'package:Maintenance/constant/app_color.dart';
 import 'package:Maintenance/constant/app_fonts.dart';
 import 'package:Maintenance/constant/app_styles.dart';
 import 'package:Maintenance/directory.dart';
-import 'package:Maintenance/spare.dart';
+import 'package:Maintenance/SparePartIn.dart';
 
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -193,7 +193,7 @@ class _WelcomePageState extends State<WelcomePage>
                           'Spare Parts In', AppAssets.imgWelcome, () {
                     Navigator.of(context).pushAndRemoveUntil(
                         MaterialPageRoute(
-                            builder: (BuildContext context) => spare()),
+                            builder: (BuildContext context) => SparePartIn()),
                         (Route<dynamic> route) => false);
                   })),
                   const SizedBox(

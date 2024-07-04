@@ -7,7 +7,7 @@ import 'package:Maintenance/constant/app_color.dart';
 import 'package:Maintenance/constant/app_fonts.dart';
 import 'package:Maintenance/constant/app_styles.dart';
 import 'package:Maintenance/directory.dart';
-import 'package:Maintenance/spare.dart';
+import 'package:Maintenance/SparePartIn.dart';
 
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -140,10 +140,10 @@ class _PublicDrawerState extends State<PublicDrawer> {
                 Expanded(
                     child: inSpareParts('Spare Parts In', AppAssets.imgWelcome,
                         () {
-                  Navigator.of(context).pushAndRemoveUntil(
-                      MaterialPageRoute(
-                          builder: (BuildContext context) => spare()),
-                      (Route<dynamic> route) => false);
+                  // Navigator.of(context).pushAndRemoveUntil(
+                  //     MaterialPageRoute(
+                  //         builder: (BuildContext context) => SparePartIn()),
+                  //     (Route<dynamic> route) => false);
                 })),
                 const SizedBox(
                   width: 10,
@@ -295,7 +295,7 @@ class _PublicDrawerState extends State<PublicDrawer> {
             Container(
               alignment: Alignment.center,
               child: const Text(
-                ('DEV'),
+                ('PROD'),
                 textAlign: TextAlign.center,
                 style: TextStyle(fontSize: 14, fontWeight: FontWeight.normal),
               ),
@@ -303,7 +303,7 @@ class _PublicDrawerState extends State<PublicDrawer> {
             Container(
                 alignment: Alignment.center,
                 child: const Text(
-                  ('V1.0.20240516.1351'),
+                  ('V1.0.20240702.1345'),
                   textAlign: TextAlign.center,
                   style: TextStyle(fontSize: 14, fontWeight: FontWeight.normal),
                 )),

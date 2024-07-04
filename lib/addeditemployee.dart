@@ -326,7 +326,7 @@ class _ScoreDetailsState extends State<AddEditProfile> {
     final prefs = await SharedPreferences.getInstance();
     site = prefs.getString('site');
 
-    final url = (site! + 'Maintenance//GetDepartmentList');
+    final url = (site! + 'QCM//GetDepartmentList');
 
     http.get(
       Uri.parse(url),
@@ -347,7 +347,7 @@ class _ScoreDetailsState extends State<AddEditProfile> {
     final prefs = await SharedPreferences.getInstance();
     site = prefs.getString('site');
 
-    final url = (site! + 'Maintenance/GetDesignationList');
+    final url = (site! + 'QCM/GetDesignationList');
 
     http.get(
       Uri.parse(url),
@@ -369,7 +369,7 @@ class _ScoreDetailsState extends State<AddEditProfile> {
     final prefs = await SharedPreferences.getInstance();
     site = prefs.getString('site');
 
-    final url = (site! + 'Maintenance/GetWorkLocationList');
+    final url = (site! + 'QCM/GetWorkLocationList');
 
     http.get(
       Uri.parse(url),

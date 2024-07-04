@@ -146,6 +146,24 @@ class _addMachineState extends State<addMachine> {
             MaterialPageRoute(builder: (BuildContext context) => WelcomePage()),
             (Route<dynamic> route) => false);
       }
+    } else if (response.statusCode == 409) {
+      var objData = json.decode(response.body);
+      setState(() {
+        _isLoading = false;
+      });
+      print("response");
+      print(objData['msg'] == 'Duplicate Machine Model Number');
+      if (objData['msg'] == 'Duplicate Machine Model Number') {
+        Toast.show('This Model Number is already exist.',
+            duration: Toast.lengthLong,
+            gravity: Toast.center,
+            backgroundColor: AppColors.redColor);
+      } else {
+        Toast.show('This Machine is already exist.',
+            duration: Toast.lengthLong,
+            gravity: Toast.center,
+            backgroundColor: AppColors.redColor);
+      }
     } else {
       setState(() {
         _isLoading = false;
@@ -326,7 +344,7 @@ class _addMachineState extends State<addMachine> {
                                   height: 15,
                                 ),
                                 Text(
-                                  "Machine Number",
+                                  "Machine Serial Number",
                                   style: AppStyles.textfieldCaptionTextStyle,
                                 ),
                                 SizedBox(
@@ -338,7 +356,8 @@ class _addMachineState extends State<addMachine> {
                                   textInputAction: TextInputAction.next,
                                   decoration: AppStyles.textFieldInputDecoration
                                       .copyWith(
-                                    hintText: "Please Enter Machine Number",
+                                    hintText:
+                                        "Please Enter Machine Serial Number",
                                     fillColor: Color.fromARGB(
                                             255, 242, 190, 247)
                                         .withOpacity(0.5), // Your desired color
@@ -349,7 +368,7 @@ class _addMachineState extends State<addMachine> {
                                     [
                                       RequiredValidator(
                                         errorText:
-                                            "Please Enter Machine Number",
+                                            "Please Enter Machine Serial Number",
                                       ),
                                     ],
                                   ),

@@ -63,6 +63,7 @@ class _LoginPageState extends State<LoginPage> {
     var params = {
       "loginid": loginid,
       "password": password,
+      "department": "Machine Maintenance"
     };
 
     var response = await http.post(
@@ -94,6 +95,14 @@ class _LoginPageState extends State<LoginPage> {
             gravity: Toast.center,
             backgroundColor: Colors.red);
       }
+    } else if (response.statusCode == 401) {
+      setState(() {
+        _isLoading = false;
+      });
+      Toast.show("Login id is not registered.",
+          duration: Toast.lengthLong,
+          gravity: Toast.center,
+          backgroundColor: Colors.red);
     } else if (response.statusCode == 200) {
       var objData = json.decode(response.body);
       setState(() {

@@ -320,6 +320,14 @@ class _addPartyState extends State<addParty> {
             MaterialPageRoute(builder: (BuildContext context) => WelcomePage()),
             (Route<dynamic> route) => false);
       }
+    } else if (response.statusCode == 409) {
+      setState(() {
+        _isLoading = false;
+      });
+      Toast.show('This party is already exist.',
+          duration: Toast.lengthLong,
+          gravity: Toast.center,
+          backgroundColor: AppColors.redColor);
     } else {
       setState(() {
         _isLoading = false;
@@ -328,93 +336,6 @@ class _addPartyState extends State<addParty> {
           duration: Toast.lengthLong, gravity: Toast.center);
     }
   }
-
-  // uploadPDF(List<int> referenceBytes) async {
-  //   setState(() {
-  //     _isLoading = true;
-  //   });
-  //   final prefs = await SharedPreferences.getInstance();
-  //   site = prefs.getString('site')!;
-
-  //   var currentdate = DateTime.now().microsecondsSinceEpoch;
-  //   var formData = FormData.fromMap({
-  //     "JobCardDetailId": jobCarId,
-  //     "SolderingPdf": MultipartFile.fromBytes(
-  //       referenceBytes,
-  //       filename:
-  //           (referencePdfController.text + (currentdate.toString()) + '.pdf'),
-  //       contentType: MediaType("application", 'pdf'),
-  //     ),
-  //   });
-
-  //   _response =
-  //       await _dio.post((site! + 'IPQC/UploadSolderingPeelTestPdf'), // Prod
-
-  //           options: Options(
-  //             contentType: 'multipart/form-data',
-  //             followRedirects: false,
-  //             validateStatus: (status) => true,
-  //           ),
-  //           data: formData);
-
-  //   try {
-  //     if (_response?.statusCode == 200) {
-  //       setState(() {
-  //         _isLoading = false;
-  //       });
-
-  //       Toast.show("Busbar Test Completed.",
-  //           duration: Toast.lengthLong,
-  //           gravity: Toast.center,
-  //           backgroundColor: AppColors.blueColor);
-  //       Navigator.of(context).pushReplacement(MaterialPageRoute(
-  //           builder: (BuildContext context) => IpqcTestList()));
-  //     } else {
-  //       Toast.show("Error In Server",
-  //           duration: Toast.lengthLong, gravity: Toast.center);
-  //     }
-  //   } catch (err) {
-  //     print("Error");
-  //   }
-  // }
-
-  // Widget _getFAB() {
-  //   return Padding(
-  //     padding: const EdgeInsets.only(bottom: 70),
-  //     child: FloatingActionButton(
-  //       onPressed: () {
-  //         Sample1Controllers = [];
-
-  //         for (int i = 0; i < numberOfStringers; i++) {
-  //           Sample1Controllers.add(
-  //               {"sampleAControllers${i + 1}": sampleAControllers[i].text});
-  //         }
-
-  //         Sample2Controllers = [];
-
-  //         for (int i = 0; i < numberOfStringers; i++) {
-  //           Sample2Controllers.add(
-  //               {"sampleBControllers${i + 1}": sampleBControllers[i].text});
-  //         }
-  //         if (status != 'Pending') {
-  //           setState(() {
-  //             sendStatus = 'Inprogress';
-  //           });
-  //           createData();
-  //         }
-  //       },
-  //       child: ClipOval(
-  //         child: Image.asset(
-  //           AppAssets.save,
-  //           height: 70,
-  //           width: 60,
-  //         ),
-  //       ),
-  //     ),
-  //   );
-  // }
-
-// ***************** Done Send the Data *******************************
 
   @override
   Widget build(BuildContext context) {
