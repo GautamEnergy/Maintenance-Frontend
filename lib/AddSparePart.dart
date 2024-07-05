@@ -50,6 +50,8 @@ class _addSparePartState extends State<addSparePart> {
   TextEditingController sparePartNumberController = TextEditingController();
   TextEditingController brandNameController = TextEditingController();
   TextEditingController specificationController = TextEditingController();
+  TextEditingController cycleTimeController = TextEditingController();
+  TextEditingController pCSInOneTimeController = TextEditingController();
   TextEditingController machineModelNumberController = TextEditingController();
   final MultiSelectController _controller = MultiSelectController();
   TextEditingController drawingPdfController = new TextEditingController();
@@ -81,6 +83,7 @@ class _addSparePartState extends State<addSparePart> {
   List<ValueItem> options = [];
   late String sendStatus;
   List<int>? imageBytes, drawingPdfFileBytes;
+  List<Map<String, dynamic>> filesData = [];
   String status = '',
       jobCarId = '',
       machineNameController = "",
@@ -131,13 +134,33 @@ class _addSparePartState extends State<addSparePart> {
   Future<void> _pickImage() async {
     FilePickerResult? result = await FilePicker.platform.pickFiles(
       type: FileType.image,
+      allowMultiple: true,
     );
 
     if (result != null) {
-      File pdffile = File(result.files.single.path!);
+      // Create a list to hold file properties
+
+      // Iterate over each selected file
+      for (var file in result.files) {
+        File imageFile = File(file.path!);
+
+        // Add file properties to the list
+        filesData.add({
+          'bytes': imageFile.readAsBytesSync(),
+          'filename': file.name,
+        });
+        setState(() {
+          imageController.text = file.name;
+        });
+      }
+
+      print(filesData);
+
+      // Update state if necessary
       setState(() {
-        imageBytes = pdffile.readAsBytesSync();
-        imageController.text = result.files.single.name;
+        // Use filesData to update the UI or perform further operations
+        // For example:
+        // selectedFiles = filesData;
       });
     } else {
       // User canceled the file picker
@@ -232,7 +255,8 @@ class _addSparePartState extends State<addSparePart> {
   //   }
   // }
 
-  uploadPDF(List<int> imageBytes, List<int> drawingPdfBytes) async {
+  uploadPDF(List<Map<String, dynamic>> files, List<int> drawingPdfBytes) async {
+    print("Upload....");
     setState(() {
       _isLoading = true;
     });
@@ -240,13 +264,17 @@ class _addSparePartState extends State<addSparePart> {
     site = prefs.getString('site')!;
 
     var currentdate = DateTime.now().microsecondsSinceEpoch;
+    List<MultipartFile> sparePartImages = files.map((file) {
+      return MultipartFile.fromBytes(
+        file['bytes'],
+        filename: file['filename'] + (currentdate.toString()) + '.png',
+        contentType: MediaType("application", 'png'),
+      );
+    }).toList();
+
     var formData = FormData.fromMap({
       "SparePartId": SparePartId,
-      "SparePartImage": MultipartFile.fromBytes(
-        imageBytes,
-        filename: (imageController.text + (currentdate.toString()) + '.png'),
-        contentType: MediaType("application", 'png'),
-      ),
+      "SparePartImage": sparePartImages,
       "DrawingImage": MultipartFile.fromBytes(
         drawingPdfBytes,
         filename:
@@ -255,16 +283,16 @@ class _addSparePartState extends State<addSparePart> {
       ),
     });
 
-    _response = await _dio.post((site! + 'Maintenance/SparePartsImage'), // Prod
-
-        options: Options(
-          contentType: 'multipart/form-data',
-          followRedirects: false,
-          validateStatus: (status) => true,
-        ),
-        data: formData);
-
     try {
+      _response =
+          await _dio.post((site! + 'Maintenance/SparePartsImage'), // Prod
+              options: Options(
+                contentType: 'multipart/form-data',
+                followRedirects: false,
+                validateStatus: (status) => true,
+              ),
+              data: formData);
+
       if (_response?.statusCode == 200) {
         setState(() {
           _isLoading = false;
@@ -284,7 +312,12 @@ class _addSparePartState extends State<addSparePart> {
             duration: Toast.lengthLong, gravity: Toast.center);
       }
     } catch (err) {
-      print("Error");
+      setState(() {
+        _isLoading = false;
+      });
+      print("Error: $err");
+      Toast.show("Error occurred",
+          duration: Toast.lengthLong, gravity: Toast.center);
     }
   }
 
@@ -296,6 +329,8 @@ class _addSparePartState extends State<addSparePart> {
       "SpareNumber": sparePartNumberController.text,
       "BrandName": brandNameController.text,
       "MachineName": MachineData ?? [],
+      "CycleTime": cycleTimeController.text,
+      "PCSInOneTime": pCSInOneTimeController.text,
       //  "MachineModelNumber": machineModelNumberController.text,
       "Status": "Active",
       "CurrentUser": personid
@@ -334,9 +369,9 @@ class _addSparePartState extends State<addSparePart> {
           SparePartId = objData['SparePartId'];
         });
 
-        if ((imageBytes != null && imageBytes != "") ||
+        if ((filesData != null && filesData != "") ||
             (drawingPdfFileBytes != null && drawingPdfFileBytes != "")) {
-          uploadPDF((imageBytes ?? []), (drawingPdfFileBytes ?? []));
+          uploadPDF((filesData ?? []), (drawingPdfFileBytes ?? []));
         } else {
           Toast.show("Spare Part Added Successfully.",
               duration: Toast.lengthLong,
@@ -668,9 +703,6 @@ class _addSparePartState extends State<addSparePart> {
                                       options.forEach((element) {
                                         MachineData.add(element.value!);
                                       });
-                                      print(
-                                          '#########################################');
-                                      print(MachineData);
                                     },
                                     networkConfig: NetworkConfig(
                                       url:
@@ -707,77 +739,73 @@ class _addSparePartState extends State<addSparePart> {
                                   ),
                                 ),
 
-                                // DropdownButtonFormField<String>(
-                                //   decoration: AppStyles.textFieldInputDecoration
-                                //       .copyWith(
-                                //           hintText:
-                                //               "Please Select Machine Name",
-                                //           fillColor:
-                                //               Color.fromARGB(255, 187, 241, 185)
-                                //                   .withOpacity(0.5),
-                                //           counterText: '',
-                                //           contentPadding: EdgeInsets.all(10)),
-                                //   borderRadius: BorderRadius.circular(20),
-                                //   items: machineList
-                                //       .map((label) => DropdownMenuItem(
-                                //             child: Text(label['MachineName'],
-                                //                 style: AppStyles
-                                //                     .textInputTextStyle),
-                                //             value:
-                                //                 label['MachineId'].toString(),
-                                //           ))
-                                //       .toList(),
-                                //   onChanged: (val) {
-                                //     setState(() {
-                                //       machineNameController = val!;
-                                //     });
-                                //     getMachineModelNumber(val!);
-                                //   },
-                                //   value: machineNameController != ''
-                                //       ? machineNameController
-                                //       : null,
-                                //   validator: (value) {
-                                //     if (value == null || value.isEmpty) {
-                                //       return 'Please Select Machine Name';
-                                //     }
-                                //     return null;
-                                //   },
-                                // ),
+                                const SizedBox(
+                                  height: 15,
+                                ),
 
-                                // const SizedBox(
-                                //   height: 15,
-                                // ),
-                                // Text(
-                                //   "Machine Model Number",
-                                //   style: AppStyles.textfieldCaptionTextStyle,
-                                // ),
-                                // SizedBox(
-                                //   height: 5,
-                                // ),
-                                // TextFormField(
-                                //   controller: machineModelNumberController,
-                                //   keyboardType: TextInputType.text,
-                                //   textInputAction: TextInputAction.next,
-                                //   decoration: AppStyles.textFieldInputDecoration
-                                //       .copyWith(
-                                //     hintText:
-                                //         "Please Enter Machine Model Number",
-                                //     fillColor: Color.fromARGB(
-                                //             255, 187, 241, 185)
-                                //         .withOpacity(0.5), // Your desired color
-                                //     filled: true,
-                                //   ),
-                                //   style: AppStyles.textInputTextStyle,
-                                //   readOnly: true,
-                                //   validator: MultiValidator(
-                                //     [
-                                //       RequiredValidator(
-                                //         errorText:
-                                //             "Please Enter Machine Model Number",
-                                //       ),
-                                //     ],
-                                //   ),
-                                // ),
+                                Text(
+                                  "No. Of PCS Uses In One Time",
+                                  style: AppStyles.textfieldCaptionTextStyle,
+                                ),
+                                SizedBox(
+                                  height: 5,
+                                ),
+                                TextFormField(
+                                  controller: pCSInOneTimeController,
+                                  keyboardType: TextInputType.number,
+                                  textInputAction: TextInputAction.next,
+                                  decoration: AppStyles.textFieldInputDecoration
+                                      .copyWith(
+                                    hintText:
+                                        "Please Enter No. Of PCS Uses In One Time",
+                                    fillColor: Color.fromARGB(
+                                            255, 187, 241, 185)
+                                        .withOpacity(0.5), // Your desired color
+                                    filled: true,
+                                  ),
+                                  style: AppStyles.textInputTextStyle,
+                                  validator: MultiValidator(
+                                    [
+                                      RequiredValidator(
+                                        errorText:
+                                            "Please Enter No. Of PCS Uses In One Time",
+                                      ),
+                                    ],
+                                  ),
+                                ),
+
+                                const SizedBox(
+                                  height: 15,
+                                ),
+
+                                Text(
+                                  "Cycle Time In Days",
+                                  style: AppStyles.textfieldCaptionTextStyle,
+                                ),
+                                SizedBox(
+                                  height: 5,
+                                ),
+                                TextFormField(
+                                  controller: cycleTimeController,
+                                  keyboardType: TextInputType.number,
+                                  textInputAction: TextInputAction.next,
+                                  decoration: AppStyles.textFieldInputDecoration
+                                      .copyWith(
+                                    hintText: "Please Enter Cycle Time",
+                                    fillColor: Color.fromARGB(
+                                            255, 187, 241, 185)
+                                        .withOpacity(0.5), // Your desired color
+                                    filled: true,
+                                  ),
+                                  style: AppStyles.textInputTextStyle,
+                                  validator: MultiValidator(
+                                    [
+                                      RequiredValidator(
+                                        errorText: "Please Enter Cycle Time",
+                                      ),
+                                    ],
+                                  ),
+                                ),
 
                                 const SizedBox(
                                   height: 15,
