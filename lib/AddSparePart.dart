@@ -915,7 +915,13 @@ class _addSparePartState extends State<addSparePart> {
                                 if (_items.length > 0)
                                   MultiSelectDialogField(
                                     items: _items,
-                                    title: Text("Spare Parts"),
+                                    title: const Text(
+                                      "Equivalent Spare Parts",
+                                      style: TextStyle(
+                                        fontWeight: FontWeight
+                                            .bold, // Making the text bold
+                                      ),
+                                    ),
                                     selectedColor: Colors.blue,
                                     decoration: BoxDecoration(
                                       color: Colors.blue.withOpacity(0.1),
@@ -926,12 +932,12 @@ class _addSparePartState extends State<addSparePart> {
                                         width: 2,
                                       ),
                                     ),
-                                    buttonIcon: Icon(
+                                    buttonIcon: const Icon(
                                       Icons.arrow_drop_down,
                                       color: Colors.blue,
                                     ),
                                     buttonText: Text(
-                                      "Select Spare Parts",
+                                      "Select Equivalent Spare Parts",
                                       style: TextStyle(
                                         color: Colors.blue[800],
                                         fontSize: 16,
@@ -941,71 +947,6 @@ class _addSparePartState extends State<addSparePart> {
                                       _selectedItems = results;
                                     },
                                   ),
-
-                                // if (MachineData != [])
-                                //   Container(
-                                //     child: MultiSelectDropDown.network(
-                                //       onOptionSelected: (options) {
-                                //         EquiSpareData = [];
-                                //         options.forEach((element) {
-                                //           EquiSpareData.add(element.value!);
-                                //         });
-                                //       },
-                                //       networkConfig: NetworkConfig(
-                                //         url:
-                                //             'http://srv515471.hstgr.cloud:8080/Maintenance/Equ',
-                                //         method: RequestMethod
-                                //             .post, // Change to POST method
-                                //         headers: {
-                                //           'Content-Type': 'application/json',
-                                //         },
-                                //         body: {
-                                //           "SparePartName": "Solar Panel",
-                                //           "MachineName": [
-                                //             "039b2111-93db-4615-be4e-286d6495d703",
-                                //             "9427a4f4-4c2d-40c3-94cd-ffe519392749"
-                                //           ]
-                                //           // Add your parameters here
-                                //         },
-                                //       ),
-                                //       fieldBackgroundColor: Color.fromARGB(
-                                //           239,
-                                //           223,
-                                //           216,
-                                //           209), // Background color for the dropdown field
-                                //       chipConfig: const ChipConfig(
-                                //         backgroundColor:
-                                //             Color.fromARGB(255, 66, 253, 113),
-                                //         labelColor: Colors.black,
-                                //         wrapType: WrapType.wrap,
-                                //       ),
-                                //       responseParser: (response) {
-                                //         final list = (response as List<dynamic>)
-                                //             .map((e) {
-                                //           final item =
-                                //               e as Map<String, dynamic>;
-                                //           return ValueItem(
-                                //             label: item['Value'],
-                                //             value:
-                                //                 item['SparePartId'].toString(),
-                                //           );
-                                //         }).toList();
-
-                                //         return Future.value(list);
-                                //       },
-                                //       responseErrorBuilder: (context, body) {
-                                //         return const Padding(
-                                //           padding: EdgeInsets.all(16.0),
-                                //           child: Text(
-                                //             'Error fetching the data',
-                                //             style: TextStyle(
-                                //                 color: Colors
-                                //                     .red), // Error text color
-                                //           ),
-                                //         );
-                                //       },
-                                //     ),
-                                //   ),
 
                                 const SizedBox(
                                   height: 25,
