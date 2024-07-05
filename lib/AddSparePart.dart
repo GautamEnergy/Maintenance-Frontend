@@ -19,6 +19,7 @@ import 'package:Maintenance/constant/app_color.dart';
 import 'package:Maintenance/constant/app_fonts.dart';
 import 'package:Maintenance/constant/app_helper.dart';
 import 'package:Maintenance/constant/app_styles.dart';
+import 'package:multi_select_flutter/multi_select_flutter.dart';
 
 import 'package:dio/dio.dart';
 import 'package:file_picker/file_picker.dart';
@@ -67,7 +68,7 @@ class _addSparePartState extends State<addSparePart> {
   String invoiceDate = '';
   String date = '';
   String dateOfQualityCheck = '';
-  bool? isCycleTimeTrue;
+
   bool? isBacksheetCuttingTrue;
   List<int>? referencePdfFileBytes;
   String selectedmachine = "";
@@ -77,6 +78,7 @@ class _addSparePartState extends State<addSparePart> {
   String selectedbrand = "";
   String _selectedValue = "Spare Part Name";
   List MachineData = [];
+  List EquiSpareData = [];
   List sampleAInputtext = [];
   List sampleBInputText = [];
   List machineList = [];
@@ -95,22 +97,17 @@ class _addSparePartState extends State<addSparePart> {
   final _dio = Dio();
   List data = [];
 
-  Response.Response? _response;
+  List<Map<String, String>> spareParts = [];
+  List<MultiSelectItem<String>> _items = [];
+  List<String> _selectedItems = [];
 
-  void addControllers(int count) {
-    for (int i = 0; i < count; i++) {
-      sampleAControllers.add(TextEditingController());
-      sampleBControllers.add(TextEditingController());
-    }
-  }
+  Response.Response? _response;
 
   @override
   void initState() {
     super.initState();
     store();
-    isCycleTimeTrue = true; // Set initial value
   }
-  // *******  Send the Data where will be Used to Backend *******
 
   void store() async {
     final prefs = await SharedPreferences.getInstance();
@@ -122,7 +119,6 @@ class _addSparePartState extends State<addSparePart> {
       department = prefs.getString('department')!;
       token = prefs.getString('token')!;
     });
-    getMachineListData();
   }
 
   void _handleRadioValueChange(value) {
@@ -210,15 +206,20 @@ class _addSparePartState extends State<addSparePart> {
     });
   }
 
-  getMachineListData() async {
+  // [{MachineId: 039b2111-93db-4615-be4e-286d6495d703, MachineName: Gautam1225345654675867}, {MachineId: 143cd0ea-fa88-4164-9a04-eb1cf1b8d782, MachineName: gear5}, {MachineId: 154f0b1f-2013-42dc-9ba4-b1c9d5a32b10, MachineName: gearj}];
+
+  getEquiSparePartData() async {
     final prefs = await SharedPreferences.getInstance();
     site = prefs.getString('site')!;
 
-    final url = (site! + 'Maintenance/MachineDetailById');
+    final url = (site! + 'Maintenance/Equ');
 
-    http.get(
+    http.post(
       Uri.parse(url),
-      // body: json.encode({"MachineId": ""}),
+      body: json.encode({
+        "SparePartName": sparePartNameController.text,
+        "MachineName": MachineData ?? []
+      }),
       headers: {
         'Content-Type': 'application/json; charset=UTF-8',
       },
@@ -227,13 +228,15 @@ class _addSparePartState extends State<addSparePart> {
         var machineBody = jsonDecode(response.body);
         setState(() {
           machineList = machineBody;
-          // options = machineList
-          //     .map((item) => ValueItem(
-          //         label: item['MachineName']!, value: item['MachineId']!))
-          //     .toList();
         });
+        _items = machineList
+            .map((part) =>
+                MultiSelectItem<String>(part["SparePartId"]!, part["Value"]!))
+            .toList();
         print("machine list data");
         print(machineList);
+        print(_items);
+        print("KKKKKKKKKKkkkkkk");
       }
     });
   }
@@ -329,8 +332,9 @@ class _addSparePartState extends State<addSparePart> {
       "SpareNumber": sparePartNumberController.text,
       "BrandName": brandNameController.text,
       "MachineName": MachineData ?? [],
+      "Equivalent": _selectedItems ?? [],
       "CycleTime": cycleTimeController.text,
-      "PCSInOneTime": pCSInOneTimeController.text,
+      "NumberOfPcs": pCSInOneTimeController.text,
       //  "MachineModelNumber": machineModelNumberController.text,
       "Status": "Active",
       "CurrentUser": personid
@@ -698,11 +702,13 @@ class _addSparePartState extends State<addSparePart> {
 
                                 Container(
                                   child: MultiSelectDropDown.network(
+                                    searchEnabled: true,
                                     onOptionSelected: (options) {
                                       MachineData = [];
                                       options.forEach((element) {
                                         MachineData.add(element.value!);
                                       });
+                                      getEquiSparePartData();
                                     },
                                     networkConfig: NetworkConfig(
                                       url:
@@ -889,6 +895,117 @@ class _addSparePartState extends State<addSparePart> {
                                   //   }
                                   // },
                                 ),
+                                if (_items.length > 0)
+                                  const SizedBox(
+                                    height: 20,
+                                  ),
+                                if (_items.length > 0)
+                                  const Text(
+                                    "Equivalent Spare Part",
+                                    style: TextStyle(
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.bold,
+                                      color: Color.fromARGB(
+                                          242, 255, 125, 3), // Text color
+                                    ),
+                                  ),
+                                const SizedBox(
+                                  height: 5,
+                                ),
+                                if (_items.length > 0)
+                                  MultiSelectDialogField(
+                                    items: _items,
+                                    title: Text("Spare Parts"),
+                                    selectedColor: Colors.blue,
+                                    decoration: BoxDecoration(
+                                      color: Colors.blue.withOpacity(0.1),
+                                      borderRadius:
+                                          BorderRadius.all(Radius.circular(40)),
+                                      border: Border.all(
+                                        color: Colors.blue,
+                                        width: 2,
+                                      ),
+                                    ),
+                                    buttonIcon: Icon(
+                                      Icons.arrow_drop_down,
+                                      color: Colors.blue,
+                                    ),
+                                    buttonText: Text(
+                                      "Select Spare Parts",
+                                      style: TextStyle(
+                                        color: Colors.blue[800],
+                                        fontSize: 16,
+                                      ),
+                                    ),
+                                    onConfirm: (results) {
+                                      _selectedItems = results;
+                                    },
+                                  ),
+
+                                // if (MachineData != [])
+                                //   Container(
+                                //     child: MultiSelectDropDown.network(
+                                //       onOptionSelected: (options) {
+                                //         EquiSpareData = [];
+                                //         options.forEach((element) {
+                                //           EquiSpareData.add(element.value!);
+                                //         });
+                                //       },
+                                //       networkConfig: NetworkConfig(
+                                //         url:
+                                //             'http://srv515471.hstgr.cloud:8080/Maintenance/Equ',
+                                //         method: RequestMethod
+                                //             .post, // Change to POST method
+                                //         headers: {
+                                //           'Content-Type': 'application/json',
+                                //         },
+                                //         body: {
+                                //           "SparePartName": "Solar Panel",
+                                //           "MachineName": [
+                                //             "039b2111-93db-4615-be4e-286d6495d703",
+                                //             "9427a4f4-4c2d-40c3-94cd-ffe519392749"
+                                //           ]
+                                //           // Add your parameters here
+                                //         },
+                                //       ),
+                                //       fieldBackgroundColor: Color.fromARGB(
+                                //           239,
+                                //           223,
+                                //           216,
+                                //           209), // Background color for the dropdown field
+                                //       chipConfig: const ChipConfig(
+                                //         backgroundColor:
+                                //             Color.fromARGB(255, 66, 253, 113),
+                                //         labelColor: Colors.black,
+                                //         wrapType: WrapType.wrap,
+                                //       ),
+                                //       responseParser: (response) {
+                                //         final list = (response as List<dynamic>)
+                                //             .map((e) {
+                                //           final item =
+                                //               e as Map<String, dynamic>;
+                                //           return ValueItem(
+                                //             label: item['Value'],
+                                //             value:
+                                //                 item['SparePartId'].toString(),
+                                //           );
+                                //         }).toList();
+
+                                //         return Future.value(list);
+                                //       },
+                                //       responseErrorBuilder: (context, body) {
+                                //         return const Padding(
+                                //           padding: EdgeInsets.all(16.0),
+                                //           child: Text(
+                                //             'Error fetching the data',
+                                //             style: TextStyle(
+                                //                 color: Colors
+                                //                     .red), // Error text color
+                                //           ),
+                                //         );
+                                //       },
+                                //     ),
+                                //   ),
 
                                 const SizedBox(
                                   height: 25,
