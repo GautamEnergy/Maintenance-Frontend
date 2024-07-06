@@ -39,7 +39,7 @@ class _addPartyState extends State<addParty> {
 
   TextEditingController partyNameController = TextEditingController();
   TextEditingController addressController = TextEditingController();
-  TextEditingController countryController = TextEditingController();
+  TextEditingController pinCodeController = TextEditingController();
   TextEditingController stateController = TextEditingController();
 
   TextEditingController emailController = TextEditingController();
@@ -57,7 +57,7 @@ class _addPartyState extends State<addParty> {
   String invoiceDate = '';
   String date = '';
   String dateOfQualityCheck = '';
-  bool? isCycleTimeTrue;
+
   bool? isBacksheetCuttingTrue;
   List<int>? referencePdfFileBytes;
   String selectedmachine = "";
@@ -68,8 +68,18 @@ class _addPartyState extends State<addParty> {
 
   List sampleAInputtext = [];
   List sampleBInputText = [];
+  List countryCodeList = [
+    {"label": '+91', "value": '+91'},
+    {"label": '+86', "value": '+86'},
+  ];
+  List countryList = [
+    {"label": 'India', "value": 'India'},
+    {"label": 'China', "value": 'China'},
+  ];
   late String sendStatus;
   String status = '',
+      countryCodeController = '+91',
+      countryController = '',
       jobCarId = '',
       approvalStatus = "Approved",
       designation = '',
@@ -91,7 +101,6 @@ class _addPartyState extends State<addParty> {
   void initState() {
     super.initState();
     store();
-    isCycleTimeTrue = true; // Set initial value
   }
   // *******  Send the Data where will be Used to Backend *******
 
@@ -275,7 +284,9 @@ class _addPartyState extends State<addParty> {
       "GSTNumber": gstNumberController.text,
       "PANNumber": panNumberController.text,
       "Address": addressController.text,
-      "Country": countryController.text,
+      "PinCode": pinCodeController.text,
+      "CountryCode": countryCodeController,
+      "Country": countryController,
       "State": stateController.text,
       "Email": emailController.text,
       "MobileNumber": mobileNumberController.text,
@@ -472,100 +483,99 @@ class _addPartyState extends State<addParty> {
                                 const SizedBox(
                                   height: 15,
                                 ),
+
                                 Text(
-                                  "Address",
+                                  "Mobile Number",
                                   style: AppStyles.textfieldCaptionTextStyle,
                                 ),
                                 SizedBox(
                                   height: 5,
                                 ),
-                                TextFormField(
-                                  controller: addressController,
-                                  keyboardType: TextInputType.text,
-                                  textInputAction: TextInputAction.next,
-                                  decoration: AppStyles.textFieldInputDecoration
-                                      .copyWith(
-                                    hintText: "Please Enter Address",
-                                    fillColor: Color.fromARGB(
-                                            255, 243, 220, 142)
-                                        .withOpacity(0.5), // Your desired color
-                                    filled: true,
-                                  ),
-                                  style: AppStyles.textInputTextStyle,
-                                  validator: MultiValidator(
-                                    [
-                                      RequiredValidator(
-                                        errorText: "Please Enter Address",
+                                Row(
+                                  children: [
+                                    Expanded(
+                                      flex:
+                                          2, // Adjust the flex value to allocate less space to this field
+                                      child: DropdownButtonFormField<String>(
+                                        decoration: AppStyles
+                                            .textFieldInputDecoration
+                                            .copyWith(
+                                          hintText:
+                                              "Please Select Country Code",
+                                          counterText: '',
+                                          fillColor:
+                                              Color.fromARGB(255, 243, 220, 142)
+                                                  .withOpacity(0.5),
+                                          contentPadding: EdgeInsets.all(10),
+                                        ),
+                                        items: countryCodeList
+                                            .map((label) => DropdownMenuItem(
+                                                  child: Text(label['label'],
+                                                      style: AppStyles
+                                                          .textInputTextStyle),
+                                                  value:
+                                                      label['value'].toString(),
+                                                ))
+                                            .toList(),
+                                        onChanged: (val) {
+                                          setState(() {
+                                            countryCodeController = val!;
+                                          });
+                                        },
+                                        value: countryCodeController != ''
+                                            ? countryCodeController
+                                            : null,
+                                        validator: (value) {
+                                          if (value == null || value.isEmpty) {
+                                            return 'Please select a country code';
+                                          }
+                                          return null;
+                                        },
                                       ),
-                                    ],
-                                  ),
-                                ),
-
-                                //***************   Details   ********************
-                                const SizedBox(
-                                  height: 15,
-                                ),
-                                Text(
-                                  "Country",
-                                  style: AppStyles.textfieldCaptionTextStyle,
-                                ),
-                                SizedBox(
-                                  height: 5,
-                                ),
-                                TextFormField(
-                                  controller: countryController,
-                                  keyboardType: TextInputType.text,
-                                  textInputAction: TextInputAction.next,
-                                  decoration: AppStyles.textFieldInputDecoration
-                                      .copyWith(
-                                    hintText: "Please Enter Country",
-                                    fillColor: Color.fromARGB(
-                                            255, 243, 220, 142)
-                                        .withOpacity(0.5), // Your desired color
-                                    filled: true,
-                                  ),
-                                  style: AppStyles.textInputTextStyle,
-                                  validator: MultiValidator(
-                                    [
-                                      RequiredValidator(
-                                        errorText: "Please Enter Country",
+                                    ),
+                                    const SizedBox(
+                                        width:
+                                            10), // Add some spacing between the dropdown and the text field
+                                    Expanded(
+                                      flex:
+                                          5, // Adjust the flex value to allocate more space to this field
+                                      child: TextFormField(
+                                        controller: mobileNumberController,
+                                        keyboardType: TextInputType.number,
+                                        textInputAction: TextInputAction.next,
+                                        decoration: AppStyles
+                                            .textFieldInputDecoration
+                                            .copyWith(
+                                          hintText:
+                                              "Please Enter Mobile Number",
+                                          fillColor: const Color.fromARGB(
+                                                  255, 243, 220, 142)
+                                              .withOpacity(0.5),
+                                          filled: true,
+                                        ),
+                                        style: AppStyles.textInputTextStyle,
+                                        inputFormatters: [
+                                          LengthLimitingTextInputFormatter(
+                                              countryCodeController == '+91'
+                                                  ? 10
+                                                  : 11), // Limits the input to 10 characters
+                                          FilteringTextInputFormatter
+                                              .digitsOnly, // Allows only digits
+                                        ],
+                                        validator: MultiValidator([
+                                          RequiredValidator(
+                                              errorText:
+                                                  "Please Enter Mobile Number"),
+                                          MinLengthValidator(
+                                              countryCodeController == '+91'
+                                                  ? 10
+                                                  : 11,
+                                              errorText:
+                                                  "Please Enter Valid Mobile Number"),
+                                        ]),
                                       ),
-                                    ],
-                                  ),
-                                ),
-
-                                //***************   Details   ********************
-                                const SizedBox(
-                                  height: 15,
-                                ),
-
-                                Text(
-                                  "State",
-                                  style: AppStyles.textfieldCaptionTextStyle,
-                                ),
-                                SizedBox(
-                                  height: 5,
-                                ),
-                                TextFormField(
-                                  controller: stateController,
-                                  keyboardType: TextInputType.text,
-                                  textInputAction: TextInputAction.next,
-                                  decoration: AppStyles.textFieldInputDecoration
-                                      .copyWith(
-                                    hintText: "Please Enter State",
-                                    fillColor: Color.fromARGB(
-                                            255, 243, 220, 142)
-                                        .withOpacity(0.5), // Your desired color
-                                    filled: true,
-                                  ),
-                                  style: AppStyles.textInputTextStyle,
-                                  validator: MultiValidator(
-                                    [
-                                      RequiredValidator(
-                                        errorText: "Please Enter State",
-                                      ),
-                                    ],
-                                  ),
+                                    ),
+                                  ],
                                 ),
 
                                 const SizedBox(
@@ -608,118 +618,243 @@ class _addPartyState extends State<addParty> {
                                   height: 15,
                                 ),
                                 Text(
-                                  "Mobile Number",
+                                  "Country",
+                                  style: AppStyles.textfieldCaptionTextStyle,
+                                ),
+                                SizedBox(
+                                  height: 5,
+                                ),
+                                DropdownButtonFormField<String>(
+                                  decoration: AppStyles.textFieldInputDecoration
+                                      .copyWith(
+                                    hintText: "Please Select Country",
+                                    counterText: '',
+                                    fillColor:
+                                        Color.fromARGB(255, 243, 220, 142)
+                                            .withOpacity(0.5),
+                                    contentPadding: EdgeInsets.all(10),
+                                  ),
+                                  items: countryList
+                                      .map((label) => DropdownMenuItem(
+                                            child: Text(label['label'],
+                                                style: AppStyles
+                                                    .textInputTextStyle),
+                                            value: label['value'].toString(),
+                                          ))
+                                      .toList(),
+                                  onChanged: (val) {
+                                    setState(() {
+                                      countryController = val!;
+                                    });
+                                  },
+                                  value: countryController != ''
+                                      ? countryController
+                                      : null,
+                                  validator: (value) {
+                                    if (value == null || value.isEmpty) {
+                                      return 'Please select a country';
+                                    }
+                                    return null;
+                                  },
+                                ),
+
+                                if (countryController != 'China')
+                                  const SizedBox(
+                                    height: 15,
+                                  ),
+                                if (countryController != 'China')
+                                  Text(
+                                    "State",
+                                    style: AppStyles.textfieldCaptionTextStyle,
+                                  ),
+                                if (countryController != 'China')
+                                  SizedBox(
+                                    height: 5,
+                                  ),
+                                if (countryController != 'China')
+                                  TextFormField(
+                                    controller: stateController,
+                                    keyboardType: TextInputType.text,
+                                    textInputAction: TextInputAction.next,
+                                    decoration: AppStyles
+                                        .textFieldInputDecoration
+                                        .copyWith(
+                                      hintText: "Please Enter State",
+                                      fillColor:
+                                          Color.fromARGB(255, 243, 220, 142)
+                                              .withOpacity(
+                                                  0.5), // Your desired color
+                                      filled: true,
+                                    ),
+                                    style: AppStyles.textInputTextStyle,
+                                    validator: MultiValidator(
+                                      [
+                                        RequiredValidator(
+                                          errorText: "Please Enter State",
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                const SizedBox(
+                                  height: 15,
+                                ),
+                                Text(
+                                  "Address",
                                   style: AppStyles.textfieldCaptionTextStyle,
                                 ),
                                 SizedBox(
                                   height: 5,
                                 ),
                                 TextFormField(
-                                  controller: mobileNumberController,
+                                  controller: addressController,
+                                  keyboardType: TextInputType.text,
+                                  textInputAction: TextInputAction.next,
+                                  decoration: AppStyles.textFieldInputDecoration
+                                      .copyWith(
+                                    hintText: "Please Enter Address",
+                                    fillColor: Color.fromARGB(
+                                            255, 243, 220, 142)
+                                        .withOpacity(0.5), // Your desired color
+                                    filled: true,
+                                  ),
+                                  style: AppStyles.textInputTextStyle,
+                                  validator: MultiValidator(
+                                    [
+                                      RequiredValidator(
+                                        errorText: "Please Enter Address",
+                                      ),
+                                    ],
+                                  ),
+                                ),
+
+                                const SizedBox(
+                                  height: 15,
+                                ),
+                                Text(
+                                  countryController != 'China'
+                                      ? "Pin Code"
+                                      : "Zip Code",
+                                  style: AppStyles.textfieldCaptionTextStyle,
+                                ),
+                                SizedBox(
+                                  height: 5,
+                                ),
+                                TextFormField(
+                                  controller: pinCodeController,
                                   keyboardType: TextInputType.number,
                                   textInputAction: TextInputAction.next,
                                   decoration: AppStyles.textFieldInputDecoration
                                       .copyWith(
-                                    hintText: "Please Enter Mobile Number",
+                                    hintText: countryController != 'China'
+                                        ? "Please Enter Pin Code"
+                                        : "Please Enter zip Code",
                                     fillColor: Color.fromARGB(
                                             255, 243, 220, 142)
                                         .withOpacity(0.5), // Your desired color
                                     filled: true,
                                   ),
                                   style: AppStyles.textInputTextStyle,
+                                  validator: MultiValidator(
+                                    [
+                                      RequiredValidator(
+                                        errorText: countryController != 'China'
+                                            ? "Please Enter Pin Code"
+                                            : "Please Enter zip Code",
+                                      ),
+                                    ],
+                                  ),
                                   inputFormatters: [
                                     LengthLimitingTextInputFormatter(
-                                        10), // Limits the input to 10 characters
+                                        6), // Limits to 6 digits
                                     FilteringTextInputFormatter
-                                        .digitsOnly, // Allows only digits
+                                        .digitsOnly, // Ensures only digits are entered
                                   ],
-                                  validator: MultiValidator(
-                                    [
-                                      RequiredValidator(
-                                        errorText: "Please Enter Mobile Number",
-                                      ),
-                                      MinLengthValidator(
-                                        10,
-                                        errorText:
-                                            "Please Enter Valid Mobile Number",
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                                const SizedBox(
-                                  height: 15,
                                 ),
 
-                                Text(
-                                  "GST Number",
-                                  style: AppStyles.textfieldCaptionTextStyle,
-                                ),
-                                SizedBox(
-                                  height: 5,
-                                ),
-                                TextFormField(
-                                  controller: gstNumberController,
-                                  keyboardType: TextInputType.text,
-                                  textInputAction: TextInputAction.next,
-                                  decoration: AppStyles.textFieldInputDecoration
-                                      .copyWith(
-                                    hintText: "Please Enter GST Number",
-                                    fillColor: Color.fromARGB(
-                                            255, 243, 220, 142)
-                                        .withOpacity(0.5), // Your desired color
-                                    filled: true,
+                                if (countryController != 'China')
+                                  const SizedBox(
+                                    height: 15,
                                   ),
-                                  style: AppStyles.textInputTextStyle,
-                                  validator: MultiValidator(
-                                    [
-                                      RequiredValidator(
-                                        errorText: "Please Enter GST Number",
-                                      ),
-                                      PatternValidator(
-                                        r'^[0-9]{2}[A-Z]{5}[0-9]{4}[A-Z]{1}[1-9A-Z]{1}Z[0-9A-Z]{1}$',
-                                        errorText:
-                                            "Please Enter a Valid GST Number",
-                                      ),
-                                    ],
+                                if (countryController != 'China')
+                                  Text(
+                                    "GST Number",
+                                    style: AppStyles.textfieldCaptionTextStyle,
                                   ),
-                                  onChanged: (value) {
-                                    // Call your function here
-                                    extractPanFromGst(value);
-                                  },
-                                ),
+                                if (countryController != 'China')
+                                  SizedBox(
+                                    height: 5,
+                                  ),
+                                if (countryController != 'China')
+                                  TextFormField(
+                                    controller: gstNumberController,
+                                    keyboardType: TextInputType.text,
+                                    textInputAction: TextInputAction.next,
+                                    decoration: AppStyles
+                                        .textFieldInputDecoration
+                                        .copyWith(
+                                      hintText: "Please Enter GST Number",
+                                      fillColor:
+                                          Color.fromARGB(255, 243, 220, 142)
+                                              .withOpacity(
+                                                  0.5), // Your desired color
+                                      filled: true,
+                                    ),
+                                    style: AppStyles.textInputTextStyle,
+                                    validator: MultiValidator(
+                                      [
+                                        RequiredValidator(
+                                          errorText: "Please Enter GST Number",
+                                        ),
+                                        PatternValidator(
+                                          r'^[0-9]{2}[A-Z]{5}[0-9]{4}[A-Z]{1}[1-9A-Z]{1}Z[0-9A-Z]{1}$',
+                                          errorText:
+                                              "Please Enter a Valid GST Number",
+                                        ),
+                                      ],
+                                    ),
+                                    onChanged: (value) {
+                                      // Call your function here
+                                      extractPanFromGst(value);
+                                    },
+                                  ),
 
-                                //***************   Details   ********************
-                                const SizedBox(
-                                  height: 15,
-                                ),
-                                Text(
-                                  "PAN Number",
-                                  style: AppStyles.textfieldCaptionTextStyle,
-                                ),
-                                SizedBox(
-                                  height: 5,
-                                ),
-                                TextFormField(
-                                  controller: panNumberController,
-                                  keyboardType: TextInputType.text,
-                                  textInputAction: TextInputAction.next,
-                                  decoration: AppStyles.textFieldInputDecoration
-                                      .copyWith(
-                                    hintText: "Please Enter PAN Number",
-                                    fillColor: Color.fromARGB(
-                                            255, 243, 220, 142)
-                                        .withOpacity(0.5), // Your desired color
-                                    filled: true,
+                                if (countryController != 'China')
+                                  const SizedBox(
+                                    height: 15,
                                   ),
-                                  style: AppStyles.textInputTextStyle,
-                                  validator: MultiValidator(
-                                    [
-                                      RequiredValidator(
-                                        errorText: "Please Enter PAN Number",
-                                      ),
-                                    ],
+                                if (countryController != 'China')
+                                  Text(
+                                    "PAN Number",
+                                    style: AppStyles.textfieldCaptionTextStyle,
                                   ),
-                                ),
+                                if (countryController != 'China')
+                                  SizedBox(
+                                    height: 5,
+                                  ),
+                                if (countryController != 'China')
+                                  TextFormField(
+                                    controller: panNumberController,
+                                    keyboardType: TextInputType.text,
+                                    textInputAction: TextInputAction.next,
+                                    decoration: AppStyles
+                                        .textFieldInputDecoration
+                                        .copyWith(
+                                      hintText: "Please Enter PAN Number",
+                                      fillColor:
+                                          Color.fromARGB(255, 243, 220, 142)
+                                              .withOpacity(
+                                                  0.5), // Your desired color
+                                      filled: true,
+                                    ),
+                                    style: AppStyles.textInputTextStyle,
+                                    validator: MultiValidator(
+                                      [
+                                        RequiredValidator(
+                                          errorText: "Please Enter PAN Number",
+                                        ),
+                                      ],
+                                    ),
+                                  ),
                                 const SizedBox(
                                   height: 25,
                                 ),

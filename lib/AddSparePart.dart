@@ -511,26 +511,10 @@ class _addSparePartState extends State<addSparePart> {
                                   "Master Spare Part Name",
                                   style: AppStyles.textfieldCaptionTextStyle,
                                 ),
-                                SizedBox(
+                                const SizedBox(
                                   height: 5,
                                 ),
-                                // ListTile(
-                                //   title: const Text('Spare Part Name'),
-                                //   leading: Radio<String>(
-                                //     value: "Spare Part Name",
-                                //     groupValue: _selectedValue,
-                                //     onChanged: _handleRadioValueChange,
-                                //   ),
-                                // ),
 
-                                // ListTile(
-                                //   title: const Text('Master Spare Part Name'),
-                                //   leading: Radio<String>(
-                                //     value: "Master Spare Part Name",
-                                //     groupValue: _selectedValue,
-                                //     onChanged: _handleRadioValueChange,
-                                //   ),
-                                // ),
                                 TextFormField(
                                   controller: masterSparePartNameController,
                                   keyboardType: TextInputType.text,
@@ -539,7 +523,7 @@ class _addSparePartState extends State<addSparePart> {
                                       .copyWith(
                                     hintText:
                                         "Please Enter Master Spare Part Name",
-                                    fillColor: Color.fromARGB(
+                                    fillColor: const Color.fromARGB(
                                             255, 187, 241, 185)
                                         .withOpacity(0.5), // Your desired color
                                     filled: true,
@@ -563,7 +547,7 @@ class _addSparePartState extends State<addSparePart> {
                                   "Spare Part Name",
                                   style: AppStyles.textfieldCaptionTextStyle,
                                 ),
-                                SizedBox(
+                                const SizedBox(
                                   height: 5,
                                 ),
                                 TextFormField(
@@ -573,7 +557,7 @@ class _addSparePartState extends State<addSparePart> {
                                   decoration: AppStyles.textFieldInputDecoration
                                       .copyWith(
                                     hintText: "Please Enter Spare Part Name",
-                                    fillColor: Color.fromARGB(
+                                    fillColor: const Color.fromARGB(
                                             255, 187, 241, 185)
                                         .withOpacity(0.5), // Your desired color
                                     filled: true,
@@ -596,7 +580,7 @@ class _addSparePartState extends State<addSparePart> {
                                   "Spare Part Model Number",
                                   style: AppStyles.textfieldCaptionTextStyle,
                                 ),
-                                SizedBox(
+                                const SizedBox(
                                   height: 5,
                                 ),
                                 TextFormField(
@@ -607,7 +591,7 @@ class _addSparePartState extends State<addSparePart> {
                                       .copyWith(
                                     hintText:
                                         "Please Enter Spare Part Model Number",
-                                    fillColor: Color.fromARGB(
+                                    fillColor: const Color.fromARGB(
                                             255, 187, 241, 185)
                                         .withOpacity(0.5), // Your desired color
                                     filled: true,
@@ -630,7 +614,7 @@ class _addSparePartState extends State<addSparePart> {
                                   "Brand Name",
                                   style: AppStyles.textfieldCaptionTextStyle,
                                 ),
-                                SizedBox(
+                                const SizedBox(
                                   height: 5,
                                 ),
                                 TextFormField(
@@ -640,7 +624,7 @@ class _addSparePartState extends State<addSparePart> {
                                   decoration: AppStyles.textFieldInputDecoration
                                       .copyWith(
                                     hintText: "Please Enter Brand Name",
-                                    fillColor: Color.fromARGB(
+                                    fillColor: const Color.fromARGB(
                                             255, 187, 241, 185)
                                         .withOpacity(0.5), // Your desired color
                                     filled: true,
@@ -663,7 +647,7 @@ class _addSparePartState extends State<addSparePart> {
                                   "Specification",
                                   style: AppStyles.textfieldCaptionTextStyle,
                                 ),
-                                SizedBox(
+                                const SizedBox(
                                   height: 5,
                                 ),
                                 TextFormField(
@@ -673,7 +657,7 @@ class _addSparePartState extends State<addSparePart> {
                                   decoration: AppStyles.textFieldInputDecoration
                                       .copyWith(
                                     hintText: "Please Enter Specification",
-                                    fillColor: Color.fromARGB(
+                                    fillColor: const Color.fromARGB(
                                             255, 187, 241, 185)
                                         .withOpacity(0.5), // Your desired color
                                     filled: true,
@@ -696,7 +680,7 @@ class _addSparePartState extends State<addSparePart> {
                                   "Machine Name",
                                   style: AppStyles.textfieldCaptionTextStyle,
                                 ),
-                                SizedBox(
+                                const SizedBox(
                                   height: 5,
                                 ),
 
@@ -718,8 +702,8 @@ class _addSparePartState extends State<addSparePart> {
                                         'Content-Type': 'application/json',
                                       },
                                     ),
-                                    fieldBackgroundColor:
-                                        Color.fromARGB(255, 187, 241, 185),
+                                    fieldBackgroundColor: const Color.fromARGB(
+                                        255, 187, 241, 185),
                                     chipConfig: const ChipConfig(
                                         backgroundColor: Colors.amber,
                                         labelColor: Colors.black,
@@ -753,7 +737,7 @@ class _addSparePartState extends State<addSparePart> {
                                   "No. Of PCS Uses In One Time",
                                   style: AppStyles.textfieldCaptionTextStyle,
                                 ),
-                                SizedBox(
+                                const SizedBox(
                                   height: 5,
                                 ),
                                 TextFormField(
@@ -764,7 +748,7 @@ class _addSparePartState extends State<addSparePart> {
                                       .copyWith(
                                     hintText:
                                         "Please Enter No. Of PCS Uses In One Time",
-                                    fillColor: Color.fromARGB(
+                                    fillColor: const Color.fromARGB(
                                             255, 187, 241, 185)
                                         .withOpacity(0.5), // Your desired color
                                     filled: true,
@@ -788,7 +772,7 @@ class _addSparePartState extends State<addSparePart> {
                                   "Cycle Time In Days",
                                   style: AppStyles.textfieldCaptionTextStyle,
                                 ),
-                                SizedBox(
+                                const SizedBox(
                                   height: 5,
                                 ),
                                 TextFormField(
@@ -798,7 +782,7 @@ class _addSparePartState extends State<addSparePart> {
                                   decoration: AppStyles.textFieldInputDecoration
                                       .copyWith(
                                     hintText: "Please Enter Cycle Time",
-                                    fillColor: Color.fromARGB(
+                                    fillColor: const Color.fromARGB(
                                             255, 187, 241, 185)
                                         .withOpacity(0.5), // Your desired color
                                     filled: true,
@@ -830,7 +814,7 @@ class _addSparePartState extends State<addSparePart> {
                                   decoration: AppStyles.textFieldInputDecoration
                                       .copyWith(
                                           hintText: "Please Select Image",
-                                          fillColor: Color.fromARGB(
+                                          fillColor: const Color.fromARGB(
                                                   255, 187, 241, 185)
                                               .withOpacity(
                                                   0.5), // Your desired color
@@ -871,7 +855,7 @@ class _addSparePartState extends State<addSparePart> {
                                   decoration: AppStyles.textFieldInputDecoration
                                       .copyWith(
                                           hintText: "Please Select Drawing Pdf",
-                                          fillColor: Color.fromARGB(
+                                          fillColor: const Color.fromARGB(
                                                   255, 187, 241, 185)
                                               .withOpacity(
                                                   0.5), // Your desired color
