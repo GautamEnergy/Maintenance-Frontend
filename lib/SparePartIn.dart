@@ -44,6 +44,10 @@ class _SparePartInState extends State<SparePartIn> {
   TextEditingController specificationController = TextEditingController();
   TextEditingController quantityController = TextEditingController();
   TextEditingController unitController = TextEditingController();
+  TextEditingController priceController = TextEditingController();
+  TextEditingController transportationPriceController = TextEditingController();
+  TextEditingController dutyAmountController = TextEditingController();
+  TextEditingController totalCostController = TextEditingController();
   TextEditingController machineModelNumberController = TextEditingController();
 
   TextEditingController ribbonController = TextEditingController();
@@ -69,6 +73,11 @@ class _SparePartInState extends State<SparePartIn> {
     {"key": 'Bugati', "value": 'Bugati'},
   ];
 
+  List currencyList = [
+    {"key": 'INR', "value": 'INR'},
+    {"key": 'CNY', "value": 'CNY'},
+  ];
+
   bool menu = false, user = false, face = false, home = false;
   int numberOfStringers = 0;
   bool _isLoading = false;
@@ -83,6 +92,7 @@ class _SparePartInState extends State<SparePartIn> {
   String selectedmachinemodel = "";
   String selectedspare = "";
   String selectedsparemodel = "";
+  String selectedCurrency = "";
   String selectedbrand = "";
   List Sample1Controllers = [];
   List Sample2Controllers = [];
@@ -111,8 +121,52 @@ class _SparePartInState extends State<SparePartIn> {
   void initState() {
     super.initState();
     store();
-    isCycleTimeTrue = true; // Set initial value
+
+    dutyAmountController.addListener(updateTotalCost);
+    priceController.addListener(updateTotalCost);
+    transportationPriceController.addListener(updateTotalCost);
   }
+
+  @override
+  void dispose() {
+    dutyAmountController.removeListener(updateTotalCost);
+    priceController.removeListener(updateTotalCost);
+    transportationPriceController.removeListener(updateTotalCost);
+
+    dutyAmountController.dispose();
+    priceController.dispose();
+    transportationPriceController.dispose();
+    totalCostController.dispose();
+
+    super.dispose();
+  }
+
+  void updateTotalCost() {
+    double priceAmount = 0.0;
+    double dutyAmount = 0.0;
+    double transportationPrice = 0.0;
+
+    // Check if the text fields are not empty before parsing
+    if (priceController.text.isNotEmpty) {
+      priceAmount = double.parse(priceController.text);
+    }
+
+    if (dutyAmountController.text.isNotEmpty) {
+      dutyAmount = double.parse(dutyAmountController.text);
+    }
+
+    if (transportationPriceController.text.isNotEmpty) {
+      transportationPrice = double.parse(transportationPriceController.text);
+    }
+
+    double totalCost = priceAmount + dutyAmount + transportationPrice;
+
+    setState(() {
+      totalCostController.text =
+          totalCost.toStringAsFixed(2) + " " + selectedCurrency;
+    });
+  }
+
   // *******  Send the Data where will be Used to Backend *******
 
   void store() async {
@@ -150,8 +204,6 @@ class _SparePartInState extends State<SparePartIn> {
           //         label: item['MachineName']!, value: item['MachineId']!))
           //     .toList();
         });
-        print("machine list data");
-        print(MachineList);
       }
     });
   }
@@ -179,129 +231,9 @@ class _SparePartInState extends State<SparePartIn> {
           machineModelNumberController.text =
               machineBody[0]['MachineModelNumber'];
         });
-        print("machine list data");
-        print(machineModelNumberController.text);
       }
     });
   }
-
-  // Future _get() async {
-  //   final prefs = await SharedPreferences.getInstance();
-  //   setState(() {
-  //     if (widget.id != '' && widget.id != null) {
-  //       _isLoading = true;
-  //     }
-  //     site = prefs.getString('site')!;
-  //   });
-  //   final AllSolarData = ((site!) + 'IPQC/GetSpecificSolderingPeelTest');
-  //   final allSolarData = await http.post(
-  //     Uri.parse(AllSolarData),
-  //     body: jsonEncode(<String, String>{
-  //       "JobCardDetailId": widget.id ?? '',
-  //       "token": token!
-  //     }),
-  //     headers: {
-  //       'Content-Type': 'application/json; charset=UTF-8',
-  //     },
-  //   );
-
-  //   setState(() {
-  //     _isLoading = false;
-  //   });
-
-  //   var resBody = json.decode(allSolarData.body);
-
-  //   if (mounted) {
-  //     setState(() {
-  //       if (resBody != '') {
-  //         status = resBody['response']['Status'] ?? '';
-  //         dateOfQualityCheck = resBody['response']['Date'] ?? '';
-  //         dateController.text = resBody['response']['Date'] != ''
-  //             ? DateFormat("EEE MMM dd, yyyy").format(
-  //                 DateTime.parse(resBody['response']['Date'].toString()))
-  //             : '';
-  //         selectedShift = resBody['response']['Shift'] ?? "";
-  //         LineController.text = resBody['response']['Line'] ?? "";
-  //         operatornameController.text =
-  //             resBody['response']['OperatorName'] ?? '';
-  //         selectedtype = resBody['response']['BussingStage'] ?? "";
-  //         ribbonWidthController.text = resBody['response']['RibbonSize'] ?? '';
-  //         busbarWidthController.text = resBody['response']['BusBarWidth'] ?? '';
-  //         ribbonController.text =
-  //             resBody['response']['Sample1Length'].toString() ?? '';
-
-  //         sampleAInputtext = resBody['response']['Sample1'] ?? [];
-  //         numberOfStringers = resBody['response']['Sample1Length'] ?? 0;
-
-  //         sampleBInputText = resBody['response']['Sample2'] ?? [];
-  //         addControllers(numberOfStringers);
-
-  //         for (int i = 0; i < numberOfStringers; i++) {
-  //           sampleAControllers.add(TextEditingController());
-  //           sampleBControllers.add(TextEditingController());
-  //           if (widget.id != "" &&
-  //               widget.id != null &&
-  //               sampleAInputtext.length > 0 &&
-  //               sampleBInputText.length > 0) {
-  //             sampleAControllers[i].text =
-  //                 sampleAInputtext[i]["sampleAControllers${i + 1}"];
-  //             sampleBControllers[i].text =
-  //                 sampleBInputText[i]["sampleBControllers${i + 1}"];
-  //           }
-  //         }
-
-  //         remarkController.text = resBody['response']['Remarks'] ?? '';
-  //         referencePdfController.text = resBody['response']['Pdf'] ?? '';
-  //       }
-  //     });
-  //   }
-  // }
-
-  // Future setApprovalStatus() async {
-  //   setState(() {
-  //     _isLoading = true;
-  //   });
-  //   FocusScope.of(context).unfocus();
-  //   final url = (site! + "IPQC/UpdateSolderingPeelTestStatus");
-
-  //   var params = {
-  //     "token": token,
-  //     "CurrentUser": personid,
-  //     "ApprovalStatus": approvalStatus,
-  //     "JobCardDetailId": widget.id ?? ""
-  //   };
-
-  //   var response = await http.post(
-  //     Uri.parse(url),
-  //     body: json.encode(params),
-  //     headers: {
-  //       'Content-Type': 'application/json; charset=UTF-8',
-  //     },
-  //   );
-
-  //   if (response.statusCode == 200) {
-  //     setState(() {
-  //       _isLoading = false;
-  //     });
-  //     var objData = json.decode(response.body);
-  //     if (objData['success'] == false) {
-  //       Toast.show("Please Try Again.",
-  //           duration: Toast.lengthLong,
-  //           gravity: Toast.center,
-  //           backgroundColor: AppColors.redColor);
-  //     } else {
-  //       Toast.show("Busbar Test $approvalStatus .",
-  //           duration: Toast.lengthLong,
-  //           gravity: Toast.center,
-  //           backgroundColor: AppColors.blueColor);
-  //       Navigator.of(context).pushReplacement(MaterialPageRoute(
-  //           builder: (BuildContext context) => IpqcTestList()));
-  //     }
-  //   } else {
-  //     Toast.show("Error In Server",
-  //         duration: Toast.lengthLong, gravity: Toast.center);
-  //   }
-  // }
 
   // Future<void> _pickReferencePDF() async {
   //   FilePickerResult? result = await FilePicker.platform.pickFiles(
@@ -479,8 +411,6 @@ class _SparePartInState extends State<SparePartIn> {
   //     ),
   //   );
   // }
-
-// ***************** Done Send the Data *******************************
 
   @override
   Widget build(BuildContext context) {
@@ -698,20 +628,17 @@ class _SparePartInState extends State<SparePartIn> {
                                             value: label['value'].toString(),
                                           ))
                                       .toList(),
-                                  onChanged:
-                                      designation != "QC" && status == "Pending"
-                                          ? null
-                                          : (val) {
-                                              setState(() {
-                                                selectedspare = val!;
-                                              });
-                                            },
+                                  onChanged: (val) {
+                                    setState(() {
+                                      selectedspare = val!;
+                                    });
+                                  },
                                   value: selectedspare != ''
                                       ? selectedspare
                                       : null,
                                   validator: (value) {
                                     if (value == null || value.isEmpty) {
-                                      return 'Please select a Spare Part Name';
+                                      return 'Please Select Spare Part Name';
                                     }
                                     return null; // Return null if the validation is successful
                                   },
@@ -802,20 +729,17 @@ class _SparePartInState extends State<SparePartIn> {
                                             value: label['value'].toString(),
                                           ))
                                       .toList(),
-                                  onChanged:
-                                      designation != "QC" && status == "Pending"
-                                          ? null
-                                          : (val) {
-                                              setState(() {
-                                                selectedsparemodel = val!;
-                                              });
-                                            },
+                                  onChanged: (val) {
+                                    setState(() {
+                                      selectedsparemodel = val!;
+                                    });
+                                  },
                                   value: selectedsparemodel != ''
                                       ? selectedsparemodel
                                       : null,
                                   validator: (value) {
                                     if (value == null || value.isEmpty) {
-                                      return 'Please select a Spare Part Model No';
+                                      return 'Please Select Spare Part Model No';
                                     }
                                     return null; // Return null if the validation is successful
                                   },
@@ -826,7 +750,7 @@ class _SparePartInState extends State<SparePartIn> {
                                 ),
 
                                 Text(
-                                  "Specification.",
+                                  "Specification",
                                   style: AppStyles.textfieldCaptionTextStyle,
                                 ),
                                 SizedBox(
@@ -845,10 +769,6 @@ class _SparePartInState extends State<SparePartIn> {
                                     filled: true,
                                   ),
                                   style: AppStyles.textInputTextStyle,
-                                  readOnly:
-                                      status == 'Pending' && designation != "QC"
-                                          ? true
-                                          : false,
                                   validator: MultiValidator(
                                     [
                                       RequiredValidator(
@@ -858,12 +778,11 @@ class _SparePartInState extends State<SparePartIn> {
                                   ),
                                 ),
 
-                                //***************   Details   ********************
                                 const SizedBox(
-                                  height: 25,
+                                  height: 15,
                                 ),
                                 Text(
-                                  "Quantity.",
+                                  "Quantity In PCS",
                                   style: AppStyles.textfieldCaptionTextStyle,
                                 ),
                                 SizedBox(
@@ -871,7 +790,7 @@ class _SparePartInState extends State<SparePartIn> {
                                 ),
                                 TextFormField(
                                   controller: quantityController,
-                                  keyboardType: TextInputType.text,
+                                  keyboardType: TextInputType.number,
                                   textInputAction: TextInputAction.next,
                                   decoration: AppStyles.textFieldInputDecoration
                                       .copyWith(
@@ -882,10 +801,6 @@ class _SparePartInState extends State<SparePartIn> {
                                     filled: true,
                                   ),
                                   style: AppStyles.textInputTextStyle,
-                                  readOnly:
-                                      status == 'Pending' && designation != "QC"
-                                          ? true
-                                          : false,
                                   validator: MultiValidator(
                                     [
                                       RequiredValidator(
@@ -895,9 +810,8 @@ class _SparePartInState extends State<SparePartIn> {
                                   ),
                                 ),
 
-                                //***************   Details   ********************
                                 const SizedBox(
-                                  height: 25,
+                                  height: 15,
                                 ),
                                 Text(
                                   "Units",
@@ -932,7 +846,186 @@ class _SparePartInState extends State<SparePartIn> {
                                   ),
                                 ),
 
-                                //***************   Details   ********************
+                                const SizedBox(
+                                  height: 15,
+                                ),
+                                Text(
+                                  "Currency",
+                                  style: AppStyles.textfieldCaptionTextStyle,
+                                ),
+                                const SizedBox(
+                                  height: 4,
+                                ),
+
+                                DropdownButtonFormField<String>(
+                                  decoration: AppStyles.textFieldInputDecoration
+                                      .copyWith(
+                                    hintText: "Please Select Currency",
+                                    counterText: '',
+                                    contentPadding: EdgeInsets.all(10),
+                                    fillColor: Color.fromARGB(
+                                            255, 195, 230, 155)
+                                        .withOpacity(0.5), // Your desired color
+                                    filled: true,
+                                  ),
+                                  borderRadius: BorderRadius.circular(20),
+                                  items: currencyList
+                                      .map((label) => DropdownMenuItem(
+                                            child: Text(
+                                              label['key'],
+                                              style:
+                                                  AppStyles.textInputTextStyle,
+                                            ),
+                                            value: label['value'].toString(),
+                                          ))
+                                      .toList(),
+                                  onChanged: (val) {
+                                    setState(() {
+                                      selectedCurrency = val!;
+                                    });
+                                  },
+                                  value: selectedCurrency != ''
+                                      ? selectedCurrency
+                                      : null,
+                                  validator: (value) {
+                                    if (value == null || value.isEmpty) {
+                                      return 'Please Select Currency';
+                                    }
+                                    return null;
+                                  },
+                                ),
+
+                                const SizedBox(
+                                  height: 15,
+                                ),
+                                Text(
+                                  "Price",
+                                  style: AppStyles.textfieldCaptionTextStyle,
+                                ),
+                                SizedBox(
+                                  height: 5,
+                                ),
+                                TextFormField(
+                                  controller: priceController,
+                                  keyboardType: TextInputType.number,
+                                  textInputAction: TextInputAction.next,
+                                  decoration: AppStyles.textFieldInputDecoration
+                                      .copyWith(
+                                    hintText: "Please Enter Price",
+                                    fillColor: Color.fromARGB(
+                                            255, 195, 230, 155)
+                                        .withOpacity(0.5), // Your desired color
+                                    filled: true,
+                                  ),
+                                  style: AppStyles.textInputTextStyle,
+                                  validator: MultiValidator(
+                                    [
+                                      RequiredValidator(
+                                        errorText: "Please Enter Price",
+                                      ),
+                                    ],
+                                  ),
+                                ),
+
+                                const SizedBox(
+                                  height: 15,
+                                ),
+                                Text(
+                                  "Transportation Price",
+                                  style: AppStyles.textfieldCaptionTextStyle,
+                                ),
+                                SizedBox(
+                                  height: 5,
+                                ),
+                                TextFormField(
+                                  controller: transportationPriceController,
+                                  keyboardType: TextInputType.number,
+                                  textInputAction: TextInputAction.next,
+                                  decoration: AppStyles.textFieldInputDecoration
+                                      .copyWith(
+                                    hintText:
+                                        "Please Enter Transportation Price",
+                                    fillColor: Color.fromARGB(
+                                            255, 195, 230, 155)
+                                        .withOpacity(0.5), // Your desired color
+                                    filled: true,
+                                  ),
+                                  style: AppStyles.textInputTextStyle,
+                                  validator: MultiValidator(
+                                    [
+                                      RequiredValidator(
+                                        errorText:
+                                            "Please Enter Transportation Price",
+                                      ),
+                                    ],
+                                  ),
+                                ),
+
+                                const SizedBox(
+                                  height: 15,
+                                ),
+                                Text(
+                                  "Duty Amount",
+                                  style: AppStyles.textfieldCaptionTextStyle,
+                                ),
+                                SizedBox(
+                                  height: 5,
+                                ),
+                                TextFormField(
+                                  controller: dutyAmountController,
+                                  keyboardType: TextInputType.number,
+                                  textInputAction: TextInputAction.next,
+                                  decoration: AppStyles.textFieldInputDecoration
+                                      .copyWith(
+                                    hintText: "Please Enter Duty Amount",
+                                    fillColor: Color.fromARGB(
+                                            255, 195, 230, 155)
+                                        .withOpacity(0.5), // Your desired color
+                                    filled: true,
+                                  ),
+                                  style: AppStyles.textInputTextStyle,
+                                  validator: MultiValidator(
+                                    [
+                                      RequiredValidator(
+                                        errorText: "Please Enter Duty Amount",
+                                      ),
+                                    ],
+                                  ),
+                                ),
+
+                                const SizedBox(
+                                  height: 15,
+                                ),
+                                Text(
+                                  "Total Cost",
+                                  style: AppStyles.textfieldCaptionTextStyle,
+                                ),
+                                SizedBox(
+                                  height: 5,
+                                ),
+                                TextFormField(
+                                  controller: totalCostController,
+                                  keyboardType: TextInputType.number,
+                                  textInputAction: TextInputAction.next,
+                                  decoration: AppStyles.textFieldInputDecoration
+                                      .copyWith(
+                                    hintText: "Please Enter Total Cost",
+                                    fillColor: Color.fromARGB(
+                                            255, 195, 230, 155)
+                                        .withOpacity(0.5), // Your desired color
+                                    filled: true,
+                                  ),
+                                  style: AppStyles.textInputTextStyle,
+                                  readOnly: true,
+                                  validator: MultiValidator(
+                                    [
+                                      RequiredValidator(
+                                        errorText: "Please Enter Total Cost",
+                                      ),
+                                    ],
+                                  ),
+                                ),
+
                                 const SizedBox(
                                   height: 25,
                                 ),

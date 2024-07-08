@@ -646,6 +646,14 @@ class _addPartyState extends State<addParty> {
                                     setState(() {
                                       countryController = val!;
                                     });
+
+                                    if (val == "China") {
+                                      setState(() {
+                                        stateController.text = "";
+                                        panNumberController.text = "";
+                                        gstNumberController.text = "";
+                                      });
+                                    }
                                   },
                                   value: countryController != ''
                                       ? countryController
