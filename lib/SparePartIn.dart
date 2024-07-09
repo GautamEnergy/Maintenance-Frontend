@@ -49,6 +49,7 @@ class _SparePartInState extends State<SparePartIn> {
   TextEditingController dutyAmountController = TextEditingController();
   TextEditingController totalCostController = TextEditingController();
   TextEditingController machineModelNumberController = TextEditingController();
+  TextEditingController invoicePdfController = new TextEditingController();
 
   TextEditingController ribbonController = TextEditingController();
   TextEditingController referencePdfController = new TextEditingController();
@@ -78,6 +79,8 @@ class _SparePartInState extends State<SparePartIn> {
     {"key": 'CNY', "value": 'CNY'},
   ];
 
+  List<int>? invoicePdfFileBytes;
+
   bool menu = false, user = false, face = false, home = false;
   int numberOfStringers = 0;
   bool _isLoading = false;
@@ -100,7 +103,7 @@ class _SparePartInState extends State<SparePartIn> {
   List sampleBInputText = [];
   late String sendStatus;
   String status = '',
-      jobCarId = '',
+      sparePartId = '',
       approvalStatus = "Approved",
       designation = '',
       token = '',
@@ -182,6 +185,23 @@ class _SparePartInState extends State<SparePartIn> {
     getMachineListData();
   }
 
+  Future<void> _pickcocPDF() async {
+    FilePickerResult? result = await FilePicker.platform.pickFiles(
+      type: FileType.custom,
+      allowedExtensions: ['pdf'],
+    );
+
+    if (result != null) {
+      File pdffile = File(result.files.single.path!);
+      setState(() {
+        invoicePdfFileBytes = pdffile.readAsBytesSync();
+        invoicePdfController.text = result.files.single.name;
+      });
+    } else {
+      // User canceled the file picker
+    }
+  }
+
   getMachineListData() async {
     final prefs = await SharedPreferences.getInstance();
     site = prefs.getString('site')!;
@@ -235,182 +255,113 @@ class _SparePartInState extends State<SparePartIn> {
     });
   }
 
-  // Future<void> _pickReferencePDF() async {
-  //   FilePickerResult? result = await FilePicker.platform.pickFiles(
-  //     type: FileType.custom,
-  //     allowedExtensions: ['pdf'],
-  //   );
+  Future createData() async {
+    var data = {
+      "Type": "Busbar",
+      "DocNo": "GSPL/IPQC/GP/005",
+      "RevNo": "1.0 & 12.08.2023",
+      "RibbonMake": "",
+      "CellSize": "",
+      "MachineNo": "",
+      "CellMake": ""
+    };
 
-  //   if (result != null) {
-  //     File pdffile = File(result.files.single.path!);
-  //     setState(() {
-  //       referencePdfFileBytes = pdffile.readAsBytesSync();
-  //       referencePdfController.text = result.files.single.name;
-  //     });
-  //   } else {
-  //     // User canceled the file picker
-  //   }
-  // }
+    setState(() {
+      _isLoading = true;
+    });
+    FocusScope.of(context).unfocus();
 
-  // Future createData() async {
-  //   var data = {
-  //     "Type": "Busbar",
-  //     "JobCardDetailId": jobCarId != '' && jobCarId != null
-  //         ? jobCarId
-  //         : widget.id != '' && widget.id != null
-  //             ? widget.id
-  //             : '',
-  //     "DocNo": "GSPL/IPQC/GP/005",
-  //     "RevNo": "1.0 & 12.08.2023",
-  //     "RibbonMake": "",
-  //     "CellSize": "",
-  //     "RibbonSize": ribbonWidthController.text,
-  //     "Date": dateOfQualityCheck,
-  //     "Line": LineController.text,
-  //     "Shift": selectedShift,
-  //     "MachineNo": "",
-  //     "OperatorName": operatornameController.text,
-  //     "CellMake": "",
-  //     "Status": sendStatus,
-  //     "BussingStage": selectedtype,
-  //     "BusBarWidth": busbarWidthController.text,
-  //     "CreatedBy": personid,
-  //     "Remarks": remarkController.text,
-  //     "Sample1Length": ribbonController.text,
-  //     "Samples": {"Sample1": Sample1Controllers, "Sample2": Sample2Controllers}
-  //   };
+    final url = (site! + "Maintenance/Test");
 
-  //   setState(() {
-  //     _isLoading = true;
-  //   });
-  //   FocusScope.of(context).unfocus();
+    final prefs = await SharedPreferences.getInstance();
 
-  //   final url = (site! + "IPQC/AddSolderingPeelTest");
+    var response = await http.post(
+      Uri.parse(url),
+      body: json.encode(data),
+      headers: {
+        'Content-Type': 'application/json; charset=UTF-8',
+      },
+    );
 
-  //   final prefs = await SharedPreferences.getInstance();
+    if (response.statusCode == 200) {
+      var objData = json.decode(response.body);
+      setState(() {
+        sparePartId = objData['UUID'];
 
-  //   var response = await http.post(
-  //     Uri.parse(url),
-  //     body: json.encode(data),
-  //     headers: {
-  //       'Content-Type': 'application/json; charset=UTF-8',
-  //     },
-  //   );
+        _isLoading = false;
+      });
 
-  //   if (response.statusCode == 200) {
-  //     var objData = json.decode(response.body);
-  //     setState(() {
-  //       jobCarId = objData['UUID'];
+      print(objData['UUID']);
+      if (objData['success'] == false) {
+        Toast.show(objData['message'],
+            duration: Toast.lengthLong,
+            gravity: Toast.center,
+            backgroundColor: AppColors.redColor);
+      } else {
+        if (invoicePdfFileBytes != '' && invoicePdfFileBytes != null) {
+          uploadPDF((invoicePdfFileBytes ?? []));
+        } else {
+          Toast.show("Spare Part In Successfully.",
+              duration: Toast.lengthLong,
+              gravity: Toast.center,
+              backgroundColor: AppColors.blueColor);
+        }
+      }
+    } else {
+      setState(() {
+        _isLoading = false;
+      });
+      Toast.show("Error In Server",
+          duration: Toast.lengthLong, gravity: Toast.center);
+    }
+  }
 
-  //       _isLoading = false;
-  //     });
+  uploadPDF(List<int> referenceBytes) async {
+    setState(() {
+      _isLoading = true;
+    });
+    final prefs = await SharedPreferences.getInstance();
+    site = prefs.getString('site')!;
 
-  //     print(objData['UUID']);
-  //     if (objData['success'] == false) {
-  //       Toast.show(objData['message'],
-  //           duration: Toast.lengthLong,
-  //           gravity: Toast.center,
-  //           backgroundColor: AppColors.redColor);
-  //     } else {
-  //       if (sendStatus == 'Pending') {
-  //         uploadPDF((referencePdfFileBytes ?? []));
-  //       } else {
-  //         Toast.show("Data has been saved.",
-  //             duration: Toast.lengthLong,
-  //             gravity: Toast.center,
-  //             backgroundColor: AppColors.blueColor);
-  //       }
-  //     }
-  //   } else {
-  //     Toast.show("Error In Server",
-  //         duration: Toast.lengthLong, gravity: Toast.center);
-  //   }
-  // }
+    var currentdate = DateTime.now().microsecondsSinceEpoch;
+    var formData = FormData.fromMap({
+      "sparePartId": sparePartId,
+      "invoicePdf": MultipartFile.fromBytes(
+        referenceBytes,
+        filename:
+            (referencePdfController.text + (currentdate.toString()) + '.pdf'),
+        contentType: MediaType("application", 'pdf'),
+      ),
+    });
 
-  // uploadPDF(List<int> referenceBytes) async {
-  //   setState(() {
-  //     _isLoading = true;
-  //   });
-  //   final prefs = await SharedPreferences.getInstance();
-  //   site = prefs.getString('site')!;
+    _response = await _dio.post((site! + 'Maintenance/Test'),
+        options: Options(
+          contentType: 'multipart/form-data',
+          followRedirects: false,
+          validateStatus: (status) => true,
+        ),
+        data: formData);
 
-  //   var currentdate = DateTime.now().microsecondsSinceEpoch;
-  //   var formData = FormData.fromMap({
-  //     "JobCardDetailId": jobCarId,
-  //     "SolderingPdf": MultipartFile.fromBytes(
-  //       referenceBytes,
-  //       filename:
-  //           (referencePdfController.text + (currentdate.toString()) + '.pdf'),
-  //       contentType: MediaType("application", 'pdf'),
-  //     ),
-  //   });
-
-  //   _response =
-  //       await _dio.post((site! + 'IPQC/UploadSolderingPeelTestPdf'), // Prod
-
-  //           options: Options(
-  //             contentType: 'multipart/form-data',
-  //             followRedirects: false,
-  //             validateStatus: (status) => true,
-  //           ),
-  //           data: formData);
-
-  //   try {
-  //     if (_response?.statusCode == 200) {
-  //       setState(() {
-  //         _isLoading = false;
-  //       });
-
-  //       Toast.show("Busbar Test Completed.",
-  //           duration: Toast.lengthLong,
-  //           gravity: Toast.center,
-  //           backgroundColor: AppColors.blueColor);
-  //       Navigator.of(context).pushReplacement(MaterialPageRoute(
-  //           builder: (BuildContext context) => IpqcTestList()));
-  //     } else {
-  //       Toast.show("Error In Server",
-  //           duration: Toast.lengthLong, gravity: Toast.center);
-  //     }
-  //   } catch (err) {
-  //     print("Error");
-  //   }
-  // }
-
-  // Widget _getFAB() {
-  //   return Padding(
-  //     padding: const EdgeInsets.only(bottom: 70),
-  //     child: FloatingActionButton(
-  //       onPressed: () {
-  //         Sample1Controllers = [];
-
-  //         for (int i = 0; i < numberOfStringers; i++) {
-  //           Sample1Controllers.add(
-  //               {"sampleAControllers${i + 1}": sampleAControllers[i].text});
-  //         }
-
-  //         Sample2Controllers = [];
-
-  //         for (int i = 0; i < numberOfStringers; i++) {
-  //           Sample2Controllers.add(
-  //               {"sampleBControllers${i + 1}": sampleBControllers[i].text});
-  //         }
-  //         if (status != 'Pending') {
-  //           setState(() {
-  //             sendStatus = 'Inprogress';
-  //           });
-  //           createData();
-  //         }
-  //       },
-  //       child: ClipOval(
-  //         child: Image.asset(
-  //           AppAssets.save,
-  //           height: 70,
-  //           width: 60,
-  //         ),
-  //       ),
-  //     ),
-  //   );
-  // }
+    try {
+      if (_response?.statusCode == 200) {
+        setState(() {
+          _isLoading = false;
+        });
+        Toast.show("Spare Part In Successfully.",
+            duration: Toast.lengthLong,
+            gravity: Toast.center,
+            backgroundColor: AppColors.blueColor);
+        // Navigator.of(context).pushReplacement(MaterialPageRoute(
+        //     builder: (BuildContext context) => IpqcTestList())
+        // );
+      } else {
+        Toast.show("Error In Server",
+            duration: Toast.lengthLong, gravity: Toast.center);
+      }
+    } catch (err) {
+      print("Error");
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -863,7 +814,7 @@ class _SparePartInState extends State<SparePartIn> {
                                     hintText: "Please Select Currency",
                                     counterText: '',
                                     contentPadding: EdgeInsets.all(10),
-                                    fillColor: Color.fromARGB(
+                                    fillColor: const Color.fromARGB(
                                             255, 195, 230, 155)
                                         .withOpacity(0.5), // Your desired color
                                     filled: true,
@@ -1000,7 +951,7 @@ class _SparePartInState extends State<SparePartIn> {
                                   "Total Cost",
                                   style: AppStyles.textfieldCaptionTextStyle,
                                 ),
-                                SizedBox(
+                                const SizedBox(
                                   height: 5,
                                 ),
                                 TextFormField(
@@ -1010,7 +961,7 @@ class _SparePartInState extends State<SparePartIn> {
                                   decoration: AppStyles.textFieldInputDecoration
                                       .copyWith(
                                     hintText: "Please Enter Total Cost",
-                                    fillColor: Color.fromARGB(
+                                    fillColor: const Color.fromARGB(
                                             255, 195, 230, 155)
                                         .withOpacity(0.5), // Your desired color
                                     filled: true,
@@ -1024,6 +975,48 @@ class _SparePartInState extends State<SparePartIn> {
                                       ),
                                     ],
                                   ),
+                                ),
+
+                                const SizedBox(
+                                  height: 15,
+                                ),
+                                Text(
+                                  "Upload Drawing Pdf",
+                                  style: AppStyles.textfieldCaptionTextStyle,
+                                ),
+                                const SizedBox(
+                                  height: 5,
+                                ),
+                                TextFormField(
+                                  controller: invoicePdfController,
+                                  keyboardType: TextInputType.text,
+                                  textInputAction: TextInputAction.next,
+                                  decoration: AppStyles.textFieldInputDecoration
+                                      .copyWith(
+                                          hintText: "Please Select Drawing Pdf",
+                                          fillColor: const Color.fromARGB(
+                                                  255, 187, 241, 185)
+                                              .withOpacity(
+                                                  0.5), // Your desired color
+                                          filled: true,
+                                          suffixIcon: IconButton(
+                                            onPressed: () async {
+                                              _pickcocPDF();
+                                            },
+                                            icon: const Icon(
+                                                Icons.open_in_browser),
+                                          ),
+                                          counterText: ''),
+                                  style: AppStyles.textInputTextStyle,
+                                  maxLines: 1,
+                                  readOnly: true,
+                                  // validator: (value) {
+                                  //   if (value!.isEmpty) {
+                                  //     return "Please Select Drawing Pdf";
+                                  //   } else {
+                                  //     return null;
+                                  //   }
+                                  // },
                                 ),
 
                                 const SizedBox(
