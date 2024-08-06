@@ -52,6 +52,7 @@ class _addSparePartState extends State<addSparePart> {
   TextEditingController brandNameController = TextEditingController();
   TextEditingController specificationController = TextEditingController();
   TextEditingController cycleTimeController = TextEditingController();
+  TextEditingController hSNCodeController = TextEditingController();
   TextEditingController pCSInOneTimeController = TextEditingController();
   TextEditingController machineModelNumberController = TextEditingController();
   final MultiSelectController _controller = MultiSelectController();
@@ -334,6 +335,7 @@ class _addSparePartState extends State<addSparePart> {
       "MachineName": MachineData ?? [],
       "Equivalent": _selectedItems ?? [],
       "CycleTime": cycleTimeController.text,
+      "HSNCode": hSNCodeController.text,
       "NumberOfPcs": pCSInOneTimeController.text,
       //  "MachineModelNumber": machineModelNumberController.text,
       "Status": "Active",
@@ -795,6 +797,32 @@ class _addSparePartState extends State<addSparePart> {
                                       ),
                                     ],
                                   ),
+                                ),
+
+                                const SizedBox(
+                                  height: 15,
+                                ),
+
+                                Text(
+                                  "HSN/SAC Code",
+                                  style: AppStyles.textfieldCaptionTextStyle,
+                                ),
+                                const SizedBox(
+                                  height: 5,
+                                ),
+                                TextFormField(
+                                  controller: hSNCodeController,
+                                  keyboardType: TextInputType.text,
+                                  textInputAction: TextInputAction.next,
+                                  decoration: AppStyles.textFieldInputDecoration
+                                      .copyWith(
+                                    hintText: "Please Enter HSN/SAC Code",
+                                    fillColor: const Color.fromARGB(
+                                            255, 187, 241, 185)
+                                        .withOpacity(0.5), // Your desired color
+                                    filled: true,
+                                  ),
+                                  style: AppStyles.textInputTextStyle,
                                 ),
 
                                 const SizedBox(

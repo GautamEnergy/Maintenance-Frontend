@@ -8,7 +8,7 @@ import 'package:Maintenance/constant/app_color.dart';
 import 'package:Maintenance/constant/app_fonts.dart';
 import 'package:Maintenance/constant/app_helper.dart';
 import 'package:Maintenance/constant/app_styles.dart';
-
+import 'package:dropdown_search/dropdown_search.dart';
 import 'package:Maintenance/constant/app_color.dart';
 import 'package:dio/dio.dart';
 import 'package:file_picker/file_picker.dart';
@@ -43,12 +43,16 @@ class _SparePartInState extends State<SparePartIn> {
   TextEditingController remarkController = TextEditingController();
   TextEditingController specificationController = TextEditingController();
   TextEditingController quantityController = TextEditingController();
+  TextEditingController quantityReceiveController = TextEditingController();
+  TextEditingController currencyController = TextEditingController();
   TextEditingController unitController = TextEditingController();
   TextEditingController priceController = TextEditingController();
   TextEditingController transportationPriceController = TextEditingController();
   TextEditingController dutyAmountController = TextEditingController();
   TextEditingController totalCostController = TextEditingController();
-  TextEditingController machineModelNumberController = TextEditingController();
+  TextEditingController invoiceNumberController = TextEditingController();
+  TextEditingController sparePartBrandController = TextEditingController();
+  TextEditingController sparePartNameController = TextEditingController();
   TextEditingController invoicePdfController = new TextEditingController();
 
   TextEditingController ribbonController = TextEditingController();
@@ -58,10 +62,13 @@ class _SparePartInState extends State<SparePartIn> {
   List<TextEditingController> sampleBControllers = [];
   List MachineList = [];
   List sparePartsNameList = [];
-  List sparePartsBrandNameList = [];
+  List POList = [];
   List sparePartModelNoList = [];
+  List allList = [];
+  List partyList = [];
   List currencyList = [];
-
+  List<String> selectedMachineItems = []; // Set your default values here
+  List<dynamic> Mach = [];
   List<int>? invoicePdfFileBytes;
 
   bool menu = false, user = false, face = false, home = false;
@@ -77,9 +84,12 @@ class _SparePartInState extends State<SparePartIn> {
   String selectedmachine = "";
   String selectedmachinemodel = "";
   String selectedspare = "";
-  String selectedsparemodel = "";
+  String selectedsparemodel = "",
+      sendSelectedsparemodel = "",
+      selectedPartyName = "",
+      sendSelectedParty = "";
   String selectedCurrency = "";
-  String selectedbrand = "";
+  String selectedPO = "";
 
   String status = '',
       sparePartId = '',
@@ -95,21 +105,18 @@ class _SparePartInState extends State<SparePartIn> {
   void initState() {
     super.initState();
     store();
-
-    dutyAmountController.addListener(updateTotalCost);
+    quantityReceiveController.addListener(updateTotalCost);
     priceController.addListener(updateTotalCost);
-    transportationPriceController.addListener(updateTotalCost);
   }
 
   @override
   void dispose() {
-    dutyAmountController.removeListener(updateTotalCost);
+    quantityReceiveController.removeListener(updateTotalCost);
     priceController.removeListener(updateTotalCost);
-    transportationPriceController.removeListener(updateTotalCost);
 
-    dutyAmountController.dispose();
+    quantityReceiveController.dispose();
     priceController.dispose();
-    transportationPriceController.dispose();
+
     totalCostController.dispose();
 
     super.dispose();
@@ -117,23 +124,18 @@ class _SparePartInState extends State<SparePartIn> {
 
   void updateTotalCost() {
     double priceAmount = 0.0;
-    double dutyAmount = 0.0;
-    double transportationPrice = 0.0;
+    double receiveQuantity = 0.0;
 
     // Check if the text fields are not empty before parsing
     if (priceController.text.isNotEmpty) {
       priceAmount = double.parse(priceController.text);
     }
 
-    if (dutyAmountController.text.isNotEmpty) {
-      dutyAmount = double.parse(dutyAmountController.text);
+    if (quantityReceiveController.text.isNotEmpty) {
+      receiveQuantity = double.parse(quantityReceiveController.text);
     }
 
-    if (transportationPriceController.text.isNotEmpty) {
-      transportationPrice = double.parse(transportationPriceController.text);
-    }
-
-    double totalCost = priceAmount + dutyAmount + transportationPrice;
+    double totalCost = priceAmount * receiveQuantity;
 
     setState(() {
       totalCostController.text =
@@ -153,6 +155,8 @@ class _SparePartInState extends State<SparePartIn> {
       department = prefs.getString('department')!;
       token = prefs.getString('token')!;
     });
+    getPartyListData();
+    getSparePartModelNoListData();
     getMachineListData();
     getCurrencyListData();
   }
@@ -224,7 +228,28 @@ class _SparePartInState extends State<SparePartIn> {
     });
   }
 
-  getSparePartModelNoListData(SparePartId) async {
+  getPartyListData() async {
+    final prefs = await SharedPreferences.getInstance();
+    site = prefs.getString('site')!;
+
+    final url = (site! + 'Maintenance/GetParty');
+
+    http.get(
+      Uri.parse(url),
+      headers: {
+        'Content-Type': 'application/json; charset=UTF-8',
+      },
+    ).then((response) {
+      if (mounted) {
+        var partyBody = jsonDecode(response.body);
+        setState(() {
+          partyList = partyBody;
+        });
+      }
+    });
+  }
+
+  getSparePartModelNoListData() async {
     final prefs = await SharedPreferences.getInstance();
     site = prefs.getString('site')!;
 
@@ -232,16 +257,14 @@ class _SparePartInState extends State<SparePartIn> {
 
     http.post(
       Uri.parse(url),
-      body: json.encode(
-          {"required": "Spare Part Model No", "SparePartId": SparePartId}),
+      body: json.encode({"required": "Spare Part Model No"}),
       headers: {
         'Content-Type': 'application/json; charset=UTF-8',
       },
     ).then((response) {
       if (mounted) {
         var machineBody = jsonDecode(response.body);
-        print("machineBody........QQQQQ");
-        print(machineBody['data']);
+
         setState(() {
           sparePartModelNoList = machineBody['data'];
         });
@@ -249,26 +272,62 @@ class _SparePartInState extends State<SparePartIn> {
     });
   }
 
-  getSparePartBrandNameListData(SparePartId) async {
+  getPONumberListData(PartyId, SparepartModelId) async {
     final prefs = await SharedPreferences.getInstance();
     site = prefs.getString('site')!;
 
-    final url = (site! + 'Maintenance/GetAutoData');
+    final url = (site! + 'Maintenance/GetVoucherList');
 
     http.post(
       Uri.parse(url),
-      body: json.encode(
-          {"required": "Spare Part Brand Name", "SparePartId": SparePartId}),
+      body: json.encode({"SparePartId": SparepartModelId, "PartyId": PartyId}),
       headers: {
         'Content-Type': 'application/json; charset=UTF-8',
       },
     ).then((response) {
       if (mounted) {
-        var machineBody = jsonDecode(response.body);
-        print("machineBody........QQQQQ");
-        print(machineBody['data']);
+        var poBody = jsonDecode(response.body);
+        print("poBody........QQQQQ");
+        print(poBody);
         setState(() {
-          sparePartsBrandNameList = machineBody['data'];
+          POList = poBody;
+        });
+      }
+    });
+  }
+
+  getAllDataFromPONumber(SparePartId, PurchaseOrderId) async {
+    final prefs = await SharedPreferences.getInstance();
+    site = prefs.getString('site')!;
+
+    final url = (site! + 'Maintenance/GetPO&SparePartDetail');
+
+    http.post(
+      Uri.parse(url),
+      body: json.encode(
+          {"SparePartId": SparePartId, "PurchaseOrderId": PurchaseOrderId}),
+      headers: {
+        'Content-Type': 'application/json; charset=UTF-8',
+      },
+    ).then((response) {
+      if (mounted) {
+        var allBody = jsonDecode(response.body);
+        print("Raajjj.....?");
+        print(allBody);
+        print(allBody['Machine']);
+        setState(() {
+          // allList = allBody;
+          sparePartBrandController.text = allBody['BrandName'];
+
+          priceController.text = allBody['Price'];
+          specificationController.text = allBody['Specification'];
+          quantityController.text = allBody['Quantity'];
+          currencyController.text = allBody['Currency'];
+          unitController.text = allBody['Unit'];
+          Mach = allBody['Machine'];
+          selectedMachineItems = Mach.where((element) => element is String)
+              .cast<String>()
+              .toList();
         });
       }
     });
@@ -325,32 +384,31 @@ class _SparePartInState extends State<SparePartIn> {
     });
   }
 
-  getMachineModelNumber(machineId) async {
-    print("machineBody.Idddddddd.");
-    print(machineId);
-    final prefs = await SharedPreferences.getInstance();
-    site = prefs.getString('site')!;
+  // getMachineModelNumber(machineId) async {
+  //   print("machineBody.Idddddddd.");
+  //   print(machineId);
+  //   final prefs = await SharedPreferences.getInstance();
+  //   site = prefs.getString('site')!;
 
-    final url = (site! + 'Maintenance/GetMachineModelNumber');
+  //   final url = (site! + 'Maintenance/GetMachineModelNumber');
 
-    http.post(
-      Uri.parse(url),
-      body: json.encode({"MachineId": machineId}),
-      headers: {
-        'Content-Type': 'application/json; charset=UTF-8',
-      },
-    ).then((response) {
-      if (mounted) {
-        var machineBody = jsonDecode(response.body);
-        print("MachineModelNumber..");
-        print(machineBody[0]['MachineModelNumber']);
-        setState(() {
-          machineModelNumberController.text =
-              machineBody[0]['MachineModelNumber'];
-        });
-      }
-    });
-  }
+  //   http.post(
+  //     Uri.parse(url),
+  //     body: json.encode({"MachineId": machineId}),
+  //     headers: {
+  //       'Content-Type': 'application/json; charset=UTF-8',
+  //     },
+  //   ).then((response) {
+  //     if (mounted) {
+  //       var machineBody = jsonDecode(response.body);
+  //       print("MachineModelNumber..");
+  //       print(machineBody[0]['MachineModelNumber']);
+  //       setState(() {
+  //         sparePartBrandController.text = machineBody[0]['MachineModelNumber'];
+  //       });
+  //     }
+  //   });
+  // }
 
   Future createData() async {
     var data = {
@@ -448,9 +506,6 @@ class _SparePartInState extends State<SparePartIn> {
             duration: Toast.lengthLong,
             gravity: Toast.center,
             backgroundColor: AppColors.blueColor);
-        // Navigator.of(context).pushReplacement(MaterialPageRoute(
-        //     builder: (BuildContext context) => IpqcTestList())
-        // );
       } else {
         Toast.show("Error In Server",
             duration: Toast.lengthLong, gravity: Toast.center);
@@ -556,95 +611,154 @@ class _SparePartInState extends State<SparePartIn> {
                                     ),
                                   ),
                                 ),
-
-                                // **************** Document Number *******************
                                 const SizedBox(
                                   height: 35,
                                 ),
-
                                 Text(
-                                  "Machine Name",
+                                  "Party Name",
                                   style: AppStyles.textfieldCaptionTextStyle,
                                 ),
                                 const SizedBox(
                                   height: 4,
                                 ),
-
-                                DropdownButtonFormField<String>(
-                                  decoration: AppStyles.textFieldInputDecoration
-                                      .copyWith(
-                                    hintText: "Please Select Machine Name",
-                                    counterText: '',
-                                    contentPadding: EdgeInsets.all(10),
-                                    fillColor: Color.fromARGB(
-                                            255, 196, 214, 176)
-                                        .withOpacity(0.5), // Your desired color
-                                    filled: true,
+                                DropdownSearch<String>(
+                                  dropdownDecoratorProps:
+                                      DropDownDecoratorProps(
+                                    dropdownSearchDecoration: AppStyles
+                                        .textFieldInputDecoration
+                                        .copyWith(
+                                      hintText: "Please Select Party Name",
+                                      counterText: '',
+                                      contentPadding: const EdgeInsets.all(10),
+                                      fillColor: const Color.fromARGB(
+                                              255, 196, 214, 176)
+                                          .withOpacity(
+                                              0.5), // Your desired color
+                                      filled: true,
+                                    ),
                                   ),
-                                  borderRadius: BorderRadius.circular(20),
-                                  items: MachineList.map((label) =>
-                                      DropdownMenuItem(
-                                        child: Text(
-                                          label['MachineName'],
-                                          style: AppStyles.textInputTextStyle,
-                                        ),
-                                        value: label['MachineId'].toString(),
-                                      )).toList(),
+                                  items: partyList
+                                      .map((label) =>
+                                          label['PartyName'].toString())
+                                      .toList(),
                                   onChanged: (val) {
                                     setState(() {
-                                      selectedspare = "";
-                                      selectedmachine = val!;
+                                      selectedPartyName = val!;
                                     });
-                                    getMachineModelNumber(val!);
-                                    getSparePartNameListData(val!);
+
+                                    final selectedParty = partyList.firstWhere(
+                                        (element) =>
+                                            element['PartyName'] == val);
+                                    // getSparePartSpecificationData(
+                                    //     selectedModel['SparePartId']
+                                    //         .toString());
+                                    getPONumberListData(
+                                        selectedParty['PartyNameId'].toString(),
+                                        sendSelectedsparemodel);
+                                    setState(() {
+                                      sendSelectedParty =
+                                          selectedParty['PartyNameId']
+                                              .toString();
+                                    });
                                   },
-                                  value: selectedmachine != ''
-                                      ? selectedmachine
+                                  selectedItem: selectedPartyName != ''
+                                      ? selectedPartyName
                                       : null,
                                   validator: (value) {
                                     if (value == null || value.isEmpty) {
-                                      return 'Please select a Machine Name';
+                                      return 'Please Select Party Name';
                                     }
-                                    return null; // Return null if the validation is successful
+                                    return null;
                                   },
+                                  popupProps: const PopupProps.menu(
+                                    showSearchBox: true,
+                                    searchFieldProps: TextFieldProps(
+                                      decoration: InputDecoration(
+                                        border: OutlineInputBorder(),
+                                        hintText: 'Search Party Name...',
+                                      ),
+                                    ),
+                                  ),
                                 ),
-
                                 const SizedBox(
                                   height: 15,
                                 ),
                                 Text(
-                                  "Machine Model Number",
+                                  "Spare Part Model No",
                                   style: AppStyles.textfieldCaptionTextStyle,
                                 ),
                                 const SizedBox(
                                   height: 4,
                                 ),
-
-                                TextFormField(
-                                  controller: machineModelNumberController,
-                                  keyboardType: TextInputType.text,
-                                  textInputAction: TextInputAction.next,
-                                  decoration: AppStyles.textFieldInputDecoration
-                                      .copyWith(
-                                    hintText:
-                                        "Please Enter Machine Model Number",
-                                    fillColor: Color.fromARGB(
-                                            255, 196, 214, 176)
-                                        .withOpacity(0.5), // Your desired color
-                                    filled: true,
+                                DropdownSearch<String>(
+                                  dropdownDecoratorProps:
+                                      DropDownDecoratorProps(
+                                    dropdownSearchDecoration: AppStyles
+                                        .textFieldInputDecoration
+                                        .copyWith(
+                                      hintText:
+                                          "Please Select Spare Part Model No",
+                                      counterText: '',
+                                      contentPadding: const EdgeInsets.all(10),
+                                      fillColor: const Color.fromARGB(
+                                              255, 196, 214, 176)
+                                          .withOpacity(
+                                              0.5), // Your desired color
+                                      filled: true,
+                                    ),
                                   ),
-                                  style: AppStyles.textInputTextStyle,
-                                  readOnly: true,
-                                  validator: MultiValidator(
-                                    [
-                                      RequiredValidator(
-                                        errorText:
-                                            "Please Enter Machine Model Number",
+                                  items: sparePartModelNoList
+                                      .map((label) =>
+                                          label['SparePartModelNumber']
+                                              .toString())
+                                      .toList(),
+                                  onChanged: (val) {
+                                    setState(() {
+                                      selectedsparemodel = val!;
+                                    });
+                                    final selectedModel = sparePartModelNoList
+                                        .firstWhere((element) =>
+                                            element['SparePartModelNumber'] ==
+                                            val);
+
+                                    getPONumberListData(
+                                        sendSelectedParty,
+                                        selectedModel['SparePartId']
+                                            .toString());
+
+                                    getAllDataFromPONumber(
+                                        selectedModel['SparePartId'].toString(),
+                                        selectedPO);
+
+                                    setState(() {
+                                      sendSelectedsparemodel =
+                                          selectedModel['SparePartId']
+                                              .toString();
+                                      sparePartNameController.text =
+                                          selectedModel['SparePartName']
+                                              .toString();
+                                      selectedPO = "";
+                                    });
+                                  },
+                                  selectedItem: selectedsparemodel != ''
+                                      ? selectedsparemodel
+                                      : null,
+                                  validator: (value) {
+                                    if (value == null || value.isEmpty) {
+                                      return 'Please Select Spare Part Model No';
+                                    }
+                                    return null;
+                                  },
+                                  popupProps: const PopupProps.menu(
+                                    showSearchBox: true,
+                                    searchFieldProps: TextFieldProps(
+                                      decoration: InputDecoration(
+                                        border: OutlineInputBorder(),
+                                        hintText: 'Search Spare Part Model No',
                                       ),
-                                    ],
+                                    ),
                                   ),
                                 ),
-
                                 const SizedBox(
                                   height: 15,
                                 ),
@@ -655,46 +769,117 @@ class _SparePartInState extends State<SparePartIn> {
                                 const SizedBox(
                                   height: 4,
                                 ),
-
+                                TextFormField(
+                                  controller: sparePartNameController,
+                                  keyboardType: TextInputType.text,
+                                  textInputAction: TextInputAction.next,
+                                  decoration: AppStyles.textFieldInputDecoration
+                                      .copyWith(
+                                    hintText: "Please Enter Spare Part Name",
+                                    fillColor: const Color.fromARGB(
+                                            255, 196, 214, 176)
+                                        .withOpacity(0.5), // Your desired color
+                                    filled: true,
+                                  ),
+                                  style: AppStyles.textInputTextStyle,
+                                  readOnly: true,
+                                  validator: MultiValidator(
+                                    [
+                                      RequiredValidator(
+                                        errorText:
+                                            "Please Enter Spare Part Name",
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                                const SizedBox(
+                                  height: 15,
+                                ),
+                                Text(
+                                  "PO Number",
+                                  style: AppStyles.textfieldCaptionTextStyle,
+                                ),
+                                const SizedBox(
+                                  height: 4,
+                                ),
                                 DropdownButtonFormField<String>(
                                   decoration: AppStyles.textFieldInputDecoration
                                       .copyWith(
-                                    hintText: "Please Select Spare Part Name",
+                                    hintText: "Please Select PO Number",
                                     counterText: '',
                                     contentPadding: EdgeInsets.all(10),
-                                    fillColor: Color.fromARGB(
+                                    fillColor: const Color.fromARGB(
                                             255, 196, 214, 176)
                                         .withOpacity(0.5), // Your desired color
                                     filled: true,
                                   ),
                                   borderRadius: BorderRadius.circular(20),
-                                  items: sparePartsNameList
-                                      .map((label) => DropdownMenuItem(
-                                            child: Text(
-                                              label['SparePartName'],
-                                              style:
-                                                  AppStyles.textInputTextStyle,
-                                            ),
-                                            value:
-                                                label['SparePartId'].toString(),
-                                          ))
-                                      .toList(),
+                                  items: POList.map((label) => DropdownMenuItem(
+                                        child: Text(
+                                          label['Voucher_Number'],
+                                          style: AppStyles.textInputTextStyle,
+                                        ),
+                                        value: label['Purchase_Order_Id']
+                                            .toString(),
+                                      )).toList(),
                                   onChanged: (val) {
                                     setState(() {
-                                      selectedbrand = "";
-                                      selectedspare = val!;
+                                      selectedPO = val!;
                                     });
-                                    getSparePartBrandNameListData(val!);
+                                    getAllDataFromPONumber(
+                                        sendSelectedsparemodel, val);
                                   },
-                                  value: selectedspare != ''
-                                      ? selectedspare
-                                      : null,
+                                  value: selectedPO != '' ? selectedPO : null,
                                   validator: (value) {
                                     if (value == null || value.isEmpty) {
-                                      return 'Please Select Spare Part Name';
+                                      return 'Please select a po number';
                                     }
-                                    return null; // Return null if the validation is successful
+                                    return null;
                                   },
+                                ),
+                                const SizedBox(
+                                  height: 15,
+                                ),
+                                Text(
+                                  "Machine Name",
+                                  style: AppStyles.textfieldCaptionTextStyle,
+                                ),
+                                const SizedBox(
+                                  height: 4,
+                                ),
+                                DropdownSearch<String>.multiSelection(
+                                  items: const [
+                                    "Item 1",
+                                    "Item 2",
+                                    "Item 3",
+                                    "Item 4"
+                                  ],
+                                  selectedItems: selectedMachineItems,
+                                  dropdownDecoratorProps:
+                                      DropDownDecoratorProps(
+                                    dropdownSearchDecoration: InputDecoration(
+                                      // labelText: "Select items",
+                                      hintText: "Please Select Machine Name",
+                                      counterText: '',
+                                      contentPadding: EdgeInsets.all(10),
+                                      fillColor: const Color.fromARGB(
+                                              255, 196, 214, 176)
+                                          .withOpacity(0.5),
+                                      filled: true,
+                                      border: OutlineInputBorder(
+                                        borderRadius: BorderRadius.circular(20),
+                                      ),
+                                    ),
+                                  ),
+                                  onChanged: (List<String> value) {
+                                    setState(() {
+                                      selectedMachineItems = value;
+                                    });
+                                  },
+                                  enabled: false,
+                                  clearButtonProps: const ClearButtonProps(
+                                    isVisible: true,
+                                  ),
                                 ),
                                 const SizedBox(
                                   height: 15,
@@ -706,109 +891,38 @@ class _SparePartInState extends State<SparePartIn> {
                                 const SizedBox(
                                   height: 4,
                                 ),
-
-                                DropdownButtonFormField<String>(
-                                  decoration: AppStyles.textFieldInputDecoration
-                                      .copyWith(
-                                    hintText: "Please Select Brand Name",
-                                    counterText: '',
-                                    contentPadding: EdgeInsets.all(10),
-                                    fillColor: Color.fromARGB(
-                                            255, 196, 214, 176)
-                                        .withOpacity(0.5), // Your desired color
-                                    filled: true,
-                                  ),
-                                  borderRadius: BorderRadius.circular(20),
-                                  items: sparePartsBrandNameList
-                                      .map((label) => DropdownMenuItem(
-                                            child: Text(
-                                              label['BrandName'],
-                                              style:
-                                                  AppStyles.textInputTextStyle,
-                                            ),
-                                            value:
-                                                label['SparePartId'].toString(),
-                                          ))
-                                      .toList(),
-                                  onChanged: (val) {
-                                    setState(() {
-                                      selectedsparemodel = "";
-                                      selectedbrand = val!;
-                                    });
-                                    getSparePartModelNoListData(val!);
-                                  },
-                                  value: selectedbrand != ''
-                                      ? selectedbrand
-                                      : null,
-                                  validator: (value) {
-                                    if (value == null || value.isEmpty) {
-                                      return 'Please select a Brand Name';
-                                    }
-                                    return null; // Return null if the validation is successful
-                                  },
-                                ),
-
-                                const SizedBox(
-                                  height: 15,
-                                ),
-                                Text(
-                                  "Spare Part Model No",
-                                  style: AppStyles.textfieldCaptionTextStyle,
-                                ),
-                                const SizedBox(
-                                  height: 4,
-                                ),
-
-                                DropdownButtonFormField<String>(
+                                TextFormField(
+                                  controller: sparePartBrandController,
+                                  keyboardType: TextInputType.text,
+                                  textInputAction: TextInputAction.next,
                                   decoration: AppStyles.textFieldInputDecoration
                                       .copyWith(
                                     hintText:
-                                        "Please Select Spare Part Model No",
-                                    counterText: '',
-                                    contentPadding: EdgeInsets.all(10),
-                                    fillColor: Color.fromARGB(
+                                        "Please Enter Spare Part Brand Name",
+                                    fillColor: const Color.fromARGB(
                                             255, 196, 214, 176)
                                         .withOpacity(0.5), // Your desired color
                                     filled: true,
                                   ),
-                                  borderRadius: BorderRadius.circular(20),
-                                  items: sparePartModelNoList
-                                      .map((label) => DropdownMenuItem(
-                                            child: Text(
-                                              label['SparePartModelNumber'],
-                                              style:
-                                                  AppStyles.textInputTextStyle,
-                                            ),
-                                            value:
-                                                label['SparePartId'].toString(),
-                                          ))
-                                      .toList(),
-                                  onChanged: (val) {
-                                    setState(() {
-                                      selectedsparemodel = val!;
-                                    });
-                                    getSparePartSpecificationData(val!);
-                                  },
-                                  value: selectedsparemodel != ''
-                                      ? selectedsparemodel
-                                      : null,
-                                  validator: (value) {
-                                    if (value == null || value.isEmpty) {
-                                      return 'Please Select Spare Part Model No';
-                                    }
-                                    return null; // Return null if the validation is successful
-                                  },
+                                  style: AppStyles.textInputTextStyle,
+                                  readOnly: true,
+                                  validator: MultiValidator(
+                                    [
+                                      RequiredValidator(
+                                        errorText:
+                                            "Please Enter Spare Part Brand Name",
+                                      ),
+                                    ],
+                                  ),
                                 ),
-
                                 const SizedBox(
                                   height: 15,
                                 ),
-
                                 Text(
                                   "Specification",
                                   style: AppStyles.textfieldCaptionTextStyle,
                                 ),
-                                SizedBox(
+                                const SizedBox(
                                   height: 5,
                                 ),
                                 TextFormField(
@@ -818,7 +932,7 @@ class _SparePartInState extends State<SparePartIn> {
                                   decoration: AppStyles.textFieldInputDecoration
                                       .copyWith(
                                     hintText: "Please Enter Specification",
-                                    fillColor: Color.fromARGB(
+                                    fillColor: const Color.fromARGB(
                                             255, 196, 214, 176)
                                         .withOpacity(0.5), // Your desired color
                                     filled: true,
@@ -833,15 +947,14 @@ class _SparePartInState extends State<SparePartIn> {
                                     ],
                                   ),
                                 ),
-
                                 const SizedBox(
                                   height: 15,
                                 ),
                                 Text(
-                                  "Quantity In PCS",
+                                  "Quantity In PCS(In PO)",
                                   style: AppStyles.textfieldCaptionTextStyle,
                                 ),
-                                SizedBox(
+                                const SizedBox(
                                   height: 5,
                                 ),
                                 TextFormField(
@@ -851,7 +964,39 @@ class _SparePartInState extends State<SparePartIn> {
                                   decoration: AppStyles.textFieldInputDecoration
                                       .copyWith(
                                     hintText: "Please Enter Quantity",
-                                    fillColor: Color.fromARGB(
+                                    fillColor: const Color.fromARGB(
+                                            255, 196, 214, 176)
+                                        .withOpacity(0.5), // Your desired color
+                                    filled: true,
+                                  ),
+                                  style: AppStyles.textInputTextStyle,
+                                  readOnly: true,
+                                  validator: MultiValidator(
+                                    [
+                                      RequiredValidator(
+                                        errorText: "Please Enter Quantity",
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                                const SizedBox(
+                                  height: 15,
+                                ),
+                                Text(
+                                  "Quantity In PCS(Receive)",
+                                  style: AppStyles.textfieldCaptionTextStyle,
+                                ),
+                                const SizedBox(
+                                  height: 5,
+                                ),
+                                TextFormField(
+                                  controller: quantityReceiveController,
+                                  keyboardType: TextInputType.number,
+                                  textInputAction: TextInputAction.next,
+                                  decoration: AppStyles.textFieldInputDecoration
+                                      .copyWith(
+                                    hintText: "Please Enter Quantity",
+                                    fillColor: const Color.fromARGB(
                                             255, 196, 214, 176)
                                         .withOpacity(0.5), // Your desired color
                                     filled: true,
@@ -865,7 +1010,6 @@ class _SparePartInState extends State<SparePartIn> {
                                     ],
                                   ),
                                 ),
-
                                 const SizedBox(
                                   height: 15,
                                 ),
@@ -873,7 +1017,7 @@ class _SparePartInState extends State<SparePartIn> {
                                   "Units",
                                   style: AppStyles.textfieldCaptionTextStyle,
                                 ),
-                                SizedBox(
+                                const SizedBox(
                                   height: 5,
                                 ),
                                 TextFormField(
@@ -883,7 +1027,7 @@ class _SparePartInState extends State<SparePartIn> {
                                   decoration: AppStyles.textFieldInputDecoration
                                       .copyWith(
                                     hintText: "Please Enter Units",
-                                    fillColor: Color.fromARGB(
+                                    fillColor: const Color.fromARGB(
                                             255, 196, 214, 176)
                                         .withOpacity(0.5), // Your desired color
                                     filled: true,
@@ -897,7 +1041,6 @@ class _SparePartInState extends State<SparePartIn> {
                                     ],
                                   ),
                                 ),
-
                                 const SizedBox(
                                   height: 15,
                                 ),
@@ -908,45 +1051,27 @@ class _SparePartInState extends State<SparePartIn> {
                                 const SizedBox(
                                   height: 4,
                                 ),
-
-                                DropdownButtonFormField<String>(
+                                TextFormField(
+                                  controller: currencyController,
+                                  keyboardType: TextInputType.number,
+                                  textInputAction: TextInputAction.next,
                                   decoration: AppStyles.textFieldInputDecoration
                                       .copyWith(
-                                    hintText: "Please Select Currency",
-                                    counterText: '',
-                                    contentPadding: EdgeInsets.all(10),
-                                    fillColor: Color.fromARGB(
+                                    hintText: "Please Enter Currency",
+                                    fillColor: const Color.fromARGB(
                                             255, 196, 214, 176)
                                         .withOpacity(0.5), // Your desired color
                                     filled: true,
                                   ),
-                                  borderRadius: BorderRadius.circular(20),
-                                  items: currencyList
-                                      .map((label) => DropdownMenuItem(
-                                            child: Text(
-                                              label['Currency'],
-                                              style:
-                                                  AppStyles.textInputTextStyle,
-                                            ),
-                                            value: label['Currency'].toString(),
-                                          ))
-                                      .toList(),
-                                  onChanged: (val) {
-                                    setState(() {
-                                      selectedCurrency = val!;
-                                    });
-                                  },
-                                  value: selectedCurrency != ''
-                                      ? selectedCurrency
-                                      : null,
-                                  validator: (value) {
-                                    if (value == null || value.isEmpty) {
-                                      return 'Please Select Currency';
-                                    }
-                                    return null;
-                                  },
+                                  style: AppStyles.textInputTextStyle,
+                                  validator: MultiValidator(
+                                    [
+                                      RequiredValidator(
+                                        errorText: "Please Enter Currency",
+                                      ),
+                                    ],
+                                  ),
                                 ),
-
                                 const SizedBox(
                                   height: 15,
                                 ),
@@ -954,7 +1079,7 @@ class _SparePartInState extends State<SparePartIn> {
                                   "Price",
                                   style: AppStyles.textfieldCaptionTextStyle,
                                 ),
-                                SizedBox(
+                                const SizedBox(
                                   height: 5,
                                 ),
                                 TextFormField(
@@ -964,7 +1089,7 @@ class _SparePartInState extends State<SparePartIn> {
                                   decoration: AppStyles.textFieldInputDecoration
                                       .copyWith(
                                     hintText: "Please Enter Price",
-                                    fillColor: Color.fromARGB(
+                                    fillColor: const Color.fromARGB(
                                             255, 196, 214, 176)
                                         .withOpacity(0.5), // Your desired color
                                     filled: true,
@@ -978,73 +1103,6 @@ class _SparePartInState extends State<SparePartIn> {
                                     ],
                                   ),
                                 ),
-
-                                const SizedBox(
-                                  height: 15,
-                                ),
-                                Text(
-                                  "Transportation Price",
-                                  style: AppStyles.textfieldCaptionTextStyle,
-                                ),
-                                SizedBox(
-                                  height: 5,
-                                ),
-                                TextFormField(
-                                  controller: transportationPriceController,
-                                  keyboardType: TextInputType.number,
-                                  textInputAction: TextInputAction.next,
-                                  decoration: AppStyles.textFieldInputDecoration
-                                      .copyWith(
-                                    hintText:
-                                        "Please Enter Transportation Price",
-                                    fillColor: Color.fromARGB(
-                                            255, 196, 214, 176)
-                                        .withOpacity(0.5), // Your desired color
-                                    filled: true,
-                                  ),
-                                  style: AppStyles.textInputTextStyle,
-                                  validator: MultiValidator(
-                                    [
-                                      RequiredValidator(
-                                        errorText:
-                                            "Please Enter Transportation Price",
-                                      ),
-                                    ],
-                                  ),
-                                ),
-
-                                const SizedBox(
-                                  height: 15,
-                                ),
-                                Text(
-                                  "Duty Amount",
-                                  style: AppStyles.textfieldCaptionTextStyle,
-                                ),
-                                SizedBox(
-                                  height: 5,
-                                ),
-                                TextFormField(
-                                  controller: dutyAmountController,
-                                  keyboardType: TextInputType.number,
-                                  textInputAction: TextInputAction.next,
-                                  decoration: AppStyles.textFieldInputDecoration
-                                      .copyWith(
-                                    hintText: "Please Enter Duty Amount",
-                                    fillColor: Color.fromARGB(
-                                            255, 196, 214, 176)
-                                        .withOpacity(0.5), // Your desired color
-                                    filled: true,
-                                  ),
-                                  style: AppStyles.textInputTextStyle,
-                                  validator: MultiValidator(
-                                    [
-                                      RequiredValidator(
-                                        errorText: "Please Enter Duty Amount",
-                                      ),
-                                    ],
-                                  ),
-                                ),
-
                                 const SizedBox(
                                   height: 15,
                                 ),
@@ -1062,7 +1120,7 @@ class _SparePartInState extends State<SparePartIn> {
                                   decoration: AppStyles.textFieldInputDecoration
                                       .copyWith(
                                     hintText: "Please Enter Total Cost",
-                                    fillColor: Color.fromARGB(
+                                    fillColor: const Color.fromARGB(
                                             255, 196, 214, 176)
                                         .withOpacity(0.5), // Your desired color
                                     filled: true,
@@ -1077,7 +1135,38 @@ class _SparePartInState extends State<SparePartIn> {
                                     ],
                                   ),
                                 ),
-
+                                const SizedBox(
+                                  height: 15,
+                                ),
+                                Text(
+                                  "Invoice Number",
+                                  style: AppStyles.textfieldCaptionTextStyle,
+                                ),
+                                const SizedBox(
+                                  height: 5,
+                                ),
+                                TextFormField(
+                                  controller: invoiceNumberController,
+                                  keyboardType: TextInputType.number,
+                                  textInputAction: TextInputAction.next,
+                                  decoration: AppStyles.textFieldInputDecoration
+                                      .copyWith(
+                                    hintText: "Please Enter Invoice Number",
+                                    fillColor: const Color.fromARGB(
+                                            255, 196, 214, 176)
+                                        .withOpacity(0.5), // Your desired color
+                                    filled: true,
+                                  ),
+                                  style: AppStyles.textInputTextStyle,
+                                  validator: MultiValidator(
+                                    [
+                                      RequiredValidator(
+                                        errorText:
+                                            "Please Enter Invoice Number",
+                                      ),
+                                    ],
+                                  ),
+                                ),
                                 const SizedBox(
                                   height: 15,
                                 ),
@@ -1119,11 +1208,9 @@ class _SparePartInState extends State<SparePartIn> {
                                     }
                                   },
                                 ),
-
                                 const SizedBox(
                                   height: 25,
                                 ),
-
                                 Padding(
                                     padding: EdgeInsets.fromLTRB(0, 10, 0, 0)),
                                 _isLoading
@@ -1147,11 +1234,38 @@ class _SparePartInState extends State<SparePartIn> {
                                         label: "Save",
                                         organization: '',
                                       ),
-
+                                const SizedBox(
+                                  height: 10,
+                                ),
+                                Center(
+                                  child: Padding(
+                                    padding: const EdgeInsets.all(8.0),
+                                    child: InkWell(
+                                      onTap: () {
+                                        Navigator.of(context)
+                                            .pushAndRemoveUntil(
+                                                MaterialPageRoute(
+                                                    builder:
+                                                        (BuildContext
+                                                                context) =>
+                                                            WelcomePage()),
+                                                (Route<dynamic> route) =>
+                                                    false);
+                                      },
+                                      child: const Text(
+                                        'BACK',
+                                        style: TextStyle(
+                                            fontFamily: appFontFamily,
+                                            fontSize: 16,
+                                            fontWeight: FontWeight.w500,
+                                            color: AppColors.redColor),
+                                      ),
+                                    ),
+                                  ),
+                                ),
                                 const SizedBox(
                                   height: 25,
                                 ),
-
                                 Container(
                                   alignment: Alignment.center,
                                   child: const Column(
