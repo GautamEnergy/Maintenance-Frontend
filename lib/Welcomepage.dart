@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:Maintenance/CommonDrawer.dart';
+import 'package:Maintenance/SparePartInList.dart';
 
 import 'package:Maintenance/components/appbar.dart';
 import 'package:Maintenance/constant/app_color.dart';
@@ -158,7 +159,7 @@ class _WelcomePageState extends State<WelcomePage>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.lightBlack,
+      backgroundColor: Color.fromARGB(68, 123, 100, 141),
       appBar: GautamAppBar(
         organization: "organizationtype",
         isBackRequired: false,
@@ -199,6 +200,19 @@ class _WelcomePageState extends State<WelcomePage>
                   const SizedBox(
                     width: 10,
                   ),
+                  Expanded(
+                      child: sparePartInList(
+                          'Spare Parts In List', AppAssets.imgSparePartList,
+                          () {
+                    Navigator.of(context).pushAndRemoveUntil(
+                        MaterialPageRoute(
+                            builder: (BuildContext context) =>
+                                SparePartInList()),
+                        (Route<dynamic> route) => false);
+                  })),
+                  const SizedBox(
+                    width: 10,
+                  ),
                 ],
               ),
               const SizedBox(
@@ -214,6 +228,18 @@ class _WelcomePageState extends State<WelcomePage>
                   Expanded(
                       child: outSpareParts(
                           'Machine Maintenance', AppAssets.Laminator1, () {
+                    // Navigator.of(context).pushAndRemoveUntil(
+                    //     MaterialPageRoute(
+                    //         builder: (BuildContext context) => EmployeeList()),
+                    //     (Route<dynamic> route) => false);
+                  })),
+                  const SizedBox(
+                    width: 10,
+                  ),
+                  Expanded(
+                      child: machineMaintenanceList(
+                          'Machine Maintenance List', AppAssets.imgMachineList,
+                          () {
                     // Navigator.of(context).pushAndRemoveUntil(
                     //     MaterialPageRoute(
                     //         builder: (BuildContext context) => EmployeeList()),
@@ -449,7 +475,97 @@ class _WelcomePageState extends State<WelcomePage>
                   ),
                   Center(
                     child: Text(
-                      "0",
+                      "",
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 60,
+                        color: Colors.white,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget sparePartInList(String title, String img, final Function onPressed) {
+    return InkWell(
+      onTap: () {
+        onPressed();
+      },
+      child: AnimatedBuilder(
+        animation: _animation1,
+        builder: (context, child) {
+          return Transform.scale(
+            scale: _animation1.value,
+            child: child,
+          );
+        },
+        child: Container(
+          decoration: BoxDecoration(
+            color: Color.fromARGB(255, 253, 229, 11),
+            borderRadius: BorderRadius.circular(10),
+          ),
+          height: 255,
+          child: Stack(
+            children: [
+              Positioned(
+                bottom: 0,
+                right: 0,
+                child: Container(
+                  height: 150,
+                  width: 155,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.only(
+                      bottomRight: Radius.circular(10),
+                    ),
+                    image: DecorationImage(
+                      image: AssetImage(AppAssets.imgSparePartList),
+                      fit: BoxFit.fill,
+                    ),
+                  ),
+                ),
+              ),
+              Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.only(left: 18.0, top: 15),
+                    child: Text(
+                      title,
+                      style: TextStyle(
+                        fontWeight: FontWeight.w600,
+                        fontFamily: appFontFamily,
+                        fontSize: 16,
+                        color: Color.fromARGB(255, 0, 0, 0),
+                      ),
+                    ),
+                  ),
+                  SizedBox(
+                    height: 15,
+                  ),
+                  Center(
+                    child: Container(
+                      height: 36,
+                      width: 36,
+                      child: Image.asset(
+                        img,
+                        height: 36,
+                        width: 36,
+                      ),
+                    ),
+                  ),
+                  SizedBox(
+                    height: 10,
+                  ),
+                  Center(
+                    child: Text(
+                      "",
                       style: TextStyle(
                         fontWeight: FontWeight.bold,
                         fontSize: 60,
@@ -491,14 +607,91 @@ class _WelcomePageState extends State<WelcomePage>
                     bottom: 0,
                     right: 0,
                     child: Container(
-                      height: 200,
-                      width: 175,
+                      height: 100,
+                      width: 100,
                       decoration: BoxDecoration(
                           borderRadius: BorderRadius.only(
                               bottomRight: Radius.circular(10)),
                           image: DecorationImage(
                               image: AssetImage(
                                 AppAssets.Laminator1,
+                              ),
+                              fit: BoxFit.fill)),
+                      // child: Image.asset(
+                      //   AppAssets.icEllipse,
+                      //   fit: BoxFit.fill,
+                      //   height: 50,
+                      //   width: 155,
+                      // ),
+                    )),
+                Column(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.only(left: 18.0, top: 15),
+                      child: Text(title,
+                          style: TextStyle(
+                              fontWeight: FontWeight.w600,
+                              fontFamily: appFontFamily,
+                              fontSize: 16,
+                              color: Color.fromARGB(249, 0, 0, 0))),
+                    ),
+                    SizedBox(
+                      height: 15,
+                    ),
+                    Center(
+                        child: Container(
+                            height: 36,
+                            width: 36,
+                            child: Image.asset(
+                              img,
+                              height: 36,
+                              width: 36,
+                              //fit: BoxFit.cover,
+                            )))
+                  ],
+                )
+              ],
+            ),
+          )),
+    );
+  }
+
+  Widget machineMaintenanceList(
+      String title, String img, final Function onPressed) {
+    return InkWell(
+      onTap: () {
+        onPressed();
+      },
+      child: AnimatedBuilder(
+          animation: _animation2,
+          builder: (context, child) {
+            return Transform.scale(
+              scale: _animation2.value,
+              child: child,
+            );
+          },
+          child: Container(
+            decoration: BoxDecoration(
+              color: Color.fromARGB(255, 21, 228, 255),
+              borderRadius: BorderRadius.circular(10),
+            ),
+            height: 255,
+            child: Stack(
+              children: [
+                Positioned(
+                    bottom: 0,
+                    right: 0,
+                    child: Container(
+                      height: 100,
+                      width: 100,
+                      decoration: BoxDecoration(
+                          borderRadius: BorderRadius.only(
+                              bottomRight: Radius.circular(10)),
+                          image: DecorationImage(
+                              image: AssetImage(
+                                AppAssets.imgMachineList,
                               ),
                               fit: BoxFit.fill)),
                       // child: Image.asset(

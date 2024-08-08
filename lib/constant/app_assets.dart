@@ -38,6 +38,9 @@ class AppAssets {
   static String imgModule = 'assets/images/module.jpg';
   static String profilePlaceholder = 'assets/images/profile_placeholder.png';
 
+  static String imgMachineList = 'assets/icons/machinelist.png';
+  static String imgSparePartList = 'assets/icons/sparepartlist.png';
+
   static String imgPerson = 'assets/icons/Member.png';
   static String imgSelectedPerson = 'assets/icons/selecteduser.png';
   static String imgFace = 'assets/icons/face.png';

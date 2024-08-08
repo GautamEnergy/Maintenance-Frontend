@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
+import 'package:Maintenance/SparePartInList.dart';
 import 'package:Maintenance/Welcomepage.dart';
 import 'package:Maintenance/components/app_button_widget.dart';
 import 'package:Maintenance/components/appbar.dart';
@@ -33,53 +34,34 @@ class SparePartIn extends StatefulWidget {
 
 class _SparePartInState extends State<SparePartIn> {
   final _registerFormKey = GlobalKey<FormState>();
-  TextEditingController dateController = TextEditingController();
-  TextEditingController shiftController = TextEditingController();
-  TextEditingController LineController = TextEditingController();
-  TextEditingController operatornameController = TextEditingController();
-  TextEditingController bussingStageController = TextEditingController();
-  TextEditingController ribbonWidthController = TextEditingController();
-  TextEditingController busbarWidthController = TextEditingController();
-  TextEditingController remarkController = TextEditingController();
+
   TextEditingController specificationController = TextEditingController();
   TextEditingController quantityController = TextEditingController();
   TextEditingController quantityReceiveController = TextEditingController();
   TextEditingController currencyController = TextEditingController();
   TextEditingController unitController = TextEditingController();
   TextEditingController priceController = TextEditingController();
-  TextEditingController transportationPriceController = TextEditingController();
-  TextEditingController dutyAmountController = TextEditingController();
   TextEditingController totalCostController = TextEditingController();
   TextEditingController invoiceNumberController = TextEditingController();
   TextEditingController sparePartBrandController = TextEditingController();
   TextEditingController sparePartNameController = TextEditingController();
-  TextEditingController invoicePdfController = new TextEditingController();
+  TextEditingController invoicePdfController = TextEditingController();
 
-  TextEditingController ribbonController = TextEditingController();
-  TextEditingController referencePdfController = new TextEditingController();
-
-  List<TextEditingController> sampleAControllers = [];
-  List<TextEditingController> sampleBControllers = [];
-  List MachineList = [];
   List sparePartsNameList = [];
   List POList = [];
   List sparePartModelNoList = [];
   List allList = [];
   List partyList = [];
   List currencyList = [];
-  List<String> selectedMachineItems = []; // Set your default values here
+  List<String> selectedMachineItems = [];
   List<dynamic> Mach = [];
   List<int>? invoicePdfFileBytes;
 
   bool menu = false, user = false, face = false, home = false;
-  int numberOfStringers = 0;
+
   bool _isLoading = false;
   String setPage = '', pic = '', site = '', personid = '';
-  String invoiceDate = '';
-  String date = '';
-  String dateOfQualityCheck = '';
-  bool? isCycleTimeTrue;
-  bool? isBacksheetCuttingTrue;
+
   List<int>? referencePdfFileBytes;
   String selectedmachine = "";
   String selectedmachinemodel = "";
@@ -157,8 +139,6 @@ class _SparePartInState extends State<SparePartIn> {
     });
     getPartyListData();
     getSparePartModelNoListData();
-    getMachineListData();
-    getCurrencyListData();
   }
 
   Future<void> _pickcocPDF() async {
@@ -176,56 +156,6 @@ class _SparePartInState extends State<SparePartIn> {
     } else {
       // User canceled the file picker
     }
-  }
-
-  getCurrencyListData() async {
-    final prefs = await SharedPreferences.getInstance();
-    site = prefs.getString('site')!;
-
-    final url = (site! + 'Maintenance/GetCurrency');
-
-    http.get(
-      Uri.parse(url),
-      headers: {
-        'Content-Type': 'application/json; charset=UTF-8',
-      },
-    ).then((response) {
-      if (mounted) {
-        var machineBody = jsonDecode(response.body);
-        print("Specification........QQQQQ");
-        print(machineBody);
-        setState(() {
-          currencyList = machineBody;
-        });
-      }
-    });
-  }
-
-  getSparePartSpecificationData(SparePartId) async {
-    final prefs = await SharedPreferences.getInstance();
-    site = prefs.getString('site')!;
-
-    final url = (site! + 'Maintenance/GetAutoData');
-
-    http.post(
-      Uri.parse(url),
-      body: json.encode(
-          {"required": "Spare Part Specification", "SparePartId": SparePartId}),
-      headers: {
-        'Content-Type': 'application/json; charset=UTF-8',
-      },
-    ).then((response) {
-      if (mounted) {
-        var machineBody = jsonDecode(response.body);
-        print("Specification........QQQQQ");
-        print(machineBody['data'][0]['Specification']);
-        setState(() {
-          // sparePartModelNoList = machineBody['data'];
-          specificationController.text =
-              machineBody['data'][0]['Specification'];
-        });
-      }
-    });
   }
 
   getPartyListData() async {
@@ -314,7 +244,7 @@ class _SparePartInState extends State<SparePartIn> {
         var allBody = jsonDecode(response.body);
         print("Raajjj.....?");
         print(allBody);
-        print(allBody['Machine']);
+
         setState(() {
           // allList = allBody;
           sparePartBrandController.text = allBody['BrandName'];
@@ -333,92 +263,24 @@ class _SparePartInState extends State<SparePartIn> {
     });
   }
 
-  getSparePartNameListData(machineId) async {
-    final prefs = await SharedPreferences.getInstance();
-    site = prefs.getString('site')!;
-
-    final url = (site! + 'Maintenance/GetAutoData');
-
-    http.post(
-      Uri.parse(url),
-      body:
-          json.encode({"required": "Spare Part Name", "MachineId": machineId}),
-      headers: {
-        'Content-Type': 'application/json; charset=UTF-8',
-      },
-    ).then((response) {
-      if (mounted) {
-        var machineBody = jsonDecode(response.body);
-        print("machineBody........QQQQQ");
-        print(machineBody['data']);
-        setState(() {
-          sparePartsNameList = machineBody['data'];
-        });
-      }
-    });
-  }
-
-  getMachineListData() async {
-    final prefs = await SharedPreferences.getInstance();
-    site = prefs.getString('site')!;
-
-    final url = (site! + 'Maintenance/MachineDetailById');
-
-    http.get(
-      Uri.parse(url),
-      // body: json.encode({"MachineId": ""}),
-      headers: {
-        'Content-Type': 'application/json; charset=UTF-8',
-      },
-    ).then((response) {
-      if (mounted) {
-        var machineBody = jsonDecode(response.body);
-        setState(() {
-          MachineList = machineBody;
-          // options = machineList
-          //     .map((item) => ValueItem(
-          //         label: item['MachineName']!, value: item['MachineId']!))
-          //     .toList();
-        });
-      }
-    });
-  }
-
-  // getMachineModelNumber(machineId) async {
-  //   print("machineBody.Idddddddd.");
-  //   print(machineId);
-  //   final prefs = await SharedPreferences.getInstance();
-  //   site = prefs.getString('site')!;
-
-  //   final url = (site! + 'Maintenance/GetMachineModelNumber');
-
-  //   http.post(
-  //     Uri.parse(url),
-  //     body: json.encode({"MachineId": machineId}),
-  //     headers: {
-  //       'Content-Type': 'application/json; charset=UTF-8',
-  //     },
-  //   ).then((response) {
-  //     if (mounted) {
-  //       var machineBody = jsonDecode(response.body);
-  //       print("MachineModelNumber..");
-  //       print(machineBody[0]['MachineModelNumber']);
-  //       setState(() {
-  //         sparePartBrandController.text = machineBody[0]['MachineModelNumber'];
-  //       });
-  //     }
-  //   });
-  // }
-
   Future createData() async {
     var data = {
-      "SparePartName": "SparePartName",
-      "SparePartName": "SparePartName",
-      "SparePartName": "SparePartName",
-      "SparePartName": "",
-      "SparePartName": "",
-      "SparePartName": "",
-      "SparePartName": ""
+      "CreatedBy": personid,
+      "PartyId": sendSelectedParty,
+      "SparePartId": sendSelectedsparemodel,
+      "SparePartName": sparePartNameController.text,
+      "PurchaseOrderId": selectedPO,
+      "MachineNames": selectedMachineItems,
+      "SparePartBrandName": sparePartBrandController.text,
+      "Price": priceController.text,
+      "SparePartSpecification": specificationController.text,
+      "QuantityPurchaseOrder": quantityController.text,
+      "Currency": currencyController.text,
+      "Unit": unitController.text,
+      "QuantityRecieved": quantityReceiveController.text,
+      "TotalCost": totalCostController.text,
+      "InvoiceNumber": invoiceNumberController.text,
+      "Status": "Active"
     };
 
     setState(() {
@@ -426,7 +288,7 @@ class _SparePartInState extends State<SparePartIn> {
     });
     FocusScope.of(context).unfocus();
 
-    final url = (site! + "Maintenance/Test");
+    final url = (site! + "Maintenance/SparePartIn");
 
     final prefs = await SharedPreferences.getInstance();
 
@@ -437,30 +299,35 @@ class _SparePartInState extends State<SparePartIn> {
         'Content-Type': 'application/json; charset=UTF-8',
       },
     );
-
+    print("response......?");
+    print(response);
+    print(response.statusCode);
+    print(response.body);
     if (response.statusCode == 200) {
       var objData = json.decode(response.body);
+      print("objData['SparePartInId']");
+      print(objData[0]['SparePartInId']);
+      print("...................................");
       setState(() {
-        sparePartId = objData['UUID'];
-
-        _isLoading = false;
+        sparePartId = objData[0]['SparePartInId'];
       });
+      print("................NNNNNNNNNNN...................");
 
-      print(objData['UUID']);
-      if (objData['success'] == false) {
-        Toast.show(objData['message'],
+      print(invoicePdfFileBytes);
+      if (invoicePdfFileBytes != '' && invoicePdfFileBytes != null) {
+        uploadPDF((invoicePdfFileBytes ?? []));
+      } else {
+        setState(() {
+          _isLoading = false;
+        });
+        Toast.show("Spare Part In Successfully.",
             duration: Toast.lengthLong,
             gravity: Toast.center,
-            backgroundColor: AppColors.redColor);
-      } else {
-        if (invoicePdfFileBytes != '' && invoicePdfFileBytes != null) {
-          uploadPDF((invoicePdfFileBytes ?? []));
-        } else {
-          Toast.show("Spare Part In Successfully.",
-              duration: Toast.lengthLong,
-              gravity: Toast.center,
-              backgroundColor: AppColors.blueColor);
-        }
+            backgroundColor: AppColors.blueColor);
+        Navigator.of(context).pushAndRemoveUntil(
+            MaterialPageRoute(
+                builder: (BuildContext context) => SparePartInList()),
+            (Route<dynamic> route) => false);
       }
     } else {
       setState(() {
@@ -472,24 +339,22 @@ class _SparePartInState extends State<SparePartIn> {
   }
 
   uploadPDF(List<int> referenceBytes) async {
-    setState(() {
-      _isLoading = true;
-    });
+    print("PDF......");
     final prefs = await SharedPreferences.getInstance();
     site = prefs.getString('site')!;
 
     var currentdate = DateTime.now().microsecondsSinceEpoch;
     var formData = FormData.fromMap({
-      "sparePartId": sparePartId,
-      "invoicePdf": MultipartFile.fromBytes(
+      "SparePartId": sparePartId,
+      "InvoicePdf": MultipartFile.fromBytes(
         referenceBytes,
         filename:
-            (referencePdfController.text + (currentdate.toString()) + '.pdf'),
+            (invoicePdfController.text + (currentdate.toString()) + '.pdf'),
         contentType: MediaType("application", 'pdf'),
       ),
     });
 
-    _response = await _dio.post((site! + 'Maintenance/Test'),
+    _response = await _dio.post((site! + 'Maintenance/SparePartsImage'),
         options: Options(
           contentType: 'multipart/form-data',
           followRedirects: false,
@@ -506,9 +371,16 @@ class _SparePartInState extends State<SparePartIn> {
             duration: Toast.lengthLong,
             gravity: Toast.center,
             backgroundColor: AppColors.blueColor);
+        Navigator.of(context).pushAndRemoveUntil(
+            MaterialPageRoute(
+                builder: (BuildContext context) => SparePartInList()),
+            (Route<dynamic> route) => false);
       } else {
-        Toast.show("Error In Server",
+        Toast.show("Error In PDF Server",
             duration: Toast.lengthLong, gravity: Toast.center);
+        setState(() {
+          _isLoading = false;
+        });
       }
     } catch (err) {
       print("Error");
@@ -715,6 +587,16 @@ class _SparePartInState extends State<SparePartIn> {
                                   onChanged: (val) {
                                     setState(() {
                                       selectedsparemodel = val!;
+                                      // Empty at onChange:
+                                      selectedPO = "";
+                                      selectedMachineItems = [];
+                                      sparePartBrandController.text = "";
+                                      priceController.text = "";
+                                      specificationController.text = "";
+                                      quantityController.text = "";
+                                      currencyController.text = "";
+                                      unitController.text = "";
+                                      quantityReceiveController.text = "";
                                     });
                                     final selectedModel = sparePartModelNoList
                                         .firstWhere((element) =>
@@ -738,6 +620,14 @@ class _SparePartInState extends State<SparePartIn> {
                                           selectedModel['SparePartName']
                                               .toString();
                                       selectedPO = "";
+                                      selectedMachineItems = [];
+                                      sparePartBrandController.text = "";
+                                      priceController.text = "";
+                                      specificationController.text = "";
+                                      quantityController.text = "";
+                                      currencyController.text = "";
+                                      unitController.text = "";
+                                      quantityReceiveController.text = "";
                                     });
                                   },
                                   selectedItem: selectedsparemodel != ''
@@ -825,6 +715,14 @@ class _SparePartInState extends State<SparePartIn> {
                                   onChanged: (val) {
                                     setState(() {
                                       selectedPO = val!;
+                                      selectedMachineItems = [];
+                                      sparePartBrandController.text = "";
+                                      priceController.text = "";
+                                      specificationController.text = "";
+                                      quantityController.text = "";
+                                      currencyController.text = "";
+                                      unitController.text = "";
+                                      quantityReceiveController.text = "";
                                     });
                                     getAllDataFromPONumber(
                                         sendSelectedsparemodel, val);
@@ -848,17 +746,11 @@ class _SparePartInState extends State<SparePartIn> {
                                   height: 4,
                                 ),
                                 DropdownSearch<String>.multiSelection(
-                                  items: const [
-                                    "Item 1",
-                                    "Item 2",
-                                    "Item 3",
-                                    "Item 4"
-                                  ],
+                                  items: const [], // Add your items here
                                   selectedItems: selectedMachineItems,
                                   dropdownDecoratorProps:
                                       DropDownDecoratorProps(
                                     dropdownSearchDecoration: InputDecoration(
-                                      // labelText: "Select items",
                                       hintText: "Please Select Machine Name",
                                       counterText: '',
                                       contentPadding: EdgeInsets.all(10),
@@ -869,6 +761,9 @@ class _SparePartInState extends State<SparePartIn> {
                                       border: OutlineInputBorder(
                                         borderRadius: BorderRadius.circular(20),
                                       ),
+                                      errorText: selectedMachineItems.isEmpty
+                                          ? 'Please select at least one machine'
+                                          : null,
                                     ),
                                   ),
                                   onChanged: (List<String> value) {
@@ -876,7 +771,8 @@ class _SparePartInState extends State<SparePartIn> {
                                       selectedMachineItems = value;
                                     });
                                   },
-                                  enabled: false,
+                                  enabled:
+                                      false, // Set to true to allow selection
                                   clearButtonProps: const ClearButtonProps(
                                     isVisible: true,
                                   ),
@@ -1002,13 +898,20 @@ class _SparePartInState extends State<SparePartIn> {
                                     filled: true,
                                   ),
                                   style: AppStyles.textInputTextStyle,
-                                  validator: MultiValidator(
-                                    [
-                                      RequiredValidator(
-                                        errorText: "Please Enter Quantity",
-                                      ),
-                                    ],
-                                  ),
+                                  readOnly: quantityController.text != ""
+                                      ? false
+                                      : true,
+                                  validator: (value) {
+                                    if (value == null || value.isEmpty) {
+                                      return 'Please Enter Quantity';
+                                    } else if (int.parse(value) >
+                                            int.parse(
+                                                quantityController.text) ||
+                                        int.parse(value) < 1) {
+                                      return 'Please Enter Valid Quantity';
+                                    }
+                                    return null;
+                                  },
                                 ),
                                 const SizedBox(
                                   height: 15,
@@ -1033,6 +936,7 @@ class _SparePartInState extends State<SparePartIn> {
                                     filled: true,
                                   ),
                                   style: AppStyles.textInputTextStyle,
+                                  readOnly: true,
                                   validator: MultiValidator(
                                     [
                                       RequiredValidator(
@@ -1064,6 +968,7 @@ class _SparePartInState extends State<SparePartIn> {
                                     filled: true,
                                   ),
                                   style: AppStyles.textInputTextStyle,
+                                  readOnly: true,
                                   validator: MultiValidator(
                                     [
                                       RequiredValidator(
@@ -1095,6 +1000,7 @@ class _SparePartInState extends State<SparePartIn> {
                                     filled: true,
                                   ),
                                   style: AppStyles.textInputTextStyle,
+                                  readOnly: true,
                                   validator: MultiValidator(
                                     [
                                       RequiredValidator(

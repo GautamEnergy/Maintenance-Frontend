@@ -1,6 +1,7 @@
 import 'package:Maintenance/AddMachine.dart';
 import 'package:Maintenance/AddParty.dart';
 import 'package:Maintenance/AddSparePart.dart';
+import 'package:Maintenance/SparePartInList.dart';
 import 'package:Maintenance/Welcomepage.dart';
 import 'package:Maintenance/components/appbar.dart';
 import 'package:Maintenance/constant/app_color.dart';
@@ -140,10 +141,10 @@ class _PublicDrawerState extends State<PublicDrawer> {
                 Expanded(
                     child: inSpareParts('Spare Parts In', AppAssets.imgWelcome,
                         () {
-                  // Navigator.of(context).pushAndRemoveUntil(
-                  //     MaterialPageRoute(
-                  //         builder: (BuildContext context) => SparePartIn()),
-                  //     (Route<dynamic> route) => false);
+                  Navigator.of(context).pushAndRemoveUntil(
+                      MaterialPageRoute(
+                          builder: (BuildContext context) => SparePartIn()),
+                      (Route<dynamic> route) => false);
                 })),
                 const SizedBox(
                   width: 10,
@@ -153,41 +154,6 @@ class _PublicDrawerState extends State<PublicDrawer> {
             SizedBox(
               height: 10,
             ),
-            // IQCP
-
-            //IPQC
-
-            // Row(
-            //   mainAxisAlignment: MainAxisAlignment.start,
-            //   crossAxisAlignment: CrossAxisAlignment.start,
-            //   children: [
-            //     SizedBox(
-            //       width: 10,
-            //     ),
-            //     Expanded(
-            //         child: tabDashboard('IPQC Test List', AppAssets.ipqc, () {
-            //       Navigator.of(context).pushAndRemoveUntil(
-            //           MaterialPageRoute(
-            //               builder: (BuildContext context) => IpqcTestList()),
-            //           (Route<dynamic> route) => false);
-            //     })),
-            //     SizedBox(
-            //       width: 10,
-            //     ),
-            //     Expanded(
-            //         child: tabDashboard('IPQC', AppAssets.ipqc, () {
-            //       Navigator.of(context).pushAndRemoveUntil(
-            //           MaterialPageRoute(
-            //               builder: (BuildContext context) => IpqcPage()),
-            //           (Route<dynamic> route) => false);
-            //     })),
-            //     SizedBox(
-            //       width: 10,
-            //     ),
-            //   ],
-            // ),
-
-            // IQCP
 
             Row(
               mainAxisAlignment: MainAxisAlignment.start,
@@ -258,6 +224,43 @@ class _PublicDrawerState extends State<PublicDrawer> {
             const SizedBox(
               height: 10,
             ),
+
+            Row(
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                SizedBox(
+                  width: 10,
+                ),
+                Expanded(
+                    child: sparePartInList(
+                        'Spare Part In List', AppAssets.imgSparePartList, () {
+                  Navigator.of(context).pushAndRemoveUntil(
+                      MaterialPageRoute(
+                          builder: (BuildContext context) => SparePartInList()),
+                      (Route<dynamic> route) => false);
+                })),
+                SizedBox(
+                  width: 10,
+                ),
+                Expanded(
+                    child: machinemaintenanceList(
+                        'Machine Maintenance List', AppAssets.imgMachineList,
+                        () {
+                  // Navigator.of(context).pushAndRemoveUntil(
+                  //     MaterialPageRoute(
+                  //         builder: (BuildContext context) => addSparePart()),
+                  //     (Route<dynamic> route) => false);
+                })),
+                SizedBox(
+                  width: 10,
+                ),
+              ],
+            ),
+            const SizedBox(
+              height: 10,
+            ),
+
             Row(
               mainAxisAlignment: MainAxisAlignment.start,
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -303,7 +306,7 @@ class _PublicDrawerState extends State<PublicDrawer> {
             Container(
                 alignment: Alignment.center,
                 child: const Text(
-                  ('V1.0.20240702.1345'),
+                  ('V1.0.20240706.1605'),
                   textAlign: TextAlign.center,
                   style: TextStyle(fontSize: 14, fontWeight: FontWeight.normal),
                 )),
@@ -844,6 +847,149 @@ Widget addMachineName(String title, String img, final Function onPressed) {
       child: Container(
         decoration: BoxDecoration(
           color: Color.fromARGB(255, 223, 54, 238),
+          borderRadius: BorderRadius.circular(10),
+        ),
+        height: 145,
+        child: Stack(
+          children: [
+            Positioned(
+                bottom: 0,
+                right: 0,
+                child: Container(
+                  height: 50,
+                  width: 55,
+                  decoration: BoxDecoration(
+                    borderRadius:
+                        BorderRadius.only(bottomRight: Radius.circular(10)),
+                  ),
+                  // child: Image.asset(
+                  //   AppAssets.icEllipse,
+                  //   fit: BoxFit.fill,
+                  //   height: 50,
+                  //   width: 155,
+                  // ),
+                )),
+            Column(
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.only(left: 18.0, top: 15),
+                  child: Text(title,
+                      style: TextStyle(
+                          fontWeight: FontWeight.w600,
+                          fontFamily: appFontFamily,
+                          fontSize: 16,
+                          color: Color.fromARGB(248, 255, 255, 255))),
+                ),
+                SizedBox(
+                  height: 15,
+                ),
+                Center(
+                    child: Container(
+                        height: 56,
+                        width: 56,
+                        child: Image.asset(
+                          img,
+                          height: 56,
+                          width: 56,
+                          //fit: BoxFit.cover,
+                        )))
+              ],
+            )
+          ],
+        ),
+      ));
+}
+
+Widget machinemaintenanceList(
+    String title, String img, final Function onPressed) {
+  return InkWell(
+      onTap: () {
+        onPressed();
+      },
+      // child: AnimatedBuilder(
+      //     animation: _animation2,
+      //     builder: (context, child) {
+      //       return Transform.scale(
+      //         scale: _animation2.value,
+      //         child: child,
+      //       );
+      //     },
+      child: Container(
+        decoration: BoxDecoration(
+          color: Color.fromARGB(255, 102, 90, 86),
+          borderRadius: BorderRadius.circular(10),
+        ),
+        height: 145,
+        child: Stack(
+          children: [
+            Positioned(
+                bottom: 0,
+                right: 0,
+                child: Container(
+                  height: 50,
+                  width: 55,
+                  decoration: BoxDecoration(
+                    borderRadius:
+                        BorderRadius.only(bottomRight: Radius.circular(10)),
+                  ),
+                  // child: Image.asset(
+                  //   AppAssets.icEllipse,
+                  //   fit: BoxFit.fill,
+                  //   height: 50,
+                  //   width: 155,
+                  // ),
+                )),
+            Column(
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.only(left: 18.0, top: 15),
+                  child: Text(title,
+                      style: TextStyle(
+                          fontWeight: FontWeight.w600,
+                          fontFamily: appFontFamily,
+                          fontSize: 16,
+                          color: Color.fromARGB(248, 255, 255, 255))),
+                ),
+                SizedBox(
+                  height: 15,
+                ),
+                Center(
+                    child: Container(
+                        height: 56,
+                        width: 56,
+                        child: Image.asset(
+                          img,
+                          height: 56,
+                          width: 56,
+                          //fit: BoxFit.cover,
+                        )))
+              ],
+            )
+          ],
+        ),
+      ));
+}
+
+Widget sparePartInList(String title, String img, final Function onPressed) {
+  return InkWell(
+      onTap: () {
+        onPressed();
+      },
+      // child: AnimatedBuilder(
+      //     animation: _animation2,
+      //     builder: (context, child) {
+      //       return Transform.scale(
+      //         scale: _animation2.value,
+      //         child: child,
+      //       );
+      //     },
+      child: Container(
+        decoration: BoxDecoration(
+          color: Color.fromARGB(255, 22, 198, 241),
           borderRadius: BorderRadius.circular(10),
         ),
         height: 145,
