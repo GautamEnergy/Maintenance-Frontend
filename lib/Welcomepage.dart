@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:Maintenance/CommonDrawer.dart';
+import 'package:Maintenance/MachineMaintenance.dart';
 import 'package:Maintenance/SparePartInList.dart';
 
 import 'package:Maintenance/components/appbar.dart';
@@ -189,27 +190,28 @@ class _WelcomePageState extends State<WelcomePage>
                   const SizedBox(
                     width: 10,
                   ),
-                  Expanded(
-                      child: inSpareParts(
-                          'Spare Parts In', AppAssets.imgWelcome, () {
-                    Navigator.of(context).pushAndRemoveUntil(
-                        MaterialPageRoute(
-                            builder: (BuildContext context) => SparePartIn()),
-                        (Route<dynamic> route) => false);
-                  })),
+                  if (designation != 'Maintenance Engineer')
+                    Expanded(
+                        child: inSpareParts(
+                            'Spare Parts In', AppAssets.imgWelcome, () {
+                      Navigator.of(context).pushAndRemoveUntil(
+                          MaterialPageRoute(
+                              builder: (BuildContext context) => SparePartIn()),
+                          (Route<dynamic> route) => false);
+                    })),
                   const SizedBox(
                     width: 10,
                   ),
-                  Expanded(
-                      child: sparePartInList(
-                          'Spare Parts In List', AppAssets.imgSparePartList,
-                          () {
-                    Navigator.of(context).pushAndRemoveUntil(
-                        MaterialPageRoute(
-                            builder: (BuildContext context) =>
-                                SparePartInList()),
-                        (Route<dynamic> route) => false);
-                  })),
+                  if (designation != 'Spare Part Store Manager')
+                    Expanded(
+                        child: outSpareParts(
+                            'Machine Maintenance', AppAssets.Laminator1, () {
+                      Navigator.of(context).pushAndRemoveUntil(
+                          MaterialPageRoute(
+                              builder: (BuildContext context) =>
+                                  MachineMaintenance()),
+                          (Route<dynamic> route) => false);
+                    })),
                   const SizedBox(
                     width: 10,
                   ),
@@ -225,26 +227,30 @@ class _WelcomePageState extends State<WelcomePage>
                   const SizedBox(
                     width: 10,
                   ),
-                  Expanded(
-                      child: outSpareParts(
-                          'Machine Maintenance', AppAssets.Laminator1, () {
-                    // Navigator.of(context).pushAndRemoveUntil(
-                    //     MaterialPageRoute(
-                    //         builder: (BuildContext context) => EmployeeList()),
-                    //     (Route<dynamic> route) => false);
-                  })),
+                  if (designation != 'Maintenance Engineer')
+                    Expanded(
+                        child: sparePartInList(
+                            'Spare Parts In List', AppAssets.imgSparePartList,
+                            () {
+                      Navigator.of(context).pushAndRemoveUntil(
+                          MaterialPageRoute(
+                              builder: (BuildContext context) =>
+                                  SparePartInList()),
+                          (Route<dynamic> route) => false);
+                    })),
                   const SizedBox(
                     width: 10,
                   ),
-                  Expanded(
-                      child: machineMaintenanceList(
-                          'Machine Maintenance List', AppAssets.imgMachineList,
-                          () {
-                    // Navigator.of(context).pushAndRemoveUntil(
-                    //     MaterialPageRoute(
-                    //         builder: (BuildContext context) => EmployeeList()),
-                    //     (Route<dynamic> route) => false);
-                  })),
+                  if (designation != 'Spare Part Store Manager')
+                    Expanded(
+                        child: machineMaintenanceList(
+                            'Machine Maintenance List',
+                            AppAssets.imgMachineList, () {
+                      // Navigator.of(context).pushAndRemoveUntil(
+                      //     MaterialPageRoute(
+                      //         builder: (BuildContext context) => EmployeeList()),
+                      //     (Route<dynamic> route) => false);
+                    })),
                   const SizedBox(
                     width: 10,
                   ),

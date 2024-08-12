@@ -665,7 +665,7 @@ class _SparePartInState extends State<SparePartInList> {
                             data.data![index].date ?? '',
                             data.data![index].invoiceNumber ?? '',
                             data.data![index].invoicePdfURL ?? ''));
-                  } else if (data.data![index].partyName!
+                  } else if (data.data![index].invoiceNumber!
                       .toLowerCase()
                       .contains((SearchController.text).toLowerCase())) {
                     return Container(
@@ -728,7 +728,7 @@ class _SparePartInState extends State<SparePartInList> {
                             data.data![index].date ?? '',
                             data.data![index].invoiceNumber ?? '',
                             data.data![index].invoicePdfURL ?? ''));
-                  } else if (data.data![index].name!
+                  } else if (data.data![index].voucherNumber!
                       .toLowerCase()
                       .contains((SearchController.text).toLowerCase())) {
                     return Container(
@@ -908,25 +908,40 @@ class _SparePartInState extends State<SparePartInList> {
                         const SizedBox(
                           height: 4,
                         ),
-                        Container(
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 10, vertical: 5),
-                          decoration: BoxDecoration(
-                            color: Color.fromARGB(
-                                255, 255, 218, 7), // Background color
-                            borderRadius: BorderRadius.circular(
-                                10), // Optional: Add border radius for rounded corners
-                          ),
-                          child: Text(
-                            "Received Date: ${date}",
-                            style: const TextStyle(
-                              fontWeight: FontWeight.bold,
-                              fontSize: 13,
+
+                        Row(children: <Widget>[
+                          Container(
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 10, vertical: 5),
+                            decoration: BoxDecoration(
                               color: Color.fromARGB(
-                                  255, 0, 0, 0), // Optional: Set text color
+                                  255, 255, 218, 7), // Background color
+                              borderRadius: BorderRadius.circular(
+                                  10), // Optional: Add border radius for rounded corners
+                            ),
+                            child: Text(
+                              "Received Date: ${date}",
+                              style: const TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 13,
+                                color: Color.fromARGB(
+                                    255, 0, 0, 0), // Optional: Set text color
+                              ),
                             ),
                           ),
-                        ),
+                          const SizedBox(
+                            width: 20,
+                          ),
+                          Flexible(
+                            child: Text("Received By: $name",
+                                style: const TextStyle(
+                                  fontWeight: FontWeight.w600,
+                                  fontFamily: appFontFamily,
+                                  fontSize: 14,
+                                )),
+                          ),
+                        ]),
+
                         const SizedBox(
                           height: 2,
                         ),

@@ -1,6 +1,7 @@
 import 'package:Maintenance/AddMachine.dart';
 import 'package:Maintenance/AddParty.dart';
 import 'package:Maintenance/AddSparePart.dart';
+import 'package:Maintenance/MachineMaintenance.dart';
 import 'package:Maintenance/SparePartInList.dart';
 import 'package:Maintenance/Welcomepage.dart';
 import 'package:Maintenance/components/appbar.dart';
@@ -135,128 +136,136 @@ class _PublicDrawerState extends State<PublicDrawer> {
                           builder: (BuildContext context) => WelcomePage()),
                       (Route<dynamic> route) => false);
                 })),
-                SizedBox(
-                  width: 10,
-                ),
-                Expanded(
-                    child: inSpareParts('Spare Parts In', AppAssets.imgWelcome,
-                        () {
-                  Navigator.of(context).pushAndRemoveUntil(
-                      MaterialPageRoute(
-                          builder: (BuildContext context) => SparePartIn()),
-                      (Route<dynamic> route) => false);
-                })),
+                if (designation == 'Super Admin')
+                  SizedBox(
+                    width: 10,
+                  ),
+                if (designation == 'Super Admin')
+                  Expanded(
+                      child:
+                          addPartyName('Add New Party', AppAssets.Addicon, () {
+                    Navigator.of(context).pushAndRemoveUntil(
+                        MaterialPageRoute(
+                            builder: (BuildContext context) => addParty()),
+                        (Route<dynamic> route) => false);
+                  })),
                 const SizedBox(
                   width: 10,
                 ),
               ],
             ),
-            SizedBox(
-              height: 10,
-            ),
+            if (designation != 'Spare Part Store Manager')
+              SizedBox(
+                height: 10,
+              ),
+            if (designation != 'Spare Part Store Manager')
+              Row(
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  SizedBox(
+                    width: 10,
+                  ),
+                  Expanded(
+                      child: outSpareParts(
+                          'Machine Maintenance', AppAssets.Laminator1, () {
+                    Navigator.of(context).pushAndRemoveUntil(
+                        MaterialPageRoute(
+                            builder: (BuildContext context) =>
+                                MachineMaintenance()),
+                        (Route<dynamic> route) => false);
+                  })),
+                  SizedBox(
+                    width: 10,
+                  ),
+                  Expanded(
+                      child: machinemaintenanceList(
+                          'Machine Maintenance List', AppAssets.imgMachineList,
+                          () {
+                    // Navigator.of(context).pushAndRemoveUntil(
+                    //     MaterialPageRoute(
+                    //         builder: (BuildContext context) => addSparePart()),
+                    //     (Route<dynamic> route) => false);
+                  })),
+                  SizedBox(
+                    width: 10,
+                  ),
+                ],
+              ),
+            if (designation == 'Super Admin')
+              const SizedBox(
+                height: 10,
+              ),
+            if (designation == 'Super Admin')
+              Row(
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  SizedBox(
+                    width: 10,
+                  ),
+                  Expanded(
+                      child: addMachineName(
+                          'Add New Machine', AppAssets.Addicon, () {
+                    Navigator.of(context).pushAndRemoveUntil(
+                        MaterialPageRoute(
+                            builder: (BuildContext context) => addMachine()),
+                        (Route<dynamic> route) => false);
+                  })),
+                  SizedBox(
+                    width: 10,
+                  ),
+                  Expanded(
+                      child: addSparePartName(
+                          'Add New Spare Part', AppAssets.Addicon, () {
+                    Navigator.of(context).pushAndRemoveUntil(
+                        MaterialPageRoute(
+                            builder: (BuildContext context) => addSparePart()),
+                        (Route<dynamic> route) => false);
+                  })),
+                  SizedBox(
+                    width: 10,
+                  ),
+                ],
+              ),
+            if (designation != 'Maintenance Engineer')
+              const SizedBox(
+                height: 10,
+              ),
 
-            Row(
-              mainAxisAlignment: MainAxisAlignment.start,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                SizedBox(
-                  width: 10,
-                ),
-                Expanded(
-                    child: outSpareParts(
-                        'Machine Maintenance', AppAssets.Laminator1, () {
-                  // Navigator.of(context).pushAndRemoveUntil(
-                  //     MaterialPageRoute(
-                  //         builder: (BuildContext context) => EmployeeList()),
-                  //     (Route<dynamic> route) => false);
-                })),
-                SizedBox(
-                  width: 10,
-                ),
-                Expanded(
-                    child: addPartyName('Add New Party', AppAssets.Addicon, () {
-                  Navigator.of(context).pushAndRemoveUntil(
-                      MaterialPageRoute(
-                          builder: (BuildContext context) => addParty()),
-                      (Route<dynamic> route) => false);
-                })),
-                SizedBox(
-                  width: 10,
-                ),
-              ],
-            ),
-
-            const SizedBox(
-              height: 10,
-            ),
-
-            Row(
-              mainAxisAlignment: MainAxisAlignment.start,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                SizedBox(
-                  width: 10,
-                ),
-                Expanded(
-                    child: addMachineName('Add New Machine', AppAssets.Addicon,
-                        () {
-                  Navigator.of(context).pushAndRemoveUntil(
-                      MaterialPageRoute(
-                          builder: (BuildContext context) => addMachine()),
-                      (Route<dynamic> route) => false);
-                })),
-                SizedBox(
-                  width: 10,
-                ),
-                Expanded(
-                    child: addSparePartName(
-                        'Add New Spare Part', AppAssets.Addicon, () {
-                  Navigator.of(context).pushAndRemoveUntil(
-                      MaterialPageRoute(
-                          builder: (BuildContext context) => addSparePart()),
-                      (Route<dynamic> route) => false);
-                })),
-                SizedBox(
-                  width: 10,
-                ),
-              ],
-            ),
-            const SizedBox(
-              height: 10,
-            ),
-
-            Row(
-              mainAxisAlignment: MainAxisAlignment.start,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                SizedBox(
-                  width: 10,
-                ),
-                Expanded(
-                    child: sparePartInList(
-                        'Spare Part In List', AppAssets.imgSparePartList, () {
-                  Navigator.of(context).pushAndRemoveUntil(
-                      MaterialPageRoute(
-                          builder: (BuildContext context) => SparePartInList()),
-                      (Route<dynamic> route) => false);
-                })),
-                SizedBox(
-                  width: 10,
-                ),
-                Expanded(
-                    child: machinemaintenanceList(
-                        'Machine Maintenance List', AppAssets.imgMachineList,
-                        () {
-                  // Navigator.of(context).pushAndRemoveUntil(
-                  //     MaterialPageRoute(
-                  //         builder: (BuildContext context) => addSparePart()),
-                  //     (Route<dynamic> route) => false);
-                })),
-                SizedBox(
-                  width: 10,
-                ),
-              ],
-            ),
+            if (designation != 'Maintenance Engineer')
+              Row(
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  SizedBox(
+                    width: 10,
+                  ),
+                  Expanded(
+                      child: inSpareParts(
+                          'Spare Parts In', AppAssets.imgWelcome, () {
+                    Navigator.of(context).pushAndRemoveUntil(
+                        MaterialPageRoute(
+                            builder: (BuildContext context) => SparePartIn()),
+                        (Route<dynamic> route) => false);
+                  })),
+                  SizedBox(
+                    width: 10,
+                  ),
+                  Expanded(
+                      child: sparePartInList(
+                          'Spare Part In List', AppAssets.imgSparePartList, () {
+                    Navigator.of(context).pushAndRemoveUntil(
+                        MaterialPageRoute(
+                            builder: (BuildContext context) =>
+                                SparePartInList()),
+                        (Route<dynamic> route) => false);
+                  })),
+                  SizedBox(
+                    width: 10,
+                  ),
+                ],
+              ),
             const SizedBox(
               height: 10,
             ),
@@ -306,7 +315,7 @@ class _PublicDrawerState extends State<PublicDrawer> {
             Container(
                 alignment: Alignment.center,
                 child: const Text(
-                  ('V1.0.20240706.1605'),
+                  ('V1.0.20240810.1345'),
                   textAlign: TextAlign.center,
                   style: TextStyle(fontSize: 14, fontWeight: FontWeight.normal),
                 )),

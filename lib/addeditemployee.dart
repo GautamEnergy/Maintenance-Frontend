@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:Maintenance/Welcomepage.dart';
 import 'package:Maintenance/components/app_loader.dart';
 import 'package:dio/src/response.dart' as Response;
 import 'package:Maintenance/components/app_button_widget.dart';
@@ -213,7 +214,7 @@ class _ScoreDetailsState extends State<AddEditProfile> {
 
   Future<bool> redirectto() async {
     Navigator.push(context, MaterialPageRoute(builder: (context) {
-      return EmployeeList();
+      return designation != 'Super Admin' ? WelcomePage() : EmployeeList();
     }));
     return true;
   }
@@ -242,7 +243,9 @@ class _ScoreDetailsState extends State<AddEditProfile> {
                 logo: "logo",
                 onTap: () {
                   Navigator.push(context, MaterialPageRoute(builder: (context) {
-                    return EmployeeList();
+                    return designation != 'Super Admin'
+                        ? WelcomePage()
+                        : EmployeeList();
                   }));
                 },
               ),

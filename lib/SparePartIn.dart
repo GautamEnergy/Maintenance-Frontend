@@ -299,21 +299,14 @@ class _SparePartInState extends State<SparePartIn> {
         'Content-Type': 'application/json; charset=UTF-8',
       },
     );
-    print("response......?");
-    print(response);
-    print(response.statusCode);
-    print(response.body);
+
     if (response.statusCode == 200) {
       var objData = json.decode(response.body);
-      print("objData['SparePartInId']");
-      print(objData[0]['SparePartInId']);
-      print("...................................");
+
       setState(() {
         sparePartId = objData[0]['SparePartInId'];
       });
-      print("................NNNNNNNNNNN...................");
 
-      print(invoicePdfFileBytes);
       if (invoicePdfFileBytes != '' && invoicePdfFileBytes != null) {
         uploadPDF((invoicePdfFileBytes ?? []));
       } else {
@@ -376,8 +369,12 @@ class _SparePartInState extends State<SparePartIn> {
                 builder: (BuildContext context) => SparePartInList()),
             (Route<dynamic> route) => false);
       } else {
-        Toast.show("Error In PDF Server",
+        Toast.show("Spare Part In Successfully Added But Error in Invoice Pdf",
             duration: Toast.lengthLong, gravity: Toast.center);
+        Navigator.of(context).pushAndRemoveUntil(
+            MaterialPageRoute(
+                builder: (BuildContext context) => SparePartInList()),
+            (Route<dynamic> route) => false);
         setState(() {
           _isLoading = false;
         });
@@ -516,6 +513,18 @@ class _SparePartInState extends State<SparePartIn> {
                                   onChanged: (val) {
                                     setState(() {
                                       selectedPartyName = val!;
+
+                                      selectedsparemodel = "";
+                                      // Empty at onChange:
+                                      selectedPO = "";
+                                      selectedMachineItems = [];
+                                      sparePartBrandController.text = "";
+                                      priceController.text = "";
+                                      specificationController.text = "";
+                                      quantityController.text = "";
+                                      currencyController.text = "";
+                                      unitController.text = "";
+                                      quantityReceiveController.text = "";
                                     });
 
                                     final selectedParty = partyList.firstWhere(
