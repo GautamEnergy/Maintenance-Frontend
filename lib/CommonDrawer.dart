@@ -2,6 +2,7 @@ import 'package:Maintenance/AddMachine.dart';
 import 'package:Maintenance/AddParty.dart';
 import 'package:Maintenance/AddSparePart.dart';
 import 'package:Maintenance/MachineMaintenance.dart';
+import 'package:Maintenance/MachineMaintenanceList.dart';
 import 'package:Maintenance/SparePartInList.dart';
 import 'package:Maintenance/Welcomepage.dart';
 import 'package:Maintenance/components/appbar.dart';
@@ -182,10 +183,11 @@ class _PublicDrawerState extends State<PublicDrawer> {
                       child: machinemaintenanceList(
                           'Machine Maintenance List', AppAssets.imgMachineList,
                           () {
-                    // Navigator.of(context).pushAndRemoveUntil(
-                    //     MaterialPageRoute(
-                    //         builder: (BuildContext context) => addSparePart()),
-                    //     (Route<dynamic> route) => false);
+                    Navigator.of(context).pushAndRemoveUntil(
+                        MaterialPageRoute(
+                            builder: (BuildContext context) =>
+                                MachineMaintenanceList()),
+                        (Route<dynamic> route) => false);
                   })),
                   SizedBox(
                     width: 10,
@@ -315,7 +317,7 @@ class _PublicDrawerState extends State<PublicDrawer> {
             Container(
                 alignment: Alignment.center,
                 child: const Text(
-                  ('V1.0.20240810.1345'),
+                  ('V1.0.20240814.1645'),
                   textAlign: TextAlign.center,
                   style: TextStyle(fontSize: 14, fontWeight: FontWeight.normal),
                 )),

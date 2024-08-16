@@ -13,7 +13,7 @@ import 'package:Maintenance/constant/app_color.dart';
 import 'package:Maintenance/constant/app_fonts.dart';
 import 'package:Maintenance/constant/app_strings.dart';
 import 'package:Maintenance/constant/app_styles.dart';
-import 'package:Maintenance/Spare_Part_In_List_Model.dart';
+import 'package:Maintenance/Available_Stock_Model.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -21,14 +21,14 @@ import 'package:toast/toast.dart';
 import 'package:http/http.dart' as http;
 import 'package:url_launcher/url_launcher.dart' as UrlLauncher;
 
-class SparePartInList extends StatefulWidget {
-  SparePartInList();
+class AvailableStock extends StatefulWidget {
+  AvailableStock();
 
   @override
-  _SparePartInState createState() => _SparePartInState();
+  _AvailableStockState createState() => _AvailableStockState();
 }
 
-class _SparePartInState extends State<SparePartInList> {
+class _AvailableStockState extends State<AvailableStock> {
   final GlobalKey<TooltipState> tooltipkey = GlobalKey<TooltipState>();
   TextEditingController SearchController = TextEditingController();
   // TextEditingController _paymentModeController = new TextEditingController();
@@ -101,11 +101,11 @@ class _SparePartInState extends State<SparePartInList> {
       _isLoading = true;
     });
 
-    final url = (site! + 'Maintenance/GetStockList');
+    final url = (site! + 'Maintenance/SparePartStockList');
 
-    http.post(
+    http.get(
       Uri.parse(url),
-      body: jsonEncode(<String, String>{}),
+      // body: jsonEncode(<String, String>{}),
       headers: {
         'Content-Type': 'application/json; charset=UTF-8',
       },
@@ -176,7 +176,7 @@ class _SparePartInState extends State<SparePartInList> {
   //                 children: [
   //                   const Text(
   //                     // 'Disable Member',
-  //                     "Disable Member",
+  //                     "Machine Maintenance",
   //                     style: TextStyle(
   //                       color: Colors.black,
   //                       fontSize: 20,
@@ -192,7 +192,7 @@ class _SparePartInState extends State<SparePartInList> {
   //                       const SizedBox(height: 15),
   //                       const Text(
   //                         // 'Are you sure you want to disable this member?',
-  //                         "Are you sure you want to disable this member?",
+  //                         "Are you involved in this machine maintenance.?",
   //                         style: TextStyle(
   //                             fontSize: 15, fontWeight: FontWeight.bold),
   //                       ),
@@ -200,7 +200,7 @@ class _SparePartInState extends State<SparePartInList> {
   //                       InkWell(
   //                         onTap: () {
   //                           Navigator.of(context).pop();
-  //                           setMemberStatus('Inactive', personId);
+  //                           // setMemberStatus('Inactive', personId);
   //                         },
   //                         child: Container(
   //                           decoration: BoxDecoration(
@@ -299,7 +299,7 @@ class _SparePartInState extends State<SparePartInList> {
                           Navigator.of(context).pushAndRemoveUntil(
                               MaterialPageRoute(
                                   builder: (BuildContext context) =>
-                                      SparePartInList()),
+                                      AvailableStock()),
                               (Route<dynamic> route) => false);
                           return Future<void>.delayed(
                               const Duration(seconds: 3));
@@ -310,10 +310,7 @@ class _SparePartInState extends State<SparePartInList> {
                           child: Center(child: _userData()),
                         ),
                       ),
-                floatingActionButton: designation == "Super Admin" ||
-                        designation == "Spare Part Store Manager"
-                    ? _getFAB()
-                    : Container(),
+                // floatingActionButton: _getFAB(),
                 bottomNavigationBar: Container(
                   height: 60,
                   decoration: const BoxDecoration(
@@ -346,7 +343,7 @@ class _SparePartInState extends State<SparePartInList> {
                             Navigator.of(context).pushReplacement(
                                 MaterialPageRoute(
                                     builder: (BuildContext context) =>
-                                        SparePartInList()));
+                                        AvailableStock()));
                           },
                           child: Image.asset(
                               user
@@ -563,7 +560,7 @@ class _SparePartInState extends State<SparePartInList> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text('Spare Part In List',
+              Text('Available Stocks',
                   style: TextStyle(
                       fontWeight: FontWeight.w600,
                       fontSize: 20,
@@ -611,8 +608,8 @@ class _SparePartInState extends State<SparePartInList> {
             children: [
               Text(
                   data.data!.length > 1
-                      ? '${data.data!.length} Lists'
-                      : '${data.data!.length} List',
+                      ? '${data.data!.length} Spare Parts'
+                      : '${data.data!.length} Spare Part',
                   style: const TextStyle(
                       fontWeight: FontWeight.w400,
                       fontFamily: appFontFamily,
@@ -629,129 +626,47 @@ class _SparePartInState extends State<SparePartInList> {
                   if (SearchController.text.isEmpty) {
                     return Container(
                         child: _tile(
-                            data.data![index].voucherNumber ?? '',
-                            data.data![index].partyName ?? '',
+                            data.data![index].sparePartStockId ?? '',
                             data.data![index].sparePartName ?? '',
-                            data.data![index].name ?? '',
-                            data.data![index].sparePartModelNumber ?? '',
-                            data.data![index].sparePartBrandName ?? '',
-                            data.data![index].quantityPurchaseOrder ?? '',
-                            data.data![index].quantityRecieved ?? '',
-                            data.data![index].currency ?? '',
-                            data.data![index].price ?? '',
-                            data.data![index].totalCost ?? '',
-                            data.data![index].availableStock ?? '',
-                            data.data![index].date ?? '',
-                            data.data![index].invoiceNumber ?? '',
-                            data.data![index].invoicePdfURL ?? ''));
-                  } else if ((data.data![index].name ?? '')
+                            data.data![index].spareModelNumber ?? '',
+                            data.data![index].machineNames!.join(", ") ?? '',
+                            data.data![index].availableStock ?? ''));
+                  } else if ((data.data![index].sparePartName ?? '')
                           .toLowerCase()
                           .contains((SearchController.text).toLowerCase()) ||
-                      data.data![index].voucherNumber!
+                      data.data![index].spareModelNumber!
                           .toLowerCase()
                           .contains((SearchController.text).toLowerCase())) {
                     return Container(
                         margin: const EdgeInsets.only(top: 10.0),
                         child: _tile(
-                            data.data![index].voucherNumber ?? '',
-                            data.data![index].partyName ?? '',
+                            data.data![index].sparePartStockId ?? '',
                             data.data![index].sparePartName ?? '',
-                            data.data![index].name ?? '',
-                            data.data![index].sparePartModelNumber ?? '',
-                            data.data![index].sparePartBrandName ?? '',
-                            data.data![index].quantityPurchaseOrder ?? '',
-                            data.data![index].quantityRecieved ?? '',
-                            data.data![index].currency ?? '',
-                            data.data![index].price ?? '',
-                            data.data![index].totalCost ?? '',
-                            data.data![index].availableStock ?? '',
-                            data.data![index].date ?? '',
-                            data.data![index].invoiceNumber ?? '',
-                            data.data![index].invoicePdfURL ?? ''));
-                  } else if (data.data![index].invoiceNumber!
+                            data.data![index].spareModelNumber ?? '',
+                            data.data![index].machineNames!.join(", ") ?? '',
+                            data.data![index].availableStock ?? ''));
+                  } else if (data.data![index].machineNames!
+                      .join(", ")
+                      .contains((SearchController.text).toLowerCase())) {
+                    return Container(
+                        margin: const EdgeInsets.only(top: 10.0),
+                        child: _tile(
+                            data.data![index].sparePartStockId ?? '',
+                            data.data![index].sparePartName ?? '',
+                            data.data![index].spareModelNumber ?? '',
+                            data.data![index].machineNames!.join(", ") ?? '',
+                            data.data![index].availableStock ?? ''));
+                  } else if (data.data![index].availableStock!
                       .toLowerCase()
                       .contains((SearchController.text).toLowerCase())) {
                     return Container(
                         margin: const EdgeInsets.only(top: 10.0),
                         child: _tile(
-                            data.data![index].voucherNumber ?? '',
-                            data.data![index].partyName ?? '',
+                            data.data![index].sparePartStockId ?? '',
                             data.data![index].sparePartName ?? '',
-                            data.data![index].name ?? '',
-                            data.data![index].sparePartModelNumber ?? '',
-                            data.data![index].sparePartBrandName ?? '',
-                            data.data![index].quantityPurchaseOrder ?? '',
-                            data.data![index].quantityRecieved ?? '',
-                            data.data![index].currency ?? '',
-                            data.data![index].price ?? '',
-                            data.data![index].totalCost ?? '',
-                            data.data![index].availableStock ?? '',
-                            data.data![index].date ?? '',
-                            data.data![index].invoiceNumber ?? '',
-                            data.data![index].invoicePdfURL ?? ''));
-                  } else if (data.data![index].sparePartName!
-                      .toLowerCase()
-                      .contains((SearchController.text).toLowerCase())) {
-                    return Container(
-                        margin: const EdgeInsets.only(top: 10.0),
-                        child: _tile(
-                            data.data![index].voucherNumber ?? '',
-                            data.data![index].partyName ?? '',
-                            data.data![index].sparePartName ?? '',
-                            data.data![index].name ?? '',
-                            data.data![index].sparePartModelNumber ?? '',
-                            data.data![index].sparePartBrandName ?? '',
-                            data.data![index].quantityPurchaseOrder ?? '',
-                            data.data![index].quantityRecieved ?? '',
-                            data.data![index].currency ?? '',
-                            data.data![index].price ?? '',
-                            data.data![index].totalCost ?? '',
-                            data.data![index].availableStock ?? '',
-                            data.data![index].date ?? '',
-                            data.data![index].invoiceNumber ?? '',
-                            data.data![index].invoicePdfURL ?? ''));
-                  } else if ((data.data![index].sparePartModelNumber!)
-                      .toLowerCase()
-                      .contains((SearchController.text).toLowerCase())) {
-                    return Container(
-                        margin: const EdgeInsets.only(top: 10.0),
-                        child: _tile(
-                            data.data![index].voucherNumber ?? '',
-                            data.data![index].partyName ?? '',
-                            data.data![index].sparePartName ?? '',
-                            data.data![index].name ?? '',
-                            data.data![index].sparePartModelNumber ?? '',
-                            data.data![index].sparePartBrandName ?? '',
-                            data.data![index].quantityPurchaseOrder ?? '',
-                            data.data![index].quantityRecieved ?? '',
-                            data.data![index].currency ?? '',
-                            data.data![index].price ?? '',
-                            data.data![index].totalCost ?? '',
-                            data.data![index].availableStock ?? '',
-                            data.data![index].date ?? '',
-                            data.data![index].invoiceNumber ?? '',
-                            data.data![index].invoicePdfURL ?? ''));
-                  } else if (data.data![index].voucherNumber!
-                      .toLowerCase()
-                      .contains((SearchController.text).toLowerCase())) {
-                    return Container(
-                        margin: const EdgeInsets.only(top: 10.0),
-                        child: _tile(
-                            data.data![index].voucherNumber ?? '',
-                            data.data![index].partyName ?? '',
-                            data.data![index].sparePartName ?? '',
-                            data.data![index].name ?? '',
-                            data.data![index].sparePartModelNumber ?? '',
-                            data.data![index].sparePartBrandName ?? '',
-                            data.data![index].quantityPurchaseOrder ?? '',
-                            data.data![index].quantityRecieved ?? '',
-                            data.data![index].currency ?? '',
-                            data.data![index].price ?? '',
-                            data.data![index].totalCost ?? '',
-                            data.data![index].availableStock ?? '',
-                            data.data![index].date ?? '',
-                            data.data![index].invoiceNumber ?? '',
-                            data.data![index].invoicePdfURL ?? ''));
+                            data.data![index].spareModelNumber ?? '',
+                            data.data![index].machineNames!.join(", ") ?? '',
+                            data.data![index].availableStock ?? ''));
                   } else {
                     return Container();
                   }
@@ -764,21 +679,11 @@ class _SparePartInState extends State<SparePartInList> {
   }
 
   Widget _tile(
-    String voucherNumber,
-    String partyName,
+    String sparePartStockId,
     String sparePartName,
-    String name,
-    String sparePartModelNumber,
-    String sparePartBrandName,
-    String quantityPurchaseOrder,
-    String quantityRecieved,
-    String currency,
-    String price,
-    String totalCost,
+    String spareModelNumber,
+    String machineNames,
     String availableStock,
-    String date,
-    String invoiceNumber,
-    String pdf,
   ) {
     return InkWell(
       child: Padding(
@@ -797,76 +702,72 @@ class _SparePartInState extends State<SparePartInList> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         //Name
+
                         Row(children: <Widget>[
                           Flexible(
-                            child: Text("PO Number: $voucherNumber",
-                                style: const TextStyle(
-                                  fontWeight: FontWeight.w600,
-                                  fontFamily:
-                                      appFontFamily, // replace with your actual font family
-                                  fontSize: 18,
-                                  color: Color.fromARGB(221, 45, 0,
-                                      247), // replace with your defined AppColors.lightBlackColor
-                                )),
-                          ),
-                          SizedBox(
-                            width: 10,
-                          ),
-                          Container(
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 10, vertical: 5),
-                            decoration: BoxDecoration(
-                              color: Color.fromARGB(
-                                  255, 255, 218, 7), // Background color
-                              borderRadius: BorderRadius.circular(
-                                  10), // Optional: Add border radius for rounded corners
-                            ),
-                            child: Text(
-                              invoiceNumber,
-                              style: const TextStyle(
-                                fontWeight: FontWeight.bold,
-                                fontSize: 11,
-                                color: Color.fromARGB(
-                                    255, 0, 0, 0), // Optional: Set text color
+                            child: RichText(
+                              text: TextSpan(
+                                children: [
+                                  TextSpan(
+                                    text: "Spare Part Name: ",
+                                    style: const TextStyle(
+                                      fontWeight: FontWeight.w600,
+                                      fontFamily:
+                                          appFontFamily, // replace with your actual font family
+                                      fontSize: 19,
+                                      color: Color.fromARGB(221, 0, 0,
+                                          0), // color for "Machine Name:"
+                                    ),
+                                  ),
+                                  TextSpan(
+                                    text: sparePartName,
+                                    style: const TextStyle(
+                                      fontWeight: FontWeight.w600,
+                                      fontFamily:
+                                          appFontFamily, // replace with your actual font family
+                                      fontSize: 18,
+                                      color: Color.fromARGB(255, 0, 123,
+                                          255), // color for the dynamic value
+                                    ),
+                                  ),
+                                ],
                               ),
                             ),
                           ),
                         ]),
 
-                        //Occupication
-                        Text("Party Name: $partyName",
-                            style: const TextStyle(
-                                fontWeight: FontWeight.w600,
-                                fontSize: 14,
-                                fontFamily: appFontFamily)),
+                        SizedBox(
+                          height: 5,
+                        ),
 
                         Row(children: <Widget>[
                           Flexible(
-                            child: Text("Spare Part Name: $sparePartName",
-                                style: const TextStyle(
-                                  fontWeight: FontWeight.w600,
-                                  fontFamily: appFontFamily,
-                                  fontSize: 14,
-                                )),
-                          ),
-                          const SizedBox(
-                            width: 20,
-                          ),
-                          Container(
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 10, vertical: 5),
-                            decoration: BoxDecoration(
-                              color: const Color.fromARGB(
-                                  255, 0, 0, 0), // Background color
-                              borderRadius: BorderRadius.circular(
-                                  10), // Optional: Add border radius for rounded corners
-                            ),
-                            child: Text(
-                              sparePartModelNumber,
-                              style: const TextStyle(
-                                fontWeight: FontWeight.bold,
-                                fontSize: 11,
-                                color: Colors.white, // Optional: Set text color
+                            child: RichText(
+                              text: TextSpan(
+                                children: [
+                                  TextSpan(
+                                    text: "Spare Part Model Number: ",
+                                    style: const TextStyle(
+                                      fontWeight: FontWeight.w600,
+                                      fontFamily:
+                                          appFontFamily, // replace with your actual font family
+                                      fontSize: 19,
+                                      color: Color.fromARGB(221, 0, 0,
+                                          0), // color for "Machine Name:"
+                                    ),
+                                  ),
+                                  TextSpan(
+                                    text: spareModelNumber,
+                                    style: const TextStyle(
+                                      fontWeight: FontWeight.w600,
+                                      fontFamily:
+                                          appFontFamily, // replace with your actual font family
+                                      fontSize: 18,
+                                      color: Color.fromARGB(255, 0, 123,
+                                          255), // color for the dynamic value
+                                    ),
+                                  ),
+                                ],
                               ),
                             ),
                           ),
@@ -878,12 +779,34 @@ class _SparePartInState extends State<SparePartInList> {
 
                         Row(children: <Widget>[
                           Flexible(
-                            child: Text("Received QTY: $quantityRecieved",
-                                style: const TextStyle(
-                                  fontWeight: FontWeight.w600,
-                                  fontFamily: appFontFamily,
-                                  fontSize: 14,
-                                )),
+                            child: RichText(
+                              text: TextSpan(
+                                children: [
+                                  TextSpan(
+                                    text: "Machine Name: ",
+                                    style: const TextStyle(
+                                      fontWeight: FontWeight.w600,
+                                      fontFamily:
+                                          appFontFamily, // replace with your actual font family
+                                      fontSize: 19,
+                                      color: Color.fromARGB(221, 236, 116,
+                                          3), // color for "Machine Name:"
+                                    ),
+                                  ),
+                                  TextSpan(
+                                    text: machineNames,
+                                    style: const TextStyle(
+                                      fontWeight: FontWeight.w600,
+                                      fontFamily:
+                                          appFontFamily, // replace with your actual font family
+                                      fontSize: 18,
+                                      color: Color.fromARGB(255, 37, 132,
+                                          233), // color for the dynamic value
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
                           ),
                           const SizedBox(
                             width: 20,
@@ -893,7 +816,7 @@ class _SparePartInState extends State<SparePartInList> {
                                 horizontal: 10, vertical: 5),
                             decoration: BoxDecoration(
                               color: Color.fromARGB(
-                                  255, 81, 241, 7), // Background color
+                                  255, 248, 212, 10), // Background color
                               borderRadius: BorderRadius.circular(
                                   10), // Optional: Add border radius for rounded corners
                             ),
@@ -912,88 +835,58 @@ class _SparePartInState extends State<SparePartInList> {
                           height: 4,
                         ),
 
-                        Row(children: <Widget>[
-                          Container(
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 10, vertical: 5),
-                            decoration: BoxDecoration(
-                              color: Color.fromARGB(
-                                  255, 255, 218, 7), // Background color
-                              borderRadius: BorderRadius.circular(
-                                  10), // Optional: Add border radius for rounded corners
-                            ),
-                            child: Text(
-                              "Received Date: ${date}",
-                              style: const TextStyle(
-                                fontWeight: FontWeight.bold,
-                                fontSize: 13,
-                                color: Color.fromARGB(
-                                    255, 0, 0, 0), // Optional: Set text color
-                              ),
-                            ),
-                          ),
-                          const SizedBox(
-                            width: 20,
-                          ),
-                          Flexible(
-                            child: Text("Received By: $name",
-                                style: const TextStyle(
-                                  fontWeight: FontWeight.w600,
-                                  fontFamily: appFontFamily,
-                                  fontSize: 14,
-                                )),
-                          ),
-                        ]),
-
                         const SizedBox(
                           height: 2,
                         ),
                       ],
                     )),
                   ),
-                  if (pdf != "" && pdf != null)
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      mainAxisAlignment: MainAxisAlignment.spaceAround,
-                      children: [
-                        GestureDetector(
-                          onTap: () {
-                            UrlLauncher.launch(pdf);
-                          },
-                          child: ClipRRect(
-                            child: Image.asset(
-                              AppAssets.icPdf,
-                              width: 40,
-                              height: 40,
-                            ),
-                          ),
-                        ),
-                        SizedBox(
-                          width: 10,
-                        ),
-                        // InkWell(
-                        //     child: Image.asset(
-                        //       AppAssets.icMemberDelete,
-                        //       height: 40,
-                        //       width: 40,
-                        //     ),
-                        //     onTap: () {
-                        //       showDialog(
-                        //         context: context,
-                        //         builder: (BuildContext context) {
-                        //           return Dialog(
-                        //             shape: RoundedRectangleBorder(
-                        //               borderRadius: BorderRadius.circular(21),
-                        //             ),
-                        //             elevation: 0,
-                        //             backgroundColor: Colors.transparent,
-                        //             child: contentBox(context, id),
-                        //           );
-                        //         },
-                        //       );
-                        //     })
-                      ],
-                    )
+                  // if (pdf != "" && pdf != null)
+                  //   Column(
+                  //     crossAxisAlignment: CrossAxisAlignment.center,
+                  //     mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  //     children: [
+                  //       GestureDetector(
+                  //         onTap: () {
+                  //           UrlLauncher.launch(pdf);
+                  //         },
+                  //         child: ClipRRect(
+                  //           child: Image.asset(
+                  //             AppAssets.icPdf,
+                  //             width: 40,
+                  //             height: 40,
+                  //           ),
+                  //         ),
+                  //       ),
+                  //       SizedBox(
+                  //         width: 10,
+                  //       ),
+                  //       SizedBox(
+                  //         height: 10,
+                  //       ),
+                  //       InkWell(
+                  //           child: Image.asset(
+                  //             AppAssets.addPlusYellow,
+                  //             height: 40,
+                  //             width: 40,
+                  //           ),
+                  //           onTap: () {
+                  //             showDialog(
+                  //               context: context,
+                  //               builder: (BuildContext context) {
+                  //                 return Dialog(
+                  //                   shape: RoundedRectangleBorder(
+                  //                     borderRadius: BorderRadius.circular(21),
+                  //                   ),
+                  //                   elevation: 0,
+                  //                   backgroundColor: Colors.transparent,
+                  //                   child: contentBox(context, "id"),
+                  //                 );
+                  //               },
+                  //             );
+                  //           })
+                  //     ],
+                  //   )
                 ],
               ),
             ),
@@ -1003,7 +896,7 @@ class _SparePartInState extends State<SparePartInList> {
             Container(
               width: MediaQuery.of(context).size.width,
               color: AppColors.dividerColor,
-              height: 1,
+              height: 2,
             )
           ],
         ),

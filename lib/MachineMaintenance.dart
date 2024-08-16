@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
+import 'package:Maintenance/MachineMaintenanceList.dart';
 import 'package:Maintenance/SparePartInList.dart';
 import 'package:Maintenance/Welcomepage.dart';
 import 'package:Maintenance/components/app_button_widget.dart';
@@ -40,6 +41,7 @@ class _MachineMaintenanceState extends State<MachineMaintenance> {
 
   TextEditingController specificationController = TextEditingController();
   TextEditingController quantityController = TextEditingController();
+  TextEditingController remarksController = TextEditingController();
   TextEditingController currencyController = TextEditingController();
   TextEditingController solutionProcessController = TextEditingController();
   TextEditingController priceController = TextEditingController();
@@ -159,6 +161,9 @@ class _MachineMaintenanceState extends State<MachineMaintenance> {
       department = prefs.getString('department')!;
       token = prefs.getString('token')!;
     });
+    // setState(() {
+    //   selectMachineName = " Framing Machine";
+    // });
     getMachineListData();
   }
 
@@ -313,6 +318,8 @@ class _MachineMaintenanceState extends State<MachineMaintenance> {
   }
 
   Future createData() async {
+    print("Person Id......?");
+    print(personid);
     chamber = [
       {"Chamber1": Chamber1, "ChamberQuantity": chamber1Controller.text},
       {"Chamber2": Chamber2, "ChamberQuantity": chamber2Controller.text},
@@ -331,6 +338,7 @@ class _MachineMaintenanceState extends State<MachineMaintenance> {
       "BreakDownTotalTime": maintenanceTimeController.text,
       "SparePartModelNumber": sendSelectedsparemodel,
       "Quantity": quantityController.text,
+      "Remarks": remarksController.text,
       "SolutionProcess": solutionProcessController.text,
       "Status": "Active"
     };
@@ -378,7 +386,7 @@ class _MachineMaintenanceState extends State<MachineMaintenance> {
             backgroundColor: AppColors.blueColor);
         Navigator.of(context).pushAndRemoveUntil(
             MaterialPageRoute(
-                builder: (BuildContext context) => SparePartInList()),
+                builder: (BuildContext context) => MachineMaintenanceList()),
             (Route<dynamic> route) => false);
       }
     } else {
@@ -425,7 +433,7 @@ class _MachineMaintenanceState extends State<MachineMaintenance> {
             backgroundColor: AppColors.blueColor);
         Navigator.of(context).pushAndRemoveUntil(
             MaterialPageRoute(
-                builder: (BuildContext context) => SparePartInList()),
+                builder: (BuildContext context) => MachineMaintenanceList()),
             (Route<dynamic> route) => false);
       } else {
         Toast.show("Error In Image Server",
@@ -463,7 +471,7 @@ class _MachineMaintenanceState extends State<MachineMaintenance> {
             logo: "logo",
             onTap: () {
               Navigator.push(context, MaterialPageRoute(builder: (context) {
-                return WelcomePage();
+                return MachineMaintenanceList();
               }));
             },
           ),
@@ -635,283 +643,345 @@ class _MachineMaintenanceState extends State<MachineMaintenance> {
                                     return null;
                                   },
                                 ),
-
-                                const SizedBox(
-                                  height: 15,
-                                ),
-                                Text(
-                                  "Line",
-                                  style: AppStyles.textfieldCaptionTextStyle,
-                                ),
-                                const SizedBox(
-                                  height: 4,
-                                ),
-                                DropdownButtonFormField<String>(
-                                  decoration: AppStyles.textFieldInputDecoration
-                                      .copyWith(
-                                    hintText: "Please Select Line",
-                                    counterText: '',
-                                    contentPadding: EdgeInsets.all(10),
-                                    filled: true,
-                                    fillColor:
-                                        Color.fromARGB(255, 255, 255, 255)
-                                            .withOpacity(0.5),
+                                if (selectMachineName == "Stringer Machine(AMO50FS)-1" ||
+                                    selectMachineName ==
+                                        "Stringer Machine(AMO50FS)-2" ||
+                                    selectMachineName ==
+                                        "Stringer Machine(AMO50FS)-3" ||
+                                    selectMachineName ==
+                                        "Stringer Machine(MS40K)-1" ||
+                                    selectMachineName ==
+                                        "Stringer Machine(MS40K)-2")
+                                  const SizedBox(
+                                    height: 15,
                                   ),
-                                  borderRadius: BorderRadius.circular(20),
-                                  items: lineList
-                                      .map((label) => DropdownMenuItem(
-                                            child: Text(label['label'],
-                                                style: AppStyles
-                                                    .textInputTextStyle),
-                                            value: label['value'].toString(),
-                                          ))
-                                      .toList(),
-                                  onChanged: (val) {
-                                    setState(() {
-                                      lineController = val!;
-                                    });
-                                  },
-                                  value: lineController != ''
-                                      ? lineController
-                                      : null,
-                                  validator: (value) {
-                                    if (value == null || value.isEmpty) {
-                                      return 'Please select a line';
-                                    }
-                                    return null;
-                                  },
-                                ),
-                                const SizedBox(
-                                  height: 15,
-                                ),
-                                Row(
-                                  children: [
-                                    Text(
-                                      "Chamber 1",
-                                      style:
-                                          AppStyles.textfieldCaptionTextStyle,
-                                    ),
-                                    const SizedBox(
-                                      width: 4,
-                                    ),
-                                    Checkbox(
-                                      value: Chamber1 == "Chamber1",
-                                      onChanged: (bool? value) {
-                                        setState(() {
-                                          print(value);
-                                          Chamber1 =
-                                              value == true ? "Chamber1" : "";
-                                          print(Chamber1);
-                                        });
-                                      },
-                                    ),
-                                    const SizedBox(
-                                      width: 4,
-                                    ),
-                                    if (Chamber1 == "Chamber1")
-                                      Expanded(
-                                        child: TextFormField(
-                                          controller: chamber1Controller,
-                                          keyboardType: TextInputType.number,
-                                          textInputAction: TextInputAction.next,
-                                          decoration: AppStyles
-                                              .textFieldInputDecoration
-                                              .copyWith(
-                                            hintText: "Please Enter Quantity",
-                                            fillColor: const Color.fromARGB(
-                                                    255, 255, 255, 255)
-                                                .withOpacity(
-                                                    0.5), // Your desired color
-                                            filled: true,
-                                          ),
-                                          style: AppStyles.textInputTextStyle,
-                                          readOnly: false,
-                                          validator: MultiValidator(
-                                            [
-                                              RequiredValidator(
-                                                errorText:
-                                                    "Please Enter Quantity",
-                                              ),
-                                            ],
-                                          ),
-                                        ),
-                                      ),
-                                  ],
-                                ),
 
-                                const SizedBox(
-                                  height: 15,
-                                ),
-                                Row(
-                                  children: [
-                                    Text(
-                                      "Chamber 2",
-                                      style:
-                                          AppStyles.textfieldCaptionTextStyle,
+                                if (selectMachineName == "Stringer Machine(AMO50FS)-1" ||
+                                    selectMachineName ==
+                                        "Stringer Machine(AMO50FS)-2" ||
+                                    selectMachineName ==
+                                        "Stringer Machine(AMO50FS)-3" ||
+                                    selectMachineName ==
+                                        "Stringer Machine(MS40K)-1" ||
+                                    selectMachineName ==
+                                        "Stringer Machine(MS40K)-2")
+                                  Text(
+                                    "Line",
+                                    style: AppStyles.textfieldCaptionTextStyle,
+                                  ),
+                                if (selectMachineName == "Stringer Machine(AMO50FS)-1" ||
+                                    selectMachineName ==
+                                        "Stringer Machine(AMO50FS)-2" ||
+                                    selectMachineName ==
+                                        "Stringer Machine(AMO50FS)-3" ||
+                                    selectMachineName ==
+                                        "Stringer Machine(MS40K)-1" ||
+                                    selectMachineName ==
+                                        "Stringer Machine(MS40K)-2")
+                                  const SizedBox(
+                                    height: 4,
+                                  ),
+                                if (selectMachineName == "Stringer Machine(AMO50FS)-1" ||
+                                    selectMachineName ==
+                                        "Stringer Machine(AMO50FS)-2" ||
+                                    selectMachineName ==
+                                        "Stringer Machine(AMO50FS)-3" ||
+                                    selectMachineName ==
+                                        "Stringer Machine(MS40K)-1" ||
+                                    selectMachineName ==
+                                        "Stringer Machine(MS40K)-2")
+                                  DropdownButtonFormField<String>(
+                                    decoration: AppStyles
+                                        .textFieldInputDecoration
+                                        .copyWith(
+                                      hintText: "Please Select Line",
+                                      counterText: '',
+                                      contentPadding: EdgeInsets.all(10),
+                                      filled: true,
+                                      fillColor:
+                                          Color.fromARGB(255, 255, 255, 255)
+                                              .withOpacity(0.5),
                                     ),
-                                    const SizedBox(
-                                      width: 4,
-                                    ),
-                                    Checkbox(
-                                      value: Chamber2 == "Chamber2",
-                                      onChanged: (bool? value) {
-                                        setState(() {
-                                          print(value);
-                                          Chamber2 =
-                                              value == true ? "Chamber2" : "";
-                                          print(Chamber2);
-                                        });
-                                      },
-                                    ),
-                                    const SizedBox(
-                                      width: 4,
-                                    ),
-                                    if (Chamber2 == "Chamber2")
-                                      Expanded(
-                                        child: TextFormField(
-                                          controller: chamber2Controller,
-                                          keyboardType: TextInputType.number,
-                                          textInputAction: TextInputAction.next,
-                                          decoration: AppStyles
-                                              .textFieldInputDecoration
-                                              .copyWith(
-                                            hintText: "Please Enter Quantity",
-                                            fillColor: const Color.fromARGB(
-                                                    255, 255, 255, 255)
-                                                .withOpacity(
-                                                    0.5), // Your desired color
-                                            filled: true,
-                                          ),
-                                          style: AppStyles.textInputTextStyle,
-                                          readOnly: false,
-                                          validator: MultiValidator(
-                                            [
-                                              RequiredValidator(
-                                                errorText:
-                                                    "Please Enter Quantity",
-                                              ),
-                                            ],
+                                    borderRadius: BorderRadius.circular(20),
+                                    items: lineList
+                                        .map((label) => DropdownMenuItem(
+                                              child: Text(label['label'],
+                                                  style: AppStyles
+                                                      .textInputTextStyle),
+                                              value: label['value'].toString(),
+                                            ))
+                                        .toList(),
+                                    onChanged: (val) {
+                                      setState(() {
+                                        lineController = val!;
+                                      });
+                                    },
+                                    value: lineController != ''
+                                        ? lineController
+                                        : null,
+                                    validator: (value) {
+                                      if (value == null || value.isEmpty) {
+                                        return 'Please select a line';
+                                      }
+                                      return null;
+                                    },
+                                  ),
+                                if (selectMachineName ==
+                                        "Laminator (Jinchen)" ||
+                                    selectMachineName == "Laminator (GMEE)")
+                                  const SizedBox(
+                                    height: 15,
+                                  ),
+                                if (selectMachineName ==
+                                        "Laminator (Jinchen)" ||
+                                    selectMachineName == "Laminator (GMEE)")
+                                  Row(
+                                    children: [
+                                      Text(
+                                        "Chamber 1",
+                                        style:
+                                            AppStyles.textfieldCaptionTextStyle,
+                                      ),
+                                      const SizedBox(
+                                        width: 4,
+                                      ),
+                                      Checkbox(
+                                        value: Chamber1 == "Chamber1",
+                                        onChanged: (bool? value) {
+                                          setState(() {
+                                            print(value);
+                                            Chamber1 =
+                                                value == true ? "Chamber1" : "";
+                                            print(Chamber1);
+                                          });
+                                        },
+                                      ),
+                                      const SizedBox(
+                                        width: 4,
+                                      ),
+                                      if (Chamber1 == "Chamber1")
+                                        Expanded(
+                                          child: TextFormField(
+                                            controller: chamber1Controller,
+                                            keyboardType: TextInputType.number,
+                                            textInputAction:
+                                                TextInputAction.next,
+                                            decoration: AppStyles
+                                                .textFieldInputDecoration
+                                                .copyWith(
+                                              hintText: "Please Enter Quantity",
+                                              fillColor: const Color.fromARGB(
+                                                      255, 255, 255, 255)
+                                                  .withOpacity(
+                                                      0.5), // Your desired color
+                                              filled: true,
+                                            ),
+                                            style: AppStyles.textInputTextStyle,
+                                            readOnly: false,
+                                            validator: MultiValidator(
+                                              [
+                                                RequiredValidator(
+                                                  errorText:
+                                                      "Please Enter Quantity",
+                                                ),
+                                              ],
+                                            ),
                                           ),
                                         ),
+                                    ],
+                                  ),
+                                if (selectMachineName ==
+                                        "Laminator (Jinchen)" ||
+                                    selectMachineName == "Laminator (GMEE)")
+                                  const SizedBox(
+                                    height: 15,
+                                  ),
+                                if (selectMachineName ==
+                                        "Laminator (Jinchen)" ||
+                                    selectMachineName == "Laminator (GMEE)")
+                                  Row(
+                                    children: [
+                                      Text(
+                                        "Chamber 2",
+                                        style:
+                                            AppStyles.textfieldCaptionTextStyle,
                                       ),
-                                  ],
-                                ),
-
-                                const SizedBox(
-                                  height: 15,
-                                ),
-                                Row(
-                                  children: [
-                                    Text(
-                                      "Chamber 3",
-                                      style:
-                                          AppStyles.textfieldCaptionTextStyle,
-                                    ),
-                                    const SizedBox(
-                                      width: 4,
-                                    ),
-                                    Checkbox(
-                                      value: Chamber3 == "Chamber3",
-                                      onChanged: (bool? value) {
-                                        setState(() {
-                                          print(value);
-                                          Chamber3 =
-                                              value == true ? "Chamber3" : "";
-                                          print(Chamber3);
-                                        });
-                                      },
-                                    ),
-                                    const SizedBox(
-                                      width: 4,
-                                    ),
-                                    if (Chamber3 == "Chamber3")
-                                      Expanded(
-                                        child: TextFormField(
-                                          controller: chamber3Controller,
-                                          keyboardType: TextInputType.number,
-                                          textInputAction: TextInputAction.next,
-                                          decoration: AppStyles
-                                              .textFieldInputDecoration
-                                              .copyWith(
-                                            hintText: "Please Enter Quantity",
-                                            fillColor: const Color.fromARGB(
-                                                    255, 255, 255, 255)
-                                                .withOpacity(
-                                                    0.5), // Your desired color
-                                            filled: true,
-                                          ),
-                                          style: AppStyles.textInputTextStyle,
-                                          readOnly: false,
-                                          validator: MultiValidator(
-                                            [
-                                              RequiredValidator(
-                                                errorText:
-                                                    "Please Enter Quantity",
-                                              ),
-                                            ],
+                                      const SizedBox(
+                                        width: 4,
+                                      ),
+                                      Checkbox(
+                                        value: Chamber2 == "Chamber2",
+                                        onChanged: (bool? value) {
+                                          setState(() {
+                                            print(value);
+                                            Chamber2 =
+                                                value == true ? "Chamber2" : "";
+                                            print(Chamber2);
+                                          });
+                                        },
+                                      ),
+                                      const SizedBox(
+                                        width: 4,
+                                      ),
+                                      if (Chamber2 == "Chamber2")
+                                        Expanded(
+                                          child: TextFormField(
+                                            controller: chamber2Controller,
+                                            keyboardType: TextInputType.number,
+                                            textInputAction:
+                                                TextInputAction.next,
+                                            decoration: AppStyles
+                                                .textFieldInputDecoration
+                                                .copyWith(
+                                              hintText: "Please Enter Quantity",
+                                              fillColor: const Color.fromARGB(
+                                                      255, 255, 255, 255)
+                                                  .withOpacity(
+                                                      0.5), // Your desired color
+                                              filled: true,
+                                            ),
+                                            style: AppStyles.textInputTextStyle,
+                                            readOnly: false,
+                                            validator: MultiValidator(
+                                              [
+                                                RequiredValidator(
+                                                  errorText:
+                                                      "Please Enter Quantity",
+                                                ),
+                                              ],
+                                            ),
                                           ),
                                         ),
+                                    ],
+                                  ),
+                                if (selectMachineName ==
+                                        "Laminator (Jinchen)" ||
+                                    selectMachineName == "Laminator (GMEE)")
+                                  const SizedBox(
+                                    height: 15,
+                                  ),
+                                if (selectMachineName ==
+                                        "Laminator (Jinchen)" ||
+                                    selectMachineName == "Laminator (GMEE)")
+                                  Row(
+                                    children: [
+                                      Text(
+                                        "Chamber 3",
+                                        style:
+                                            AppStyles.textfieldCaptionTextStyle,
                                       ),
-                                  ],
-                                ),
-
-                                const SizedBox(
-                                  height: 15,
-                                ),
-                                Row(
-                                  children: [
-                                    Text(
-                                      "Chamber 4",
-                                      style:
-                                          AppStyles.textfieldCaptionTextStyle,
-                                    ),
-                                    const SizedBox(
-                                      width: 4,
-                                    ),
-                                    Checkbox(
-                                      value: Chamber4 == "Chamber4",
-                                      onChanged: (bool? value) {
-                                        setState(() {
-                                          print(value);
-                                          Chamber4 =
-                                              value == true ? "Chamber4" : "";
-                                          print(Chamber4);
-                                        });
-                                      },
-                                    ),
-                                    const SizedBox(
-                                      width: 4,
-                                    ),
-                                    if (Chamber4 == "Chamber4")
-                                      Expanded(
-                                        child: TextFormField(
-                                          controller: chamber4Controller,
-                                          keyboardType: TextInputType.number,
-                                          textInputAction: TextInputAction.next,
-                                          decoration: AppStyles
-                                              .textFieldInputDecoration
-                                              .copyWith(
-                                            hintText: "Please Enter Quantity",
-                                            fillColor: const Color.fromARGB(
-                                                    255, 255, 255, 255)
-                                                .withOpacity(
-                                                    0.5), // Your desired color
-                                            filled: true,
-                                          ),
-                                          style: AppStyles.textInputTextStyle,
-                                          readOnly: false,
-                                          validator: MultiValidator(
-                                            [
-                                              RequiredValidator(
-                                                errorText:
-                                                    "Please Enter Quantity",
-                                              ),
-                                            ],
+                                      const SizedBox(
+                                        width: 4,
+                                      ),
+                                      Checkbox(
+                                        value: Chamber3 == "Chamber3",
+                                        onChanged: (bool? value) {
+                                          setState(() {
+                                            print(value);
+                                            Chamber3 =
+                                                value == true ? "Chamber3" : "";
+                                            print(Chamber3);
+                                          });
+                                        },
+                                      ),
+                                      const SizedBox(
+                                        width: 4,
+                                      ),
+                                      if (Chamber3 == "Chamber3")
+                                        Expanded(
+                                          child: TextFormField(
+                                            controller: chamber3Controller,
+                                            keyboardType: TextInputType.number,
+                                            textInputAction:
+                                                TextInputAction.next,
+                                            decoration: AppStyles
+                                                .textFieldInputDecoration
+                                                .copyWith(
+                                              hintText: "Please Enter Quantity",
+                                              fillColor: const Color.fromARGB(
+                                                      255, 255, 255, 255)
+                                                  .withOpacity(
+                                                      0.5), // Your desired color
+                                              filled: true,
+                                            ),
+                                            style: AppStyles.textInputTextStyle,
+                                            readOnly: false,
+                                            validator: MultiValidator(
+                                              [
+                                                RequiredValidator(
+                                                  errorText:
+                                                      "Please Enter Quantity",
+                                                ),
+                                              ],
+                                            ),
                                           ),
                                         ),
+                                    ],
+                                  ),
+                                if (selectMachineName ==
+                                        "Laminator (Jinchen)" ||
+                                    selectMachineName == "Laminator (GMEE)")
+                                  const SizedBox(
+                                    height: 15,
+                                  ),
+                                if (selectMachineName ==
+                                        "Laminator (Jinchen)" ||
+                                    selectMachineName == "Laminator (GMEE)")
+                                  Row(
+                                    children: [
+                                      Text(
+                                        "Chamber 4",
+                                        style:
+                                            AppStyles.textfieldCaptionTextStyle,
                                       ),
-                                  ],
-                                ),
+                                      const SizedBox(
+                                        width: 4,
+                                      ),
+                                      Checkbox(
+                                        value: Chamber4 == "Chamber4",
+                                        onChanged: (bool? value) {
+                                          setState(() {
+                                            print(value);
+                                            Chamber4 =
+                                                value == true ? "Chamber4" : "";
+                                            print(Chamber4);
+                                          });
+                                        },
+                                      ),
+                                      const SizedBox(
+                                        width: 4,
+                                      ),
+                                      if (Chamber4 == "Chamber4")
+                                        Expanded(
+                                          child: TextFormField(
+                                            controller: chamber4Controller,
+                                            keyboardType: TextInputType.number,
+                                            textInputAction:
+                                                TextInputAction.next,
+                                            decoration: AppStyles
+                                                .textFieldInputDecoration
+                                                .copyWith(
+                                              hintText: "Please Enter Quantity",
+                                              fillColor: const Color.fromARGB(
+                                                      255, 255, 255, 255)
+                                                  .withOpacity(
+                                                      0.5), // Your desired color
+                                              filled: true,
+                                            ),
+                                            style: AppStyles.textInputTextStyle,
+                                            readOnly: false,
+                                            validator: MultiValidator(
+                                              [
+                                                RequiredValidator(
+                                                  errorText:
+                                                      "Please Enter Quantity",
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                        ),
+                                    ],
+                                  ),
 
                                 const SizedBox(
                                   height: 15,
@@ -1186,12 +1256,12 @@ class _MachineMaintenanceState extends State<MachineMaintenance> {
                                         selectedItem: selectedsparemodel != ''
                                             ? selectedsparemodel
                                             : null,
-                                        validator: (value) {
-                                          if (value == null || value.isEmpty) {
-                                            return 'Please Select Spare Part Model No';
-                                          }
-                                          return null;
-                                        },
+                                        // validator: (value) {
+                                        //   if (value == null || value.isEmpty) {
+                                        //     return 'Please Select Spare Part Model No';
+                                        //   }
+                                        //   return null;
+                                        // },
                                         popupProps: const PopupProps.menu(
                                           showSearchBox: true,
                                           searchFieldProps: TextFieldProps(
@@ -1246,14 +1316,14 @@ class _MachineMaintenanceState extends State<MachineMaintenance> {
                                   ),
                                   style: AppStyles.textInputTextStyle,
                                   readOnly: true,
-                                  validator: MultiValidator(
-                                    [
-                                      RequiredValidator(
-                                        errorText:
-                                            "Please Enter Spare Part Name",
-                                      ),
-                                    ],
-                                  ),
+                                  // validator: MultiValidator(
+                                  //   [
+                                  //     RequiredValidator(
+                                  //       errorText:
+                                  //           "Please Enter Spare Part Name",
+                                  //     ),
+                                  //   ],
+                                  // ),
                                 ),
                                 const SizedBox(
                                   height: 15,
@@ -1267,31 +1337,71 @@ class _MachineMaintenanceState extends State<MachineMaintenance> {
                                   height: 5,
                                 ),
                                 TextFormField(
-                                  controller: quantityController,
-                                  keyboardType: TextInputType.number,
+                                    controller: quantityController,
+                                    keyboardType: TextInputType.number,
+                                    textInputAction: TextInputAction.next,
+                                    decoration: AppStyles
+                                        .textFieldInputDecoration
+                                        .copyWith(
+                                      hintText: "Please Enter Quantity",
+                                      fillColor:
+                                          Color.fromARGB(255, 255, 255, 255)
+                                              .withOpacity(
+                                                  0.5), // Your desired color
+                                      filled: true,
+                                    ),
+                                    style: AppStyles.textInputTextStyle,
+                                    readOnly:
+                                        AvailableStock != "" ? false : true,
+                                    validator: selectedsparemodel != ""
+                                        ? (value) {
+                                            if ((value == null &&
+                                                    selectedsparemodel != "") ||
+                                                (value!.isEmpty &&
+                                                    selectedsparemodel != "")) {
+                                              return 'Please Enter Quantity.';
+                                            } else if (int.parse(value) < 1 &&
+                                                selectedsparemodel != "") {
+                                              return 'Please Enter Valid Quantity.';
+                                            } else if (int.parse(value) >
+                                                    int.parse(AvailableStock) &&
+                                                selectedsparemodel != "") {
+                                              return 'Stock Is Insufficient.';
+                                            }
+                                            return null;
+                                          }
+                                        : (value) {
+                                            return;
+                                          }),
+
+                                const SizedBox(
+                                  height: 15,
+                                ),
+
+                                Text(
+                                  "Remarks",
+                                  style: AppStyles.textfieldCaptionTextStyle,
+                                ),
+                                const SizedBox(
+                                  height: 5,
+                                ),
+                                TextFormField(
+                                  controller: remarksController,
+                                  keyboardType: TextInputType.text,
                                   textInputAction: TextInputAction.next,
                                   decoration: AppStyles.textFieldInputDecoration
                                       .copyWith(
-                                    hintText: "Please Enter Quantity",
+                                    hintText: "Please Enter Remarks",
                                     fillColor: Color.fromARGB(
                                             255, 255, 255, 255)
                                         .withOpacity(0.5), // Your desired color
                                     filled: true,
                                   ),
                                   style: AppStyles.textInputTextStyle,
-                                  readOnly: AvailableStock != "" ? false : true,
-                                  validator: (value) {
-                                    if (value == null || value.isEmpty) {
-                                      return 'Please Enter Quantity.';
-                                    } else if (int.parse(value) < 1) {
-                                      return 'Please Enter Valid Quantity.';
-                                    } else if (int.parse(value) >
-                                        int.parse(AvailableStock)) {
-                                      return 'Stock Is Insufficient.';
-                                    }
-                                    return null;
-                                  },
+                                  minLines: 3,
+                                  maxLines: 5,
                                 ),
+
                                 const SizedBox(
                                   height: 15,
                                 ),

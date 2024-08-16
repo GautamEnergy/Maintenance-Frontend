@@ -1,7 +1,9 @@
 import 'dart:io';
 
+import 'package:Maintenance/AvailableStock.dart';
 import 'package:Maintenance/CommonDrawer.dart';
 import 'package:Maintenance/MachineMaintenance.dart';
+import 'package:Maintenance/MachineMaintenanceList.dart';
 import 'package:Maintenance/SparePartInList.dart';
 
 import 'package:Maintenance/components/appbar.dart';
@@ -160,7 +162,7 @@ class _WelcomePageState extends State<WelcomePage>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color.fromARGB(68, 123, 100, 141),
+      backgroundColor: Color.fromARGB(68, 243, 48, 168),
       appBar: GautamAppBar(
         organization: "organizationtype",
         isBackRequired: false,
@@ -182,6 +184,30 @@ class _WelcomePageState extends State<WelcomePage>
             children: [
               const SizedBox(
                 height: 10,
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const SizedBox(
+                    width: 10,
+                  ),
+                  Expanded(
+                      child: availableStock(
+                          'Available Stock', AppAssets.imgStock, () {
+                    Navigator.of(context).pushAndRemoveUntil(
+                        MaterialPageRoute(
+                            builder: (BuildContext context) =>
+                                AvailableStock()),
+                        (Route<dynamic> route) => false);
+                  })),
+                  const SizedBox(
+                    width: 10,
+                  ),
+                ],
+              ),
+              const SizedBox(
+                height: 20,
               ),
               Row(
                 mainAxisAlignment: MainAxisAlignment.start,
@@ -246,10 +272,11 @@ class _WelcomePageState extends State<WelcomePage>
                         child: machineMaintenanceList(
                             'Machine Maintenance List',
                             AppAssets.imgMachineList, () {
-                      // Navigator.of(context).pushAndRemoveUntil(
-                      //     MaterialPageRoute(
-                      //         builder: (BuildContext context) => EmployeeList()),
-                      //     (Route<dynamic> route) => false);
+                      Navigator.of(context).pushAndRemoveUntil(
+                          MaterialPageRoute(
+                              builder: (BuildContext context) =>
+                                  MachineMaintenanceList()),
+                          (Route<dynamic> route) => false);
                     })),
                   const SizedBox(
                     width: 10,
@@ -407,6 +434,96 @@ class _WelcomePageState extends State<WelcomePage>
     const Item3('1-2-1', "images/drawer-p2p.png"),
     const Item3('Overall', "images/drawer-visitors.png"),
   ];
+
+  Widget availableStock(String title, String img, final Function onPressed) {
+    return InkWell(
+      onTap: () {
+        onPressed();
+      },
+      child: AnimatedBuilder(
+        animation: _animation1,
+        builder: (context, child) {
+          return Transform.scale(
+            scale: _animation1.value,
+            child: child,
+          );
+        },
+        child: Container(
+          decoration: BoxDecoration(
+            color: Color.fromARGB(255, 247, 159, 28),
+            borderRadius: BorderRadius.circular(10),
+          ),
+          height: 255,
+          child: Stack(
+            children: [
+              Positioned(
+                bottom: 0,
+                right: 0,
+                child: Container(
+                  height: 150,
+                  width: 155,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.only(
+                      bottomRight: Radius.circular(10),
+                    ),
+                    image: DecorationImage(
+                      image: AssetImage(AppAssets.imgStock),
+                      fit: BoxFit.fill,
+                    ),
+                  ),
+                ),
+              ),
+              Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.only(left: 18.0, top: 15),
+                    child: Text(
+                      title,
+                      style: TextStyle(
+                        fontWeight: FontWeight.w600,
+                        fontFamily: appFontFamily,
+                        fontSize: 16,
+                        color: Color.fromARGB(255, 0, 0, 0),
+                      ),
+                    ),
+                  ),
+                  SizedBox(
+                    height: 15,
+                  ),
+                  Center(
+                    child: Container(
+                      height: 36,
+                      width: 36,
+                      child: Image.asset(
+                        img,
+                        height: 36,
+                        width: 36,
+                      ),
+                    ),
+                  ),
+                  SizedBox(
+                    height: 10,
+                  ),
+                  Center(
+                    child: Text(
+                      "",
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 60,
+                        color: Colors.white,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
 
   Widget inSpareParts(String title, String img, final Function onPressed) {
     return InkWell(

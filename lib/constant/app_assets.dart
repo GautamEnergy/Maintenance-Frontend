@@ -23,6 +23,7 @@ class AppAssets {
   static String machine = 'assets/icons/machine.png';
   static String imgAttendanceReport = 'assets/icons/tool.png';
   static String testing = 'assets/icons/testing.png';
+  static String addPlusYellow = 'assets/icons/ic_add_darkyellow.png';
   static String imgWelcome = 'assets/images/Welcome.png';
   static String imgRight = 'assets/images/rightmarkicon.png';
   static String audioThankYou = 'assets/images/thankyou.mp3';
@@ -40,6 +41,7 @@ class AppAssets {
 
   static String imgMachineList = 'assets/icons/machinelist.png';
   static String imgSparePartList = 'assets/icons/sparepartlist.png';
+  static String imgStock = 'assets/icons/stock.png';
 
   static String imgPerson = 'assets/icons/Member.png';
   static String imgSelectedPerson = 'assets/icons/selecteduser.png';
