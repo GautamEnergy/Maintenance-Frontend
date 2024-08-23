@@ -799,24 +799,43 @@ class _SparePartInState extends State<SparePartInList> {
                         //Name
                         Row(children: <Widget>[
                           Flexible(
-                            child: Text("PO Number: $voucherNumber",
-                                style: const TextStyle(
-                                  fontWeight: FontWeight.w600,
-                                  fontFamily:
-                                      appFontFamily, // replace with your actual font family
-                                  fontSize: 18,
-                                  color: Color.fromARGB(221, 45, 0,
-                                      247), // replace with your defined AppColors.lightBlackColor
-                                )),
+                            child: RichText(
+                              text: TextSpan(
+                                children: [
+                                  const TextSpan(
+                                    text: "PO Number: ",
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.w600,
+                                      fontFamily:
+                                          appFontFamily, // replace with your actual font family
+                                      fontSize: 19,
+                                      color: Color.fromARGB(221, 0, 0,
+                                          0), // color for "Machine Name:"
+                                    ),
+                                  ),
+                                  TextSpan(
+                                    text: voucherNumber,
+                                    style: const TextStyle(
+                                      fontWeight: FontWeight.w600,
+                                      fontFamily:
+                                          appFontFamily, // replace with your actual font family
+                                      fontSize: 18,
+                                      color: Color.fromARGB(255, 0, 123,
+                                          255), // color for the dynamic value
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
                           ),
-                          SizedBox(
+                          const SizedBox(
                             width: 10,
                           ),
                           Container(
                             padding: const EdgeInsets.symmetric(
                                 horizontal: 10, vertical: 5),
                             decoration: BoxDecoration(
-                              color: Color.fromARGB(
+                              color: const Color.fromARGB(
                                   255, 255, 218, 7), // Background color
                               borderRadius: BorderRadius.circular(
                                   10), // Optional: Add border radius for rounded corners
@@ -825,7 +844,7 @@ class _SparePartInState extends State<SparePartInList> {
                               invoiceNumber,
                               style: const TextStyle(
                                 fontWeight: FontWeight.bold,
-                                fontSize: 11,
+                                fontSize: 17,
                                 color: Color.fromARGB(
                                     255, 0, 0, 0), // Optional: Set text color
                               ),
@@ -833,25 +852,78 @@ class _SparePartInState extends State<SparePartInList> {
                           ),
                         ]),
 
-                        //Occupication
-                        Text("Party Name: $partyName",
-                            style: const TextStyle(
-                                fontWeight: FontWeight.w600,
-                                fontSize: 14,
-                                fontFamily: appFontFamily)),
-
                         Row(children: <Widget>[
                           Flexible(
-                            child: Text("Spare Part Name: $sparePartName",
-                                style: const TextStyle(
-                                  fontWeight: FontWeight.w600,
-                                  fontFamily: appFontFamily,
-                                  fontSize: 14,
-                                )),
+                            child: RichText(
+                              text: TextSpan(
+                                children: [
+                                  const TextSpan(
+                                    text: "Party Name: ",
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.w600,
+                                      fontFamily:
+                                          appFontFamily, // replace with your actual font family
+                                      fontSize: 18,
+                                      color: Color.fromARGB(221, 0, 0,
+                                          0), // color for "Machine Name:"
+                                    ),
+                                  ),
+                                  TextSpan(
+                                    text: partyName,
+                                    style: const TextStyle(
+                                      fontWeight: FontWeight.w600,
+                                      fontFamily:
+                                          appFontFamily, // replace with your actual font family
+                                      fontSize: 17,
+                                      color: Color.fromARGB(255, 0, 123,
+                                          255), // color for the dynamic value
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
                           ),
-                          const SizedBox(
-                            width: 20,
+                        ]),
+                        const SizedBox(
+                          height: 2,
+                        ),
+                        Row(children: <Widget>[
+                          Flexible(
+                            child: RichText(
+                              text: TextSpan(
+                                children: [
+                                  const TextSpan(
+                                    text: "Spare Part Name: ",
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.w600,
+                                      fontFamily:
+                                          appFontFamily, // replace with your actual font family
+                                      fontSize: 18,
+                                      color: Color.fromARGB(221, 0, 0,
+                                          0), // color for "Machine Name:"
+                                    ),
+                                  ),
+                                  TextSpan(
+                                    text: sparePartName,
+                                    style: const TextStyle(
+                                      fontWeight: FontWeight.w600,
+                                      fontFamily:
+                                          appFontFamily, // replace with your actual font family
+                                      fontSize: 17,
+                                      color: Color.fromARGB(255, 0, 123,
+                                          255), // color for the dynamic value
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
                           ),
+                        ]),
+                        const SizedBox(
+                          height: 2,
+                        ),
+
+                        Row(children: <Widget>[
                           Container(
                             padding: const EdgeInsets.symmetric(
                                 horizontal: 10, vertical: 5),
@@ -865,7 +937,7 @@ class _SparePartInState extends State<SparePartInList> {
                               sparePartModelNumber,
                               style: const TextStyle(
                                 fontWeight: FontWeight.bold,
-                                fontSize: 11,
+                                fontSize: 14,
                                 color: Colors.white, // Optional: Set text color
                               ),
                             ),
@@ -873,17 +945,39 @@ class _SparePartInState extends State<SparePartInList> {
                         ]),
 
                         const SizedBox(
-                          height: 2,
+                          height: 4,
                         ),
 
                         Row(children: <Widget>[
                           Flexible(
-                            child: Text("Received QTY: $quantityRecieved",
-                                style: const TextStyle(
-                                  fontWeight: FontWeight.w600,
-                                  fontFamily: appFontFamily,
-                                  fontSize: 14,
-                                )),
+                            child: RichText(
+                              text: TextSpan(
+                                children: [
+                                  const TextSpan(
+                                    text: "Received QTY: ",
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.w600,
+                                      fontFamily:
+                                          appFontFamily, // replace with your actual font family
+                                      fontSize: 18,
+                                      color: Color.fromARGB(221, 0, 0,
+                                          0), // color for "Machine Name:"
+                                    ),
+                                  ),
+                                  TextSpan(
+                                    text: quantityRecieved,
+                                    style: const TextStyle(
+                                      fontWeight: FontWeight.w600,
+                                      fontFamily:
+                                          appFontFamily, // replace with your actual font family
+                                      fontSize: 17,
+                                      color: Color.fromARGB(255, 0, 123,
+                                          255), // color for the dynamic value
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
                           ),
                           const SizedBox(
                             width: 20,
@@ -892,7 +986,7 @@ class _SparePartInState extends State<SparePartInList> {
                             padding: const EdgeInsets.symmetric(
                                 horizontal: 10, vertical: 5),
                             decoration: BoxDecoration(
-                              color: Color.fromARGB(
+                              color: const Color.fromARGB(
                                   255, 81, 241, 7), // Background color
                               borderRadius: BorderRadius.circular(
                                   10), // Optional: Add border radius for rounded corners
@@ -901,7 +995,7 @@ class _SparePartInState extends State<SparePartInList> {
                               "Available Stock: ${availableStock}",
                               style: const TextStyle(
                                 fontWeight: FontWeight.bold,
-                                fontSize: 14,
+                                fontSize: 17,
                                 color: Color.fromARGB(
                                     255, 0, 0, 0), // Optional: Set text color
                               ),
@@ -917,16 +1011,16 @@ class _SparePartInState extends State<SparePartInList> {
                             padding: const EdgeInsets.symmetric(
                                 horizontal: 10, vertical: 5),
                             decoration: BoxDecoration(
-                              color: Color.fromARGB(
+                              color: const Color.fromARGB(
                                   255, 255, 218, 7), // Background color
                               borderRadius: BorderRadius.circular(
                                   10), // Optional: Add border radius for rounded corners
                             ),
                             child: Text(
-                              "Received Date: ${date}",
+                              date,
                               style: const TextStyle(
                                 fontWeight: FontWeight.bold,
-                                fontSize: 13,
+                                fontSize: 17,
                                 color: Color.fromARGB(
                                     255, 0, 0, 0), // Optional: Set text color
                               ),
@@ -936,12 +1030,34 @@ class _SparePartInState extends State<SparePartInList> {
                             width: 20,
                           ),
                           Flexible(
-                            child: Text("Received By: $name",
-                                style: const TextStyle(
-                                  fontWeight: FontWeight.w600,
-                                  fontFamily: appFontFamily,
-                                  fontSize: 14,
-                                )),
+                            child: RichText(
+                              text: TextSpan(
+                                children: [
+                                  const TextSpan(
+                                    text: "Received By: ",
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.w600,
+                                      fontFamily:
+                                          appFontFamily, // replace with your actual font family
+                                      fontSize: 18,
+                                      color: Color.fromARGB(221, 0, 0,
+                                          0), // color for "Machine Name:"
+                                    ),
+                                  ),
+                                  TextSpan(
+                                    text: name,
+                                    style: const TextStyle(
+                                      fontWeight: FontWeight.w600,
+                                      fontFamily:
+                                          appFontFamily, // replace with your actual font family
+                                      fontSize: 17,
+                                      color: Color.fromARGB(255, 0, 123,
+                                          255), // color for the dynamic value
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
                           ),
                         ]),
 
@@ -968,7 +1084,7 @@ class _SparePartInState extends State<SparePartInList> {
                             ),
                           ),
                         ),
-                        SizedBox(
+                        const SizedBox(
                           width: 10,
                         ),
                         // InkWell(
@@ -1003,7 +1119,7 @@ class _SparePartInState extends State<SparePartInList> {
             Container(
               width: MediaQuery.of(context).size.width,
               color: AppColors.dividerColor,
-              height: 1,
+              height: 2,
             )
           ],
         ),

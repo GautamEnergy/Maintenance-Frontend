@@ -1062,7 +1062,7 @@ class _SparePartInState extends State<SparePartIn> {
                                 ),
                                 TextFormField(
                                   controller: invoiceNumberController,
-                                  keyboardType: TextInputType.number,
+                                  keyboardType: TextInputType.text,
                                   textInputAction: TextInputAction.next,
                                   decoration: AppStyles.textFieldInputDecoration
                                       .copyWith(

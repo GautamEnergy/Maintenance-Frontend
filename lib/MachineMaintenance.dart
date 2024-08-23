@@ -91,11 +91,13 @@ class _MachineMaintenanceState extends State<MachineMaintenance> {
   String selectedmachinemodel = "";
   String selectedspare = "";
   String selectedsparemodel = "",
+      isSparePartChanged = "Yes",
       sendSelectedsparemodel = "",
+      recvSelectedsparemodel = "",
       selectMachineName = "",
       sendSelectedMachine = "";
   String selectedCurrency = "";
-  String selectedPO = "";
+  String selectedPO = "", editImage = "";
 
   String status = '',
       machineMaintenanceId = '',
@@ -165,6 +167,107 @@ class _MachineMaintenanceState extends State<MachineMaintenance> {
     //   selectMachineName = " Framing Machine";
     // });
     getMachineListData();
+    if (widget.id != "" && widget.id != null) {
+      getDataById();
+    }
+  }
+
+  getDataById() async {
+    print("widget.id, Bhanu...............???");
+    print(widget.id);
+    final prefs = await SharedPreferences.getInstance();
+    site = prefs.getString('site')!;
+    setState(() {
+      _isLoading = true;
+    });
+
+    final url = (site! + 'Maintenance/GetMachineMaintenanceList');
+
+    http.post(
+      Uri.parse(url),
+      body: jsonEncode(<String, String>{
+        "MachineMaintenanceId": widget.id!,
+        "PersonId": "",
+        "reqData": ""
+      }),
+      headers: {
+        'Content-Type': 'application/json; charset=UTF-8',
+      },
+    ).then((response) {
+      if (mounted) {
+        var decodedResult = jsonDecode(response.body);
+        print("respo..........??");
+        print(decodedResult['data'][0]);
+        setState(() {
+          _isLoading = false;
+          sendSelectedMachine = decodedResult['data'][0]['MachineId'];
+          selectMachineName = decodedResult['data'][0]['Machine Name'];
+          machineNumberController.text =
+              decodedResult['data'][0]['Machine Number'];
+          lineController = decodedResult['data'][0]['Line'] ?? "";
+          //  chamber,
+          if (decodedResult['data'][0]['Chamber'].length > 0) {
+            Chamber1 =
+                decodedResult['data'][0]['Chamber']?[0]['Chamber1'] ?? "";
+            chamber1Controller.text = decodedResult['data'][0]['Chamber']?[0]
+                    ['ChamberQuantity'] ??
+                "";
+
+            Chamber2 =
+                decodedResult['data'][0]?['Chamber']?[1]['Chamber2'] ?? "";
+            chamber2Controller.text = decodedResult['data'][0]['Chamber']?[1]
+                    ['ChamberQuantity'] ??
+                "";
+
+            Chamber3 =
+                decodedResult['data'][0]['Chamber']?[2]['Chamber3'] ?? "";
+            chamber3Controller.text = decodedResult['data'][0]['Chamber']?[2]
+                    ['ChamberQuantity'] ??
+                "";
+
+            Chamber4 =
+                decodedResult['data'][0]['Chamber']?[3]['Chamber4'] ?? "";
+            chamber4Controller.text = decodedResult['data'][0]['Chamber']?[3]
+                    ['ChamberQuantity'] ??
+                "";
+          }
+
+          issueController.text = decodedResult['data'][0]['Issue'] ?? "";
+          maintenanceStartTimeController.text =
+              decodedResult['data'][0]['BreakDown Start Time'] ?? "";
+          maintenanceEndTimeController.text =
+              decodedResult['data'][0]['BreakDown End Time'] ?? "";
+          maintenanceTimeController.text =
+              decodedResult['data'][0]['BreakDown Total Time'] ?? "";
+          selectedsparemodel =
+              decodedResult['data'][0]['Spare Part Model Number'] ?? "";
+          sendSelectedsparemodel =
+              decodedResult['data'][0]['SparePartId'] ?? "";
+          recvSelectedsparemodel =
+              decodedResult['data'][0]['SparePartId'] ?? "";
+          sparePartNameController.text =
+              decodedResult['data'][0]['Spare Part Name'] ?? "";
+          AvailableStock = decodedResult['data'][0]['Available_Stock'] ?? "";
+          quantityController.text =
+              decodedResult['data'][0]['Quantity'] == "0" ||
+                      decodedResult['data'][0]['Quantity'] == null ||
+                      decodedResult['data'][0]['Quantity'] == ""
+                  ? ""
+                  : decodedResult['data'][0]['Quantity'];
+          remarksController.text = decodedResult['data'][0]['Remark'] ?? "";
+          solutionProcessController.text =
+              decodedResult['data'][0]['Solution Process'] ?? "";
+          editImage = decodedResult['data'][0]['Image_URL'] ?? "";
+          if (decodedResult['data'][0]['Machine Name'] != "" &&
+              decodedResult['data'][0]['Machine Name'] != null) {
+            getSparePartModelNoListData(
+                decodedResult['data'][0]['Machine Name']);
+          }
+        });
+      }
+    });
+
+    return null;
   }
 
   Future getImage() async {
@@ -271,8 +374,6 @@ class _MachineMaintenanceState extends State<MachineMaintenance> {
     ).then((response) {
       if (mounted) {
         var poBody = jsonDecode(response.body);
-        print("poBody........QQQQQ");
-        print(poBody);
         setState(() {
           POList = poBody;
         });
@@ -328,6 +429,7 @@ class _MachineMaintenanceState extends State<MachineMaintenance> {
     ];
 
     var data = {
+      "MachineMaintenanceId": widget.id ?? "",
       "CreatedBy": personid,
       "MachineName": sendSelectedMachine,
       "Line": lineController,
@@ -340,6 +442,7 @@ class _MachineMaintenanceState extends State<MachineMaintenance> {
       "Quantity": quantityController.text,
       "Remarks": remarksController.text,
       "SolutionProcess": solutionProcessController.text,
+      "isSparePartChanged": isSparePartChanged,
       "Status": "Active"
     };
 
@@ -553,66 +656,182 @@ class _MachineMaintenanceState extends State<MachineMaintenance> {
                                 const SizedBox(
                                   height: 4,
                                 ),
-                                DropdownSearch<String>(
-                                  dropdownDecoratorProps:
-                                      DropDownDecoratorProps(
-                                    dropdownSearchDecoration: AppStyles
-                                        .textFieldInputDecoration
-                                        .copyWith(
-                                      hintText: "Please Select Machine Name",
-                                      counterText: '',
-                                      contentPadding: const EdgeInsets.all(10),
-                                      fillColor:
-                                          Color.fromARGB(255, 255, 255, 255)
-                                              .withOpacity(
-                                                  0.5), // Your desired color
-                                      filled: true,
-                                    ),
-                                  ),
-                                  items: machineList
-                                      .map((label) =>
-                                          label['MachineName'].toString())
-                                      .toList(),
-                                  onChanged: (val) {
-                                    setState(() {
-                                      selectMachineName = val!;
-                                    });
 
-                                    final selectedMachineName =
-                                        machineList.firstWhere((element) =>
-                                            element['MachineName'] == val);
+                                (widget.id != '' && widget.id != null)
+                                    ? DropdownButtonFormField<String>(
+                                        decoration: AppStyles
+                                            .textFieldInputDecoration
+                                            .copyWith(
+                                          hintText:
+                                              "Please Select Machine Name",
+                                          counterText: '',
+                                          contentPadding: EdgeInsets.all(10),
+                                          fillColor: const Color.fromARGB(
+                                                  255, 255, 255, 255)
+                                              .withOpacity(0.5),
+                                          filled:
+                                              true, // Set your desired fill color here
+                                        ),
+                                        borderRadius: BorderRadius.circular(20),
+                                        items: machineList
+                                            .map((label) => DropdownMenuItem(
+                                                  child: Text(
+                                                    label['MachineName'],
+                                                    style: AppStyles
+                                                        .textInputTextStyle,
+                                                  ),
+                                                  value: label['MachineId']
+                                                      .toString(),
+                                                ))
+                                            .toList(),
+                                        onChanged: widget.id != '' &&
+                                                widget.id != null
+                                            ? null
+                                            : (val) {
+                                                setState(() {
+                                                  sendSelectedMachine = val!;
+                                                });
+                                              },
+                                        value: sendSelectedMachine != ''
+                                            ? sendSelectedMachine
+                                            : null,
+                                        // validator: (value) {
+                                        //   if (value == null || value.isEmpty) {
+                                        //     return 'Please select a work location';
+                                        //   }
+                                        //   return null; // Return null if the validation is successful
+                                        // },
+                                      )
+                                    : DropdownSearch<String>(
+                                        dropdownDecoratorProps:
+                                            DropDownDecoratorProps(
+                                          dropdownSearchDecoration: AppStyles
+                                              .textFieldInputDecoration
+                                              .copyWith(
+                                            hintText:
+                                                "Please Select Machine Name",
+                                            counterText: '',
+                                            contentPadding:
+                                                const EdgeInsets.all(10),
+                                            fillColor: Color.fromARGB(
+                                                    255, 255, 255, 255)
+                                                .withOpacity(
+                                                    0.5), // Your desired color
+                                            filled: true,
+                                          ),
+                                        ),
+                                        items: machineList
+                                            .map((label) =>
+                                                label['MachineName'].toString())
+                                            .toList(),
+                                        onChanged: (val) {
+                                          setState(() {
+                                            selectMachineName = val!;
+                                            selectedsparemodel = "";
+                                            sendSelectedsparemodel = "";
+                                            sparePartNameController.text = "";
+                                          });
 
-                                    getSparePartModelNoListData(
-                                        selectedMachineName['MachineName']
-                                            .toString());
-                                    setState(() {
-                                      sendSelectedMachine =
-                                          selectedMachineName['MachineId']
-                                              .toString();
-                                      machineNumberController.text =
-                                          selectedMachineName['MachineNumber']
-                                              .toString();
-                                    });
-                                  },
-                                  selectedItem: selectMachineName != ''
-                                      ? selectMachineName
-                                      : null,
-                                  validator: (value) {
-                                    if (value == null || value.isEmpty) {
-                                      return 'Please Select Machine Name';
-                                    }
-                                    return null;
-                                  },
-                                  popupProps: const PopupProps.menu(
-                                    showSearchBox: true,
-                                    searchFieldProps: TextFieldProps(
-                                      decoration: InputDecoration(
-                                        border: OutlineInputBorder(),
-                                        hintText: 'Search Machine Name...',
+                                          final selectedMachineName =
+                                              machineList.firstWhere(
+                                                  (element) =>
+                                                      element['MachineName'] ==
+                                                      val);
+
+                                          getSparePartModelNoListData(
+                                              selectedMachineName['MachineName']
+                                                  .toString());
+                                          setState(() {
+                                            sendSelectedMachine =
+                                                selectedMachineName['MachineId']
+                                                    .toString();
+                                            machineNumberController.text =
+                                                selectedMachineName[
+                                                        'MachineNumber']
+                                                    .toString();
+                                          });
+                                        },
+                                        selectedItem: selectMachineName != ''
+                                            ? selectMachineName
+                                            : null,
+                                        validator: (value) {
+                                          if (value == null || value.isEmpty) {
+                                            return 'Please Select Machine Name';
+                                          }
+                                          return null;
+                                        },
+                                        popupProps: const PopupProps.menu(
+                                          showSearchBox: true,
+                                          searchFieldProps: TextFieldProps(
+                                            decoration: InputDecoration(
+                                              border: OutlineInputBorder(),
+                                              hintText:
+                                                  'Search Machine Name...',
+                                            ),
+                                          ),
+                                        ),
                                       ),
-                                    ),
-                                  ),
-                                ),
+
+                                // DropdownSearch<String>(
+                                //   dropdownDecoratorProps:
+                                //       DropDownDecoratorProps(
+                                //     dropdownSearchDecoration: AppStyles
+                                //         .textFieldInputDecoration
+                                //         .copyWith(
+                                //       hintText: "Please Select Machine Name",
+                                //       counterText: '',
+                                //       contentPadding: const EdgeInsets.all(10),
+                                //       fillColor:
+                                //           Color.fromARGB(255, 255, 255, 255)
+                                //               .withOpacity(
+                                //                   0.5), // Your desired color
+                                //       filled: true,
+                                //     ),
+                                //   ),
+                                //   items: machineList
+                                //       .map((label) =>
+                                //           label['MachineName'].toString())
+                                //       .toList(),
+                                //   onChanged: (val) {
+                                //     setState(() {
+                                //       selectMachineName = val!;
+                                //     });
+
+                                //     final selectedMachineName =
+                                //         machineList.firstWhere((element) =>
+                                //             element['MachineName'] == val);
+
+                                //     getSparePartModelNoListData(
+                                //         selectedMachineName['MachineName']
+                                //             .toString());
+                                //     setState(() {
+                                //       sendSelectedMachine =
+                                //           selectedMachineName['MachineId']
+                                //               .toString();
+                                //       machineNumberController.text =
+                                //           selectedMachineName['MachineNumber']
+                                //               .toString();
+                                //     });
+                                //   },
+                                //   selectedItem: selectMachineName != ''
+                                //       ? selectMachineName
+                                //       : null,
+                                //   validator: (value) {
+                                //     if (value == null || value.isEmpty) {
+                                //       return 'Please Select Machine Name';
+                                //     }
+                                //     return null;
+                                //   },
+                                //   popupProps: const PopupProps.menu(
+                                //     showSearchBox: true,
+                                //     searchFieldProps: TextFieldProps(
+                                //       decoration: InputDecoration(
+                                //         border: OutlineInputBorder(),
+                                //         hintText: 'Search Machine Name...',
+                                //       ),
+                                //     ),
+                                //   ),
+                                // ),
                                 const SizedBox(
                                   height: 15,
                                 ),
@@ -778,14 +997,6 @@ class _MachineMaintenanceState extends State<MachineMaintenance> {
                                             ),
                                             style: AppStyles.textInputTextStyle,
                                             readOnly: false,
-                                            validator: MultiValidator(
-                                              [
-                                                RequiredValidator(
-                                                  errorText:
-                                                      "Please Enter Quantity",
-                                                ),
-                                              ],
-                                            ),
                                           ),
                                         ),
                                     ],
@@ -842,14 +1053,6 @@ class _MachineMaintenanceState extends State<MachineMaintenance> {
                                             ),
                                             style: AppStyles.textInputTextStyle,
                                             readOnly: false,
-                                            validator: MultiValidator(
-                                              [
-                                                RequiredValidator(
-                                                  errorText:
-                                                      "Please Enter Quantity",
-                                                ),
-                                              ],
-                                            ),
                                           ),
                                         ),
                                     ],
@@ -906,14 +1109,6 @@ class _MachineMaintenanceState extends State<MachineMaintenance> {
                                             ),
                                             style: AppStyles.textInputTextStyle,
                                             readOnly: false,
-                                            validator: MultiValidator(
-                                              [
-                                                RequiredValidator(
-                                                  errorText:
-                                                      "Please Enter Quantity",
-                                                ),
-                                              ],
-                                            ),
                                           ),
                                         ),
                                     ],
@@ -970,14 +1165,6 @@ class _MachineMaintenanceState extends State<MachineMaintenance> {
                                             ),
                                             style: AppStyles.textInputTextStyle,
                                             readOnly: false,
-                                            validator: MultiValidator(
-                                              [
-                                                RequiredValidator(
-                                                  errorText:
-                                                      "Please Enter Quantity",
-                                                ),
-                                              ],
-                                            ),
                                           ),
                                         ),
                                     ],
@@ -1194,13 +1381,11 @@ class _MachineMaintenanceState extends State<MachineMaintenance> {
                                     return null;
                                   },
                                 ),
-
                                 const SizedBox(
                                   height: 15,
                                 ),
-
                                 Text(
-                                  "Spare Part Model No",
+                                  "Is Spare Part Changed..?",
                                   style: AppStyles.textfieldCaptionTextStyle,
                                 ),
                                 const SizedBox(
@@ -1208,142 +1393,242 @@ class _MachineMaintenanceState extends State<MachineMaintenance> {
                                 ),
 
                                 Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
+                                  mainAxisAlignment: MainAxisAlignment.start,
                                   children: [
-                                    Expanded(
-                                      child: DropdownSearch<String>(
-                                        dropdownDecoratorProps:
-                                            DropDownDecoratorProps(
-                                          dropdownSearchDecoration: AppStyles
-                                              .textFieldInputDecoration
-                                              .copyWith(
-                                            hintText:
-                                                "Please Select Spare Part Model No",
-                                            counterText: '',
-                                            contentPadding:
-                                                const EdgeInsets.all(10),
-                                            fillColor: Color.fromARGB(
-                                                    255, 255, 255, 255)
-                                                .withOpacity(0.5),
-                                            filled: true,
-                                          ),
-                                        ),
-                                        items: sparePartModelNoList
-                                            .map((label) =>
-                                                label['SpareNumber'].toString())
-                                            .toList(),
-                                        onChanged: (val) {
-                                          setState(() {
-                                            selectedsparemodel = val!;
-                                          });
-                                          print(val);
-                                          final selectedModel =
-                                              sparePartModelNoList
-                                                  .firstWhere((element) =>
-                                                      element['SpareNumber'] ==
-                                                      val);
-                                          sendSelectedsparemodel =
-                                              selectedModel['Spare_Part_Id']
-                                                  .toString();
-                                          sparePartNameController.text =
-                                              selectedModel['SparePartName']
-                                                  .toString();
-                                          AvailableStock =
-                                              selectedModel['Available_Stock']
-                                                  .toString();
-                                        },
-                                        selectedItem: selectedsparemodel != ''
-                                            ? selectedsparemodel
-                                            : null,
-                                        // validator: (value) {
-                                        //   if (value == null || value.isEmpty) {
-                                        //     return 'Please Select Spare Part Model No';
-                                        //   }
-                                        //   return null;
-                                        // },
-                                        popupProps: const PopupProps.menu(
-                                          showSearchBox: true,
-                                          searchFieldProps: TextFieldProps(
-                                            decoration: InputDecoration(
-                                              border: OutlineInputBorder(),
-                                              hintText:
-                                                  'Search Spare Part Model No',
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                    const SizedBox(width: 10),
-                                    ElevatedButton(
-                                      onPressed: () {
-                                        // Define what the button should do here
+                                    Radio<String>(
+                                      value: 'Yes',
+                                      groupValue: isSparePartChanged,
+                                      onChanged: (String? value) {
+                                        setState(() {
+                                          isSparePartChanged = value!;
+                                          print(isSparePartChanged);
+                                        });
                                       },
-                                      style: ElevatedButton.styleFrom(
-                                        padding: const EdgeInsets.symmetric(
-                                            horizontal: 20, vertical: 15),
-                                        textStyle: const TextStyle(
+                                    ),
+                                    const Text(
+                                      'Yes',
+                                      style: TextStyle(
                                           fontWeight: FontWeight.bold,
-                                          fontSize: 16,
-                                        ),
-                                      ),
-                                      child: Text("Stock: $AvailableStock"),
+                                          fontSize: 16), // Makes the text bold
+                                    ),
+                                    SizedBox(
+                                        width:
+                                            20), // Optional: Adds space between the options
+                                    Radio<String>(
+                                      value: 'No',
+                                      groupValue: isSparePartChanged,
+                                      onChanged: (String? value) {
+                                        setState(() {
+                                          isSparePartChanged = value!;
+                                          print(isSparePartChanged);
+                                        });
+                                      },
+                                    ),
+                                    const Text(
+                                      'No',
+                                      style: TextStyle(
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 16), // Makes the text bold
                                     ),
                                   ],
                                 ),
-
-                                const SizedBox(
-                                  height: 15,
-                                ),
-                                Text(
-                                  "Spare Part Name",
-                                  style: AppStyles.textfieldCaptionTextStyle,
-                                ),
-                                const SizedBox(
-                                  height: 4,
-                                ),
-                                TextFormField(
-                                  controller: sparePartNameController,
-                                  keyboardType: TextInputType.text,
-                                  textInputAction: TextInputAction.next,
-                                  decoration: AppStyles.textFieldInputDecoration
-                                      .copyWith(
-                                    hintText: "Please Enter Spare Part Name",
-                                    fillColor: Color.fromARGB(
-                                            255, 255, 255, 255)
-                                        .withOpacity(0.5), // Your desired color
-                                    filled: true,
+                                if (isSparePartChanged == "Yes")
+                                  const SizedBox(
+                                    height: 15,
                                   ),
-                                  style: AppStyles.textInputTextStyle,
-                                  readOnly: true,
-                                  // validator: MultiValidator(
-                                  //   [
-                                  //     RequiredValidator(
-                                  //       errorText:
-                                  //           "Please Enter Spare Part Name",
-                                  //     ),
-                                  //   ],
-                                  // ),
-                                ),
-                                const SizedBox(
-                                  height: 15,
-                                ),
+                                if (isSparePartChanged == "Yes")
+                                  Text(
+                                    "Spare Part Model No",
+                                    style: AppStyles.textfieldCaptionTextStyle,
+                                  ),
+                                if (isSparePartChanged == "Yes")
+                                  const SizedBox(
+                                    height: 4,
+                                  ),
+                                if (isSparePartChanged == "Yes")
+                                  Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      Expanded(
+                                        child: widget.id != '' &&
+                                                widget.id != null &&
+                                                (recvSelectedsparemodel != "" &&
+                                                    recvSelectedsparemodel !=
+                                                        null)
+                                            ? DropdownButtonFormField<String>(
+                                                decoration: AppStyles
+                                                    .textFieldInputDecoration
+                                                    .copyWith(
+                                                  hintText:
+                                                      "Please Select Spare Part Model No",
+                                                  counterText: '',
+                                                  contentPadding:
+                                                      EdgeInsets.all(10),
+                                                  fillColor:
+                                                      const Color.fromARGB(255,
+                                                              255, 255, 255)
+                                                          .withOpacity(0.5),
+                                                  filled:
+                                                      true, // Set your desired fill color here
+                                                ),
+                                                borderRadius:
+                                                    BorderRadius.circular(20),
+                                                items: sparePartModelNoList
+                                                    .map((label) =>
+                                                        DropdownMenuItem(
+                                                          child: Text(
+                                                            label[
+                                                                'SpareNumber'],
+                                                            style: AppStyles
+                                                                .textInputTextStyle,
+                                                          ),
+                                                          value: label[
+                                                                  'Spare_Part_Id']
+                                                              .toString(),
+                                                        ))
+                                                    .toList(),
+                                                onChanged: widget.id != '' &&
+                                                        widget.id != null &&
+                                                        (recvSelectedsparemodel !=
+                                                                "" &&
+                                                            recvSelectedsparemodel !=
+                                                                null)
+                                                    ? null
+                                                    : (val) {
+                                                        setState(() {
+                                                          sendSelectedsparemodel =
+                                                              val!;
+                                                        });
+                                                      },
+                                                value:
+                                                    sendSelectedsparemodel != ''
+                                                        ? sendSelectedsparemodel
+                                                        : null,
+                                                // validator: (value) {
+                                                //   if (value == null || value.isEmpty) {
+                                                //     return 'Please select a work location';
+                                                //   }
+                                                //   return null; // Return null if the validation is successful
+                                                // },
+                                              )
+                                            : DropdownSearch<String>(
+                                                dropdownDecoratorProps:
+                                                    DropDownDecoratorProps(
+                                                  dropdownSearchDecoration:
+                                                      AppStyles
+                                                          .textFieldInputDecoration
+                                                          .copyWith(
+                                                    hintText:
+                                                        "Please Select Spare Part Model No",
+                                                    counterText: '',
+                                                    contentPadding:
+                                                        const EdgeInsets.all(
+                                                            10),
+                                                    fillColor:
+                                                        const Color.fromARGB(
+                                                                255,
+                                                                255,
+                                                                255,
+                                                                255)
+                                                            .withOpacity(0.5),
+                                                    filled: true,
+                                                  ),
+                                                ),
+                                                items: sparePartModelNoList
+                                                    .map((label) =>
+                                                        label['SpareNumber']
+                                                            .toString())
+                                                    .toList(),
+                                                onChanged: (val) {
+                                                  setState(() {
+                                                    selectedsparemodel = val!;
+                                                  });
+                                                  print(val);
+                                                  final selectedModel =
+                                                      sparePartModelNoList
+                                                          .firstWhere((element) =>
+                                                              element[
+                                                                  'SpareNumber'] ==
+                                                              val);
+                                                  sendSelectedsparemodel =
+                                                      selectedModel[
+                                                              'Spare_Part_Id']
+                                                          .toString();
+                                                  sparePartNameController.text =
+                                                      selectedModel[
+                                                              'SparePartName']
+                                                          .toString();
+                                                  AvailableStock =
+                                                      selectedModel[
+                                                              'Available_Stock']
+                                                          .toString();
+                                                },
+                                                selectedItem:
+                                                    selectedsparemodel != ''
+                                                        ? selectedsparemodel
+                                                        : null,
 
-                                Text(
-                                  "Quantity",
-                                  style: AppStyles.textfieldCaptionTextStyle,
-                                ),
-                                const SizedBox(
-                                  height: 5,
-                                ),
-                                TextFormField(
-                                    controller: quantityController,
-                                    keyboardType: TextInputType.number,
+                                                // validator: (value) {
+                                                //   if (value == null || value.isEmpty) {
+                                                //     return 'Please Select Spare Part Model No';
+                                                //   }
+                                                //   return null;
+                                                // },
+                                                popupProps:
+                                                    const PopupProps.menu(
+                                                  showSearchBox: true,
+                                                  searchFieldProps:
+                                                      TextFieldProps(
+                                                    decoration: InputDecoration(
+                                                      border:
+                                                          OutlineInputBorder(),
+                                                      hintText:
+                                                          'Search Spare Part Model No',
+                                                    ),
+                                                  ),
+                                                ),
+                                              ),
+                                      ),
+                                      const SizedBox(width: 10),
+                                      ElevatedButton(
+                                        onPressed: () {
+                                          // Define what the button should do here
+                                        },
+                                        style: ElevatedButton.styleFrom(
+                                          padding: const EdgeInsets.symmetric(
+                                              horizontal: 20, vertical: 15),
+                                          textStyle: const TextStyle(
+                                            fontWeight: FontWeight.bold,
+                                            fontSize: 16,
+                                          ),
+                                        ),
+                                        child: Text("Stock: $AvailableStock"),
+                                      ),
+                                    ],
+                                  ),
+                                if (isSparePartChanged == "Yes")
+                                  const SizedBox(
+                                    height: 15,
+                                  ),
+                                if (isSparePartChanged == "Yes")
+                                  Text(
+                                    "Spare Part Name",
+                                    style: AppStyles.textfieldCaptionTextStyle,
+                                  ),
+                                if (isSparePartChanged == "Yes")
+                                  const SizedBox(
+                                    height: 4,
+                                  ),
+                                if (isSparePartChanged == "Yes")
+                                  TextFormField(
+                                    controller: sparePartNameController,
+                                    keyboardType: TextInputType.text,
                                     textInputAction: TextInputAction.next,
                                     decoration: AppStyles
                                         .textFieldInputDecoration
                                         .copyWith(
-                                      hintText: "Please Enter Quantity",
+                                      hintText: "Please Enter Spare Part Name",
                                       fillColor:
                                           Color.fromARGB(255, 255, 255, 255)
                                               .withOpacity(
@@ -1351,28 +1636,80 @@ class _MachineMaintenanceState extends State<MachineMaintenance> {
                                       filled: true,
                                     ),
                                     style: AppStyles.textInputTextStyle,
-                                    readOnly:
-                                        AvailableStock != "" ? false : true,
-                                    validator: selectedsparemodel != ""
-                                        ? (value) {
-                                            if ((value == null &&
-                                                    selectedsparemodel != "") ||
-                                                (value!.isEmpty &&
-                                                    selectedsparemodel != "")) {
-                                              return 'Please Enter Quantity.';
-                                            } else if (int.parse(value) < 1 &&
-                                                selectedsparemodel != "") {
-                                              return 'Please Enter Valid Quantity.';
-                                            } else if (int.parse(value) >
-                                                    int.parse(AvailableStock) &&
-                                                selectedsparemodel != "") {
-                                              return 'Stock Is Insufficient.';
+                                    readOnly: true,
+                                    // validator: MultiValidator(
+                                    //   [
+                                    //     RequiredValidator(
+                                    //       errorText:
+                                    //           "Please Enter Spare Part Name",
+                                    //     ),
+                                    //   ],
+                                    // ),
+                                  ),
+                                if (isSparePartChanged == "Yes")
+                                  const SizedBox(
+                                    height: 15,
+                                  ),
+                                if (isSparePartChanged == "Yes")
+                                  Text(
+                                    "Quantity",
+                                    style: AppStyles.textfieldCaptionTextStyle,
+                                  ),
+                                if (isSparePartChanged == "Yes")
+                                  const SizedBox(
+                                    height: 5,
+                                  ),
+                                if (isSparePartChanged == "Yes")
+                                  TextFormField(
+                                      controller: quantityController,
+                                      keyboardType: TextInputType.number,
+                                      textInputAction: TextInputAction.next,
+                                      decoration: AppStyles
+                                          .textFieldInputDecoration
+                                          .copyWith(
+                                        hintText: "Please Enter Quantity",
+                                        fillColor:
+                                            Color.fromARGB(255, 255, 255, 255)
+                                                .withOpacity(
+                                                    0.5), // Your desired color
+                                        filled: true,
+                                      ),
+                                      style: AppStyles.textInputTextStyle,
+                                      readOnly: AvailableStock != "" &&
+                                              (recvSelectedsparemodel == "" ||
+                                                  recvSelectedsparemodel ==
+                                                      null)
+                                          ? false
+                                          : true,
+                                      validator: selectedsparemodel != ""
+                                          ? (value) {
+                                              print("Value kya aaya..?");
+                                              print(value);
+                                              if ((value == null &&
+                                                      selectedsparemodel !=
+                                                          "") ||
+                                                  (value!.isEmpty &&
+                                                      selectedsparemodel !=
+                                                          "")) {
+                                                return 'Please Enter Quantity.';
+                                              } else if (int.parse(value) < 1 &&
+                                                  selectedsparemodel != "") {
+                                                return 'Please Enter Valid Quantity.';
+                                              } else if (int.parse(value) >
+                                                      int.parse(
+                                                          AvailableStock) &&
+                                                  selectedsparemodel != "" &&
+                                                  (recvSelectedsparemodel ==
+                                                          "" ||
+                                                      recvSelectedsparemodel ==
+                                                          null)) {
+                                                return 'Stock Is Insufficient.';
+                                              }
+                                              return null;
                                             }
-                                            return null;
-                                          }
-                                        : (value) {
-                                            return;
-                                          }),
+                                          : (value) {
+                                              return;
+                                            }),
 
                                 const SizedBox(
                                   height: 15,
@@ -1494,12 +1831,29 @@ class _MachineMaintenanceState extends State<MachineMaintenance> {
                                               ? ClipRRect(
                                                   borderRadius:
                                                       BorderRadius.circular(10),
-                                                  child: CachedNetworkImage(
-                                                    imageUrl: (('')),
-                                                    fit: BoxFit.cover,
-                                                    width: 300,
-                                                    height: 300,
-                                                  ),
+                                                  child: _image != "" &&
+                                                          _image != null
+                                                      ? Image.file(
+                                                          _image!,
+                                                          fit: BoxFit.cover,
+                                                          width: 300,
+                                                          height: 300,
+                                                        )
+                                                      : editImage != "" &&
+                                                              editImage != null
+                                                          ? CachedNetworkImage(
+                                                              imageUrl:
+                                                                  ((editImage)),
+                                                              fit: BoxFit.cover,
+                                                              width: 300,
+                                                              height: 300,
+                                                            )
+                                                          : Image.asset(
+                                                              AppAssets.camera,
+                                                              fit: BoxFit.cover,
+                                                              width: 300,
+                                                              height: 300,
+                                                            ),
                                                 )
                                               : ClipRRect(
                                                   borderRadius:
@@ -1547,8 +1901,13 @@ class _MachineMaintenanceState extends State<MachineMaintenance> {
                                             _registerFormKey.currentState!
                                                 .save();
                                             print("bhanuuuuuu");
-                                            if (_imageBytes == "" ||
-                                                _imageBytes == null) {
+                                            if ((_imageBytes == "" ||
+                                                    _imageBytes == null) &&
+                                                (widget.id == "" ||
+                                                    widget.id == null) &&
+                                                (sendSelectedsparemodel != "" &&
+                                                    sendSelectedsparemodel !=
+                                                        null)) {
                                               Toast.show("Please Take Picture.",
                                                   duration: Toast.lengthLong,
                                                   gravity: Toast.center,

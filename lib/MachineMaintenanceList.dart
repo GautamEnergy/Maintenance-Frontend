@@ -104,19 +104,22 @@ class _MachineMaintenanceState extends State<MachineMaintenanceList> {
   Future<List<UserData>?> getData() async {
     final prefs = await SharedPreferences.getInstance();
     site = prefs.getString('site');
+    print(personid);
     setState(() {
       _isLoading = true;
     });
 
     final url = (site! + 'Maintenance/GetMachineMaintenanceList');
 
-    http.get(
+    http.post(
       Uri.parse(url),
-      // body: jsonEncode(<String, String>{}),
+      body: jsonEncode(<String, String>{"PersonId": personid!, "reqData": ""}),
       headers: {
         'Content-Type': 'application/json; charset=UTF-8',
       },
     ).then((response) {
+      print("response of Machine List");
+      print(response.body);
       if (mounted) {
         setState(() {
           _isLoading = false;
@@ -140,7 +143,8 @@ class _MachineMaintenanceState extends State<MachineMaintenanceList> {
       Uri.parse(url),
       body: jsonEncode(<String, String>{
         "MachineMaintenanceId": machineMaintenanceId,
-        "CreatedBy": personId
+        "CreatedBy": personId,
+        "Required": "Bahan ki shadi"
       }),
       headers: {
         'Content-Type': 'application/json; charset=UTF-8',
@@ -655,10 +659,10 @@ class _MachineMaintenanceState extends State<MachineMaintenanceList> {
                             data.data![index].maintenanceDate ?? '',
                             data.data![index].maintenancedBy!.join(", ") ?? '',
                             data.data![index].imageURL ?? ''));
-                  } else if ((data.data![index].sparePartName ?? '')
+                  } else if ((data.data![index].breakDownStartTime! ?? '')
                           .toLowerCase()
                           .contains((SearchController.text).toLowerCase()) ||
-                      data.data![index].sparePartModelNumber!
+                      data.data![index].breakDownEndTime!
                           .toLowerCase()
                           .contains((SearchController.text).toLowerCase())) {
                     return Container(
@@ -1155,24 +1159,42 @@ class _MachineMaintenanceState extends State<MachineMaintenanceList> {
                                     },
                                   );
                                 }),
-                          // SizedBox(
-                          //   width: 15,
-                          // ),
-                          // InkWell(
-                          //   onTap: () {
-                          //     Navigator.of(context).pushAndRemoveUntil(
-                          //         MaterialPageRoute(
-                          //             builder: (BuildContext context) =>
-                          //                 MachineMaintenance(
-                          //                     id: machineMaintenanceId)),
-                          //         (Route<dynamic> route) => false);
-                          //   },
-                          //   child: Image.asset(
-                          //     AppAssets.icMemberEdit,
-                          //     height: 40,
-                          //     width: 40,
-                          //   ),
-                          // ),
+                          SizedBox(
+                            width: 15,
+                          ),
+                          if (designation != "Super Admin" &&
+                              maintenancedBy.contains(fullname!))
+                            InkWell(
+                              onTap: () {
+                                Navigator.of(context).pushAndRemoveUntil(
+                                    MaterialPageRoute(
+                                        builder: (BuildContext context) =>
+                                            MachineMaintenance(
+                                                id: machineMaintenanceId)),
+                                    (Route<dynamic> route) => false);
+                              },
+                              child: Image.asset(
+                                AppAssets.icMemberEdit,
+                                height: 40,
+                                width: 40,
+                              ),
+                            ),
+                          if (designation == "Super Admin")
+                            InkWell(
+                              onTap: () {
+                                Navigator.of(context).pushAndRemoveUntil(
+                                    MaterialPageRoute(
+                                        builder: (BuildContext context) =>
+                                            MachineMaintenance(
+                                                id: machineMaintenanceId)),
+                                    (Route<dynamic> route) => false);
+                              },
+                              child: Image.asset(
+                                AppAssets.icMemberEdit,
+                                height: 40,
+                                width: 40,
+                              ),
+                            ),
                         ]),
                         const SizedBox(
                           height: 2,

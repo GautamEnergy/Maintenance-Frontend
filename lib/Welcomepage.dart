@@ -185,30 +185,32 @@ class _WelcomePageState extends State<WelcomePage>
               const SizedBox(
                 height: 10,
               ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.start,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const SizedBox(
-                    width: 10,
-                  ),
-                  Expanded(
-                      child: availableStock(
-                          'Available Stock', AppAssets.imgStock, () {
-                    Navigator.of(context).pushAndRemoveUntil(
-                        MaterialPageRoute(
-                            builder: (BuildContext context) =>
-                                AvailableStock()),
-                        (Route<dynamic> route) => false);
-                  })),
-                  const SizedBox(
-                    width: 10,
-                  ),
-                ],
-              ),
-              const SizedBox(
-                height: 20,
-              ),
+              if (designation != 'Maintenance Engineer')
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const SizedBox(
+                      width: 10,
+                    ),
+                    Expanded(
+                        child: availableStock(
+                            'Available Stock', AppAssets.imgStock, () {
+                      Navigator.of(context).pushAndRemoveUntil(
+                          MaterialPageRoute(
+                              builder: (BuildContext context) =>
+                                  AvailableStock()),
+                          (Route<dynamic> route) => false);
+                    })),
+                    const SizedBox(
+                      width: 10,
+                    ),
+                  ],
+                ),
+              if (designation != 'Maintenance Engineer')
+                const SizedBox(
+                  height: 20,
+                ),
               Row(
                 mainAxisAlignment: MainAxisAlignment.start,
                 crossAxisAlignment: CrossAxisAlignment.start,

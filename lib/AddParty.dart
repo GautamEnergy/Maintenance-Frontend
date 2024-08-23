@@ -601,16 +601,18 @@ class _addPartyState extends State<addParty> {
                                     filled: true,
                                   ),
                                   style: AppStyles.textInputTextStyle,
-                                  validator: MultiValidator(
-                                    [
-                                      RequiredValidator(
-                                        errorText: "Please Enter Email",
-                                      ),
-                                      EmailValidator(
-                                          errorText:
-                                              "Please Enter a valid Email"),
-                                    ],
-                                  ),
+                                  validator: countryController != 'China'
+                                      ? MultiValidator(
+                                          [
+                                            RequiredValidator(
+                                              errorText: "Please Enter Email",
+                                            ),
+                                            EmailValidator(
+                                                errorText:
+                                                    "Please Enter a valid Email"),
+                                          ],
+                                        )
+                                      : MultiValidator([]),
                                 ),
 
                                 //***************   Details   ********************
@@ -762,15 +764,16 @@ class _addPartyState extends State<addParty> {
                                     filled: true,
                                   ),
                                   style: AppStyles.textInputTextStyle,
-                                  validator: MultiValidator(
-                                    [
-                                      RequiredValidator(
-                                        errorText: countryController != 'China'
-                                            ? "Please Enter Pin Code"
-                                            : "Please Enter zip Code",
-                                      ),
-                                    ],
-                                  ),
+                                  validator: countryController != 'China'
+                                      ? MultiValidator(
+                                          [
+                                            RequiredValidator(
+                                              errorText:
+                                                  "Please Enter Pin Code",
+                                            ),
+                                          ],
+                                        )
+                                      : MultiValidator([]),
                                   inputFormatters: [
                                     LengthLimitingTextInputFormatter(
                                         6), // Limits to 6 digits
