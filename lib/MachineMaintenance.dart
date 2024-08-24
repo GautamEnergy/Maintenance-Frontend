@@ -92,6 +92,7 @@ class _MachineMaintenanceState extends State<MachineMaintenance> {
   String selectedspare = "";
   String selectedsparemodel = "",
       isSparePartChanged = "Yes",
+      maintenanceType = "Breakdown",
       sendSelectedsparemodel = "",
       recvSelectedsparemodel = "",
       selectMachineName = "",
@@ -443,6 +444,7 @@ class _MachineMaintenanceState extends State<MachineMaintenance> {
       "Remarks": remarksController.text,
       "SolutionProcess": solutionProcessController.text,
       "isSparePartChanged": isSparePartChanged,
+      "MaintenanceType": maintenanceType,
       "Status": "Active"
     };
 
@@ -1173,6 +1175,55 @@ class _MachineMaintenanceState extends State<MachineMaintenance> {
                                 const SizedBox(
                                   height: 15,
                                 ),
+                                Text(
+                                  "Maintenance Type",
+                                  style: AppStyles.textfieldCaptionTextStyle,
+                                ),
+                                const SizedBox(
+                                  height: 4,
+                                ),
+
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.start,
+                                  children: [
+                                    Radio<String>(
+                                      value: 'Breakdown',
+                                      groupValue: maintenanceType,
+                                      onChanged: (String? value) {
+                                        setState(() {
+                                          maintenanceType = value!;
+                                          print(maintenanceType);
+                                        });
+                                      },
+                                    ),
+                                    const Text(
+                                      'Breakdown',
+                                      style: TextStyle(
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 16), // Makes the text bold
+                                    ),
+                                    SizedBox(
+                                        width:
+                                            20), // Optional: Adds space between the options
+                                    Radio<String>(
+                                      value: 'Preventive',
+                                      groupValue: maintenanceType,
+                                      onChanged: (String? value) {
+                                        setState(() {
+                                          maintenanceType = value!;
+                                          print(maintenanceType);
+                                        });
+                                      },
+                                    ),
+                                    const Text(
+                                      'Preventive',
+                                      style: TextStyle(
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 16), // Makes the text bold
+                                    ),
+                                  ],
+                                ),
+
                                 Text(
                                   "Issue",
                                   style: AppStyles.textfieldCaptionTextStyle,
