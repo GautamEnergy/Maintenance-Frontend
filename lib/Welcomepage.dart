@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:Maintenance/AvailableStock.dart';
@@ -12,7 +13,7 @@ import 'package:Maintenance/constant/app_fonts.dart';
 import 'package:Maintenance/constant/app_styles.dart';
 import 'package:Maintenance/directory.dart';
 import 'package:Maintenance/SparePartIn.dart';
-
+import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 // import '../BoxCricket.dart';
@@ -74,7 +75,43 @@ class _WelcomePageState extends State<WelcomePage>
       ImagePath = prefs.getString('imagePath');
       vCard = prefs.getString('Vcard');
     });
-    // getFromStringmap();
+    getStatus();
+  }
+
+  void getStatus() async {
+    final prefs = await SharedPreferences.getInstance();
+    site = prefs.getString('site');
+    final url = (site!) + 'Employee/CheckActive';
+    var response = await http.post(
+      Uri.parse(url),
+      body: jsonEncode(<String, String>{"personid": personid!}),
+      headers: {
+        'Content-Type': 'application/json; charset=UTF-8',
+      },
+    );
+    print("Response.....");
+    print(response.body);
+    if (response.statusCode == 200) {
+      var objData = json.decode(response.body);
+      print(objData['status']);
+      if (objData['status'] == "Inactive") {
+        prefs.remove('site');
+
+        prefs.remove('personid');
+        prefs.remove('fullname');
+        prefs.remove('department');
+        prefs.remove('pic');
+
+        prefs.setBool('islogin', false);
+        prefs.remove('designation');
+        Navigator.of(context).pushAndRemoveUntil(
+            MaterialPageRoute(builder: (BuildContext context) => MyApp()),
+            (Route<dynamic> route) => false);
+      }
+      return;
+    } else {
+      throw Exception('Failed To Fetch Data');
+    }
   }
 
   @override

@@ -34,7 +34,7 @@ class _LoginPageState extends State<LoginPage> {
   String? uid, deviceType, designation, department;
   static final DeviceInfoPlugin deviceInfoPlugin = DeviceInfoPlugin();
 
-  // String path = "http://192.168.0.100:8080/"; //local
+  // String path = "http://192.168.1.2:8080/"; //local
   // String path =
   //     "https://fair-gray-gharial-wig.cyclic.app/"; // Maintenance Cyclic Dev
 
@@ -46,7 +46,7 @@ class _LoginPageState extends State<LoginPage> {
   // String path = "https://xvvmywehv3.ap-south-1.awsapprunner.com/"; // AWS Prod
   String path = "http://srv515471.hstgr.cloud:8080/"; // Hostinger Dev
 
-  // String path = "http://srv515471.hstgr.cloud:9090/"; // Hostinger Prod
+  // String path = "http://srv515471.hstgr.cloud:8081/"; // Hostinger Prod
 
   @override
   void initState() {
@@ -59,6 +59,8 @@ class _LoginPageState extends State<LoginPage> {
     setState(() {
       _isLoading = true;
     });
+    print("path....?");
+    print(path);
     final url = (path + 'Employee/Login');
     var params = {
       "loginid": loginid,

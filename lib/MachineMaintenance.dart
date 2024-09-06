@@ -96,6 +96,7 @@ class _MachineMaintenanceState extends State<MachineMaintenance> {
       sendSelectedsparemodel = "",
       recvSelectedsparemodel = "",
       selectMachineName = "",
+      remainingQuantity = "",
       sendSelectedMachine = "";
   String selectedCurrency = "";
   String selectedPO = "", editImage = "";
@@ -264,6 +265,9 @@ class _MachineMaintenanceState extends State<MachineMaintenance> {
             getSparePartModelNoListData(
                 decodedResult['data'][0]['Machine Name']);
           }
+          maintenanceType = decodedResult['data'][0]['Maintenance Type'] ?? "";
+          isSparePartChanged =
+              decodedResult['data'][0]['Is Spare Part Changed'] ?? "";
         });
       }
     });
@@ -408,6 +412,7 @@ class _MachineMaintenanceState extends State<MachineMaintenance> {
           priceController.text = allBody['Price'];
           specificationController.text = allBody['Specification'];
           quantityController.text = allBody['Quantity'];
+
           currencyController.text = allBody['Currency'];
           solutionProcessController.text = allBody['Unit'];
           Mach = allBody['Machine'];
@@ -444,7 +449,7 @@ class _MachineMaintenanceState extends State<MachineMaintenance> {
       "Remarks": remarksController.text,
       "SolutionProcess": solutionProcessController.text,
       "isSparePartChanged": isSparePartChanged,
-      "MaintenanceType": maintenanceType,
+      "maintenanceType": maintenanceType,
       "Status": "Active"
     };
 
@@ -528,6 +533,9 @@ class _MachineMaintenanceState extends State<MachineMaintenance> {
         data: formData);
 
     try {
+      print("Image Response........");
+      print(_response?.statusCode);
+      print(_response);
       if (_response?.statusCode == 200) {
         setState(() {
           _isLoading = false;

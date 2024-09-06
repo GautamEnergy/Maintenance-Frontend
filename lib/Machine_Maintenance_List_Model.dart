@@ -48,6 +48,8 @@ class UserData {
   String? stockAfterUsage;
   List<String>? maintenancedBy;
   String? maintenanceDate;
+  String? isSparePartChanged;
+  String? maintenanceType;
 
   UserData(
       {this.machineMaintenanceId,
@@ -66,7 +68,9 @@ class UserData {
       this.imageURL,
       this.stockAfterUsage,
       this.maintenancedBy,
-      this.maintenanceDate});
+      this.maintenanceDate,
+      this.isSparePartChanged,
+      this.maintenanceType});
 
   UserData.fromJson(Map<String, dynamic> json) {
     machineMaintenanceId = json['Machine_Maintenance_Id'];
@@ -91,6 +95,8 @@ class UserData {
     stockAfterUsage = json['Stock After Usage'];
     maintenancedBy = json['Maintenanced by'].cast<String>();
     maintenanceDate = json['Maintenance Date'];
+    isSparePartChanged = json['Is Spare Part Changed'];
+    maintenanceType = json['Maintenance Type'];
   }
 
   Map<String, dynamic> toJson() {
@@ -114,6 +120,8 @@ class UserData {
     data['Stock After Usage'] = this.stockAfterUsage;
     data['Maintenanced by'] = this.maintenancedBy;
     data['Maintenance Date'] = this.maintenanceDate;
+    data['Is Spare Part Changed'] = this.isSparePartChanged;
+    data['Maintenance Type'] = this.maintenanceType;
     return data;
   }
 }

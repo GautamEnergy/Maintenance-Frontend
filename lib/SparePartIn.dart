@@ -67,6 +67,7 @@ class _SparePartInState extends State<SparePartIn> {
   String selectedmachinemodel = "";
   String selectedspare = "";
   String selectedsparemodel = "",
+      remainingQuantity = "",
       sendSelectedsparemodel = "",
       selectedPartyName = "",
       sendSelectedParty = "";
@@ -251,7 +252,9 @@ class _SparePartInState extends State<SparePartIn> {
 
           priceController.text = allBody['Price'];
           specificationController.text = allBody['Specification'];
-          quantityController.text = allBody['Quantity'];
+          quantityController.text =
+              "${allBody['RemainingQuantity']} / ${allBody['Quantity']}";
+          remainingQuantity = allBody['RemainingQuantity'];
           currencyController.text = allBody['Currency'];
           unitController.text = allBody['Unit'];
           Mach = allBody['Machine'];
@@ -299,7 +302,9 @@ class _SparePartInState extends State<SparePartIn> {
         'Content-Type': 'application/json; charset=UTF-8',
       },
     );
-
+    print("response.statusCodeInnnnnn");
+    print(response.statusCode);
+    print(response.body);
     if (response.statusCode == 200) {
       var objData = json.decode(response.body);
 
@@ -907,15 +912,13 @@ class _SparePartInState extends State<SparePartIn> {
                                     filled: true,
                                   ),
                                   style: AppStyles.textInputTextStyle,
-                                  readOnly: quantityController.text != ""
-                                      ? false
-                                      : true,
+                                  readOnly:
+                                      remainingQuantity != "" ? false : true,
                                   validator: (value) {
                                     if (value == null || value.isEmpty) {
                                       return 'Please Enter Quantity';
                                     } else if (int.parse(value) >
-                                            int.parse(
-                                                quantityController.text) ||
+                                            int.parse(remainingQuantity) ||
                                         int.parse(value) < 1) {
                                       return 'Please Enter Valid Quantity';
                                     }

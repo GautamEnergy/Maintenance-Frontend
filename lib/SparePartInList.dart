@@ -121,134 +121,197 @@ class _SparePartInState extends State<SparePartInList> {
     return null;
   }
 
-  // void setMemberStatus(status, id) async {
-  //   setState(() {
-  //     _isLoading = true;
-  //   });
+  void addFreightDiscount(PersonId, Freight, Discount) async {
+    setState(() {
+      _isLoading = true;
+    });
 
-  //   final prefs = await SharedPreferences.getInstance();
-  //   site = prefs.getString('site');
-  //   final url = (site!) + 'Employee/DeleteEmployee';
-  //   var response = await http.post(
-  //     Uri.parse(url),
-  //     body: jsonEncode(<String, String>{"PersonId": id, "Status": status}),
-  //     headers: {
-  //       'Content-Type': 'application/json; charset=UTF-8',
-  //     },
-  //   );
-  //   print("Response.....");
-  //   print(response.statusCode);
-  //   if (response.statusCode == 200) {
-  //     setState(() {
-  //       _isLoading = false;
-  //     });
-  //     Toast.show("Employee Removed Successfully",
-  //         duration: Toast.lengthLong,
-  //         gravity: Toast.center,
-  //         backgroundColor: AppColors.primaryColor);
+    final prefs = await SharedPreferences.getInstance();
+    site = prefs.getString('site');
+    final url = (site!) + '';
+    var response = await http.post(
+      Uri.parse(url),
+      body: jsonEncode(<String, String>{
+        "PersonId": PersonId,
+        "Freight": Freight,
+        "Discount": Discount
+      }),
+      headers: {
+        'Content-Type': 'application/json; charset=UTF-8',
+      },
+    );
+    print("Response.....");
+    print(response.statusCode);
+    if (response.statusCode == 200) {
+      setState(() {
+        _isLoading = false;
+      });
+      Toast.show("Employee Removed Successfully",
+          duration: Toast.lengthLong,
+          gravity: Toast.center,
+          backgroundColor: AppColors.primaryColor);
 
-  //     getData();
+      getData();
 
-  //     return;
-  //   } else {
-  //     throw Exception('Failed To Fetch Data');
-  //   }
-  // }
+      return;
+    } else {
+      throw Exception('Failed To Fetch Data');
+    }
+  }
 
-  // contentBox(context, String personId) {
-  //   return SingleChildScrollView(
-  //     child: Form(
-  //       child: Column(
-  //         children: [
-  //           Container(
-  //             padding:
-  //                 EdgeInsets.only(left: 20, top: 20, right: 20, bottom: 20),
-  //             decoration: BoxDecoration(
-  //               shape: BoxShape.rectangle,
-  //               color: Colors.white,
-  //               borderRadius: BorderRadius.circular(20),
-  //             ),
-  //             child: SingleChildScrollView(
-  //               physics: const BouncingScrollPhysics(),
-  //               child: Column(
-  //                 mainAxisSize: MainAxisSize.min,
-  //                 mainAxisAlignment: MainAxisAlignment.center,
-  //                 children: [
-  //                   const Text(
-  //                     // 'Disable Member',
-  //                     "Disable Member",
-  //                     style: TextStyle(
-  //                       color: Colors.black,
-  //                       fontSize: 20,
-  //                       fontFamily: 'HKGrotesk',
-  //                       fontWeight: FontWeight.w500,
-  //                     ),
-  //                     textAlign: TextAlign.center,
-  //                   ),
-  //                   Column(
-  //                     mainAxisAlignment: MainAxisAlignment.start,
-  //                     crossAxisAlignment: CrossAxisAlignment.start,
-  //                     children: [
-  //                       const SizedBox(height: 15),
-  //                       const Text(
-  //                         // 'Are you sure you want to disable this member?',
-  //                         "Are you sure you want to disable this member?",
-  //                         style: TextStyle(
-  //                             fontSize: 15, fontWeight: FontWeight.bold),
-  //                       ),
-  //                       const SizedBox(height: 15),
-  //                       InkWell(
-  //                         onTap: () {
-  //                           Navigator.of(context).pop();
-  //                           setMemberStatus('Inactive', personId);
-  //                         },
-  //                         child: Container(
-  //                           decoration: BoxDecoration(
-  //                             color: AppColors.primaryColor,
-  //                             borderRadius: BorderRadius.circular(20),
-  //                           ),
-  //                           child: const Padding(
-  //                             padding: EdgeInsets.only(top: 10, bottom: 10),
-  //                             child: Center(
-  //                               child: Text(
-  //                                 'Yes',
-  //                                 style: TextStyle(
-  //                                     color: Colors.white,
-  //                                     fontFamily: 'HKGrotesk',
-  //                                     fontSize: 16.0,
-  //                                     fontWeight: FontWeight.w700),
-  //                               ),
-  //                             ),
-  //                           ),
-  //                         ),
-  //                       ),
-  //                       const SizedBox(height: 10.0),
-  //                       InkWell(
-  //                           onTap: () {
-  //                             Navigator.of(context).pop();
-  //                           },
-  //                           child: const Center(
-  //                             child: Text(
-  //                               'NO',
-  //                               style: TextStyle(
-  //                                   fontFamily: appFontFamily,
-  //                                   fontSize: 16,
-  //                                   fontWeight: FontWeight.w500,
-  //                                   color: AppColors.redColor),
-  //                             ),
-  //                           )),
-  //                       const SizedBox(height: 10.0),
-  //                     ],
-  //                   ),
-  //                 ],
-  //               ),
-  //             ),
-  //           ),
-  //         ],
-  //       ),
-  //     ),
-  //   );
-  // }
+  contentBox(BuildContext context, String personId) {
+    final _formKey = GlobalKey<FormState>();
+    final TextEditingController freightController = TextEditingController();
+    final TextEditingController discountController = TextEditingController();
+
+    return SingleChildScrollView(
+      child: Form(
+        key: _formKey,
+        child: Column(
+          children: [
+            Container(
+              padding:
+                  EdgeInsets.only(left: 20, top: 20, right: 20, bottom: 20),
+              decoration: BoxDecoration(
+                shape: BoxShape.rectangle,
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(20),
+              ),
+              child: SingleChildScrollView(
+                physics: const BouncingScrollPhysics(),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    const Text(
+                      "Add Freight & Discount",
+                      style: TextStyle(
+                        color: Colors.black,
+                        fontSize: 20,
+                        fontFamily: 'HKGrotesk',
+                        fontWeight: FontWeight.w800,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                    Column(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const SizedBox(height: 15),
+                        const Text(
+                          "Freight",
+                          style: TextStyle(
+                              fontSize: 15, fontWeight: FontWeight.bold),
+                        ),
+                        const SizedBox(height: 5),
+                        TextFormField(
+                          controller: freightController,
+                          decoration:
+                              AppStyles.textFieldInputDecoration.copyWith(
+                            hintText: 'Please Enter Freight Amount',
+                            filled: true,
+                            fillColor: Color.fromARGB(255, 255, 255, 255)
+                                .withOpacity(0.5),
+                          ),
+                          keyboardType: TextInputType.number,
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return 'Please enter the freight amount';
+                            }
+                            if (double.tryParse(value) == null) {
+                              return 'Please enter a valid number';
+                            }
+                            return null;
+                          },
+                        ),
+                        const SizedBox(height: 15),
+                        const Text(
+                          "Discount",
+                          style: TextStyle(
+                              fontSize: 15, fontWeight: FontWeight.bold),
+                        ),
+                        const SizedBox(height: 5),
+                        TextFormField(
+                          controller: discountController,
+                          decoration:
+                              AppStyles.textFieldInputDecoration.copyWith(
+                            hintText: 'Please Enter Discount Amount',
+                            filled: true,
+                            fillColor: Color.fromARGB(255, 255, 255, 255)
+                                .withOpacity(0.5),
+                          ),
+                          keyboardType: TextInputType.number,
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return 'Please enter the discount amount';
+                            }
+                            if (double.tryParse(value) == null) {
+                              return 'Please enter a valid number';
+                            }
+                            return null;
+                          },
+                        ),
+                        const SizedBox(height: 20),
+                        InkWell(
+                          onTap: () {
+                            if (_formKey.currentState!.validate()) {
+                              Navigator.of(context).pop();
+                              print(discountController.text);
+                              print(freightController.text);
+                              addFreightDiscount(
+                                  personId,
+                                  freightController.text,
+                                  discountController.text);
+                            }
+                          },
+                          child: Container(
+                            decoration: BoxDecoration(
+                              color: Colors.blue, // Use your primary color here
+                              borderRadius: BorderRadius.circular(20),
+                            ),
+                            child: const Padding(
+                              padding: EdgeInsets.only(top: 10, bottom: 10),
+                              child: Center(
+                                child: Text(
+                                  'Submit',
+                                  style: TextStyle(
+                                      color: Colors.white,
+                                      fontFamily: 'HKGrotesk',
+                                      fontSize: 16.0,
+                                      fontWeight: FontWeight.w700),
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: 10.0),
+                        InkWell(
+                            onTap: () {
+                              Navigator.of(context).pop();
+                            },
+                            child: const Center(
+                              child: Text(
+                                'Cancel',
+                                style: TextStyle(
+                                    fontFamily: 'HKGrotesk',
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w500,
+                                    color:
+                                        Colors.red), // Use your red color here
+                              ),
+                            )),
+                        const SizedBox(height: 10.0),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
 
   Future<bool> redirectto() async {
     Navigator.of(context).pushAndRemoveUntil(
@@ -1085,11 +1148,11 @@ class _SparePartInState extends State<SparePartInList> {
                           ),
                         ),
                         const SizedBox(
-                          width: 10,
+                          height: 10,
                         ),
                         // InkWell(
                         //     child: Image.asset(
-                        //       AppAssets.icMemberDelete,
+                        //       AppAssets.addPlusYellow,
                         //       height: 40,
                         //       width: 40,
                         //     ),
@@ -1103,7 +1166,7 @@ class _SparePartInState extends State<SparePartInList> {
                         //             ),
                         //             elevation: 0,
                         //             backgroundColor: Colors.transparent,
-                        //             child: contentBox(context, id),
+                        //             child: contentBox(context, ""),
                         //           );
                         //         },
                         //       );

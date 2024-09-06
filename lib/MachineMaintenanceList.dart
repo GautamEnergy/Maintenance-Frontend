@@ -658,8 +658,10 @@ class _MachineMaintenanceState extends State<MachineMaintenanceList> {
                             data.data![index].stockAfterUsage ?? '',
                             data.data![index].maintenanceDate ?? '',
                             data.data![index].maintenancedBy!.join(", ") ?? '',
-                            data.data![index].imageURL ?? ''));
-                  } else if ((data.data![index].breakDownStartTime! ?? '')
+                            data.data![index].imageURL ?? '',
+                            data.data![index].isSparePartChanged ?? '',
+                            data.data![index].maintenanceType ?? ''));
+                  } else if ((data.data![index].maintenanceType! ?? '')
                           .toLowerCase()
                           .contains((SearchController.text).toLowerCase()) ||
                       data.data![index].breakDownEndTime!
@@ -683,7 +685,9 @@ class _MachineMaintenanceState extends State<MachineMaintenanceList> {
                             data.data![index].stockAfterUsage ?? '',
                             data.data![index].maintenanceDate ?? '',
                             data.data![index].maintenancedBy!.join(", ") ?? '',
-                            data.data![index].imageURL ?? ''));
+                            data.data![index].imageURL ?? '',
+                            data.data![index].isSparePartChanged ?? '',
+                            data.data![index].maintenanceType ?? ''));
                   } else if (data.data![index].machineName!
                       .toLowerCase()
                       .contains((SearchController.text).toLowerCase())) {
@@ -705,7 +709,9 @@ class _MachineMaintenanceState extends State<MachineMaintenanceList> {
                             data.data![index].stockAfterUsage ?? '',
                             data.data![index].maintenanceDate ?? '',
                             data.data![index].maintenancedBy!.join(", ") ?? '',
-                            data.data![index].imageURL ?? ''));
+                            data.data![index].imageURL ?? '',
+                            data.data![index].isSparePartChanged ?? '',
+                            data.data![index].maintenanceType ?? ''));
                   } else if (data.data![index].machineModelNumber!
                       .toLowerCase()
                       .contains((SearchController.text).toLowerCase())) {
@@ -727,8 +733,10 @@ class _MachineMaintenanceState extends State<MachineMaintenanceList> {
                             data.data![index].stockAfterUsage ?? '',
                             data.data![index].maintenanceDate ?? '',
                             data.data![index].maintenancedBy!.join(", ") ?? '',
-                            data.data![index].imageURL ?? ''));
-                  } else if ((data.data![index].issue!)
+                            data.data![index].imageURL ?? '',
+                            data.data![index].isSparePartChanged ?? '',
+                            data.data![index].maintenanceType ?? ''));
+                  } else if ((data.data![index].isSparePartChanged!)
                       .toLowerCase()
                       .contains((SearchController.text).toLowerCase())) {
                     return Container(
@@ -749,7 +757,9 @@ class _MachineMaintenanceState extends State<MachineMaintenanceList> {
                             data.data![index].stockAfterUsage ?? '',
                             data.data![index].maintenanceDate ?? '',
                             data.data![index].maintenancedBy!.join(", ") ?? '',
-                            data.data![index].imageURL ?? ''));
+                            data.data![index].imageURL ?? '',
+                            data.data![index].isSparePartChanged ?? '',
+                            data.data![index].maintenanceType ?? ''));
                   } else if (data.data![index].line!
                       .toLowerCase()
                       .contains((SearchController.text).toLowerCase())) {
@@ -771,7 +781,9 @@ class _MachineMaintenanceState extends State<MachineMaintenanceList> {
                             data.data![index].stockAfterUsage ?? '',
                             data.data![index].maintenanceDate ?? '',
                             data.data![index].maintenancedBy!.join(", ") ?? '',
-                            data.data![index].imageURL ?? ''));
+                            data.data![index].imageURL ?? '',
+                            data.data![index].isSparePartChanged ?? '',
+                            data.data![index].maintenanceType ?? ''));
                   } else {
                     return Container();
                   }
@@ -800,6 +812,8 @@ class _MachineMaintenanceState extends State<MachineMaintenanceList> {
     String maintenanceDate,
     String maintenancedBy,
     String imageURL,
+    String isSparePartChanged,
+    String maintenanceType,
   ) {
     // setState(() {
     //   isMaintenanced = maintenancedBy.contains(fullname!);
@@ -1112,6 +1126,66 @@ class _MachineMaintenanceState extends State<MachineMaintenanceList> {
                           height: 5,
                         ),
 
+                        Row(children: <Widget>[
+                          if (isSparePartChanged != "")
+                            Flexible(
+                              child: RichText(
+                                text: TextSpan(
+                                  children: [
+                                    const TextSpan(
+                                      text: "Is Spare Part Changed: ",
+                                      style: TextStyle(
+                                        fontWeight: FontWeight.w600,
+                                        fontFamily:
+                                            appFontFamily, // replace with your actual font family
+                                        fontSize: 16,
+                                        color: Color.fromARGB(221, 0, 0,
+                                            0), // color for "Machine Name:"
+                                      ),
+                                    ),
+                                    TextSpan(
+                                      text: isSparePartChanged,
+                                      style: const TextStyle(
+                                        fontWeight: FontWeight.w600,
+                                        fontFamily:
+                                            appFontFamily, // replace with your actual font family
+                                        fontSize: 15,
+                                        color: Color.fromARGB(255, 0, 123,
+                                            255), // color for the dynamic value
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          if (maintenanceType != "")
+                            const SizedBox(
+                              width: 20,
+                            ),
+                          if (maintenanceType != "")
+                            Container(
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 10, vertical: 5),
+                              decoration: BoxDecoration(
+                                color: Color.fromARGB(
+                                    255, 2, 98, 241), // Background color
+                                borderRadius: BorderRadius.circular(
+                                    10), // Optional: Add border radius for rounded corners
+                              ),
+                              child: Text(
+                                "$maintenanceType",
+                                style: const TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 15,
+                                  color:
+                                      Colors.white, // Optional: Set text color
+                                ),
+                              ),
+                            ),
+                        ]),
+                        const SizedBox(
+                          height: 5,
+                        ),
                         Row(children: <Widget>[
                           SizedBox(
                             width: 10,
